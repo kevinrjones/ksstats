@@ -6,7 +6,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import com.ksstats.core.presentation.KSStatsApp
 import com.ksstats.di.appModule
-import com.ksstats.feature.showselection.presentation.ChooseStatsTypeScreen
 import org.koin.compose.KoinApplication
 import org.koin.core.logger.Level
 
@@ -14,7 +13,7 @@ import org.koin.core.logger.Level
 fun main() = application {
     val state: WindowState = rememberWindowState()
 
-    state.size = DpSize(900.dp, 800.dp)
+    state.size = DpSize(1200.dp, 800.dp)
     state.position = WindowPosition(Alignment.Center)
 
 

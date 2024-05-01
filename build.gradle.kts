@@ -9,11 +9,24 @@ plugins {
     alias(libs.plugins.versionUpdate)
     alias(libs.plugins.catalogUpdate)
     alias(libs.plugins.ksp) apply false
-//    alias(libs.plugins.jooq) apply false
+    alias(libs.plugins.jooq) apply false
+    alias(libs.plugins.sqlDelight) apply false
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.jooq.codeGen)
+        classpath(libs.sqlite)
+    }
+}
+
+
+
 subprojects {
-    group = "com.knowledgespike"
+    group = "com.ksstats"
     version = "0.1.0"
 
     apply(plugin = "kotlinx-serialization")
@@ -24,17 +37,13 @@ subprojects {
 project(":shared") {
     dependencies {
 
-
     }
 }
 
 project(":ksstats") {
-
-
     dependencies {
     }
 }
-
 
 
 fun isNonStable(version: String): Boolean {

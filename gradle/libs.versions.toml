@@ -1,43 +1,59 @@
 [versions]
 catalogUpdateVersion_version = "0.8.4"
+composeNavigation = "2.8.0-alpha01"
 compose_version = "1.6.2"
-jooq_version = "3.19.5"
+coroutinesSwingVersion = "1.8.0"
+dateTimeVersion = "0.5.0"
+jooq_version = "3.19.7"
 junitVersion = "5.10.2"
-koin-bom = "3.5.6"
 koin-annotations-bom = "1.3.1"
+koin-bom = "3.5.6"
 koin-compose-version = "1.1.5"
 kotlin_couroutines_version = "1.8.0"
 kotlin_version = "1.9.23"
 ksp_version = "1.9.23-1.0.20"
 logback_version = "1.5.6"
+sqLiteVersion = "3.45.3.0"
+sqldelight_version = "2.0.2"
 updateVersion_version = "0.51.0"
-coroutinesSwingVersion = "1.8.0"
-composeNavigation = "2.8.0-alpha01"
 
 [libraries]
+app-cash-sqldelight = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight_version" }
+jUnitEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitVersion" }
+jetbtains-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq_version" }
 jooq-codeGen = { module = "org.jooq:jooq-codegen", version.ref = "jooq_version" }
 jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq_version" }
-jUnitEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitVersion" }
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitVersion" }
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
-koin-core = { module = "io.insert-koin:koin-core" , version.ref = "koin-bom"}
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations-bom" }
 koin-annotations-bom = { module = "io.insert-koin:koin-annotations-bom", version.ref = "koin-annotations-bom" }
-koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref="koin-annotations-bom" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose-version" }
+koin-compose-jvm = { module = "io.insert-koin:koin-compose-jvm", version.ref = "koin-compose-version" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-bom" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations-bom" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref="koin-compose-version" }
-koin-compose-jvm = { module = "io.insert-koin:koin-compose-jvm", version.ref="koin-compose-version"  }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin_couroutines_version" }
-logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback_version" }
 kotlin-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutinesSwingVersion" }
-jetbtains-compose-navigation = {module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation"}
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTimeVersion" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback_version" }
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqLiteVersion" }
 
 [plugins]
 catalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "catalogUpdateVersion_version" }
 composeDesktop = { id = "org.jetbrains.compose", version.ref = "compose_version" }
 jooq = { id = "org.jooq.jooq-codegen-gradle", version.ref = "jooq_version" }
-kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin_version" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin_version" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin_version" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp_version" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqldelight_version" }
 versionUpdate = { id = "com.github.ben-manes.versions", version.ref = "updateVersion_version" }
+
+
+
+
+
+
+
+
+
+

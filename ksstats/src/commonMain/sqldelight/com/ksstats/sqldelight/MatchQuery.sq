@@ -1,0 +1,2 @@
+selectAllFromMatches:
+SELECT * FROM Matches;

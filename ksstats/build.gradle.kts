@@ -1,16 +1,29 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeDesktop)
-
+    alias(libs.plugins.jooq)
+    alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.kotlinSerialization)
 }
+
 
 kotlin {
     jvm("desktop")
 
     sourceSets {
         val desktopMain by getting
+
+        val generatedDir= layout.projectDirectory.dir("generated/kotlin")
+
+
+        commonMain.configure {
+            sourceSets {
+                kotlin.srcDir(generatedDir)
+            }
+        }
 
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -32,18 +45,23 @@ kotlin {
             implementation(rootProject.libs.koin.compose)
             implementation(rootProject.libs.koin.compose.jvm)
             implementation(rootProject.libs.koin.annotations)
+            implementation(rootProject.libs.jetbtains.compose.navigation)
+            implementation(rootProject.libs.app.cash.sqldelight)
+            implementation(rootProject.libs.sqlite)
             implementation(rootProject.libs.jooq)
             implementation(rootProject.libs.jooq.meta)
             implementation(rootProject.libs.jooq.codeGen)
-            implementation(rootProject.libs.jetbtains.compose.navigation)
+
+            implementation(libs.kotlinx.datetime)
 
             runtimeOnly(rootProject.libs.kotlin.coroutines.swing)
         }
     }
+
 }
 
 
-group = "com.knowledgespike"
+group = "com.ksstats"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -57,9 +75,42 @@ compose.desktop {
         mainClass = "com.ksstats.app.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Pkg)
             packageName = "distance"
             packageVersion = "1.0.0"
         }
     }
 }
+
+sqldelight {
+    databases {
+        create("KSStats") {
+            packageName.set("com.ksstats.sqldelight")
+        }
+    }
+}
+
+
+jooq {
+    configuration {
+        jdbc {
+            driver = "org.sqlite.JDBC"
+            url = "jdbc:sqlite:/Users/kevinjones/sqlite/cricket.sqlite"
+            user = ""
+            password = ""
+        }
+        generator {
+            name = "org.jooq.codegen.KotlinGenerator"
+            database {
+                name = "org.jooq.meta.sqlite.SQLiteDatabase"
+            }
+
+            target {
+                packageName = "com.ksstats.db"
+                directory = "generated/kotlin"
+                isClean = true
+            }
+        }
+    }
+}
+

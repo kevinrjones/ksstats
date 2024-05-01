@@ -1,0 +1,100 @@
+
+CREATE TABLE BattingDetails
+(
+    Id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchId             INTEGER       NOT NULL,
+    GroundId            INTEGER       NOT NULL,
+    SeriesDate          TEXT          NOT NULL,
+    MatchType           TEXT          NOT NULL,
+    PlayerId            INTEGER       NOT NULL,
+    FullName            TEXT          NOT NULL,
+    TeamId              INTEGER       NOT NULL,
+    OpponentsId         INTEGER       NOT NULL,
+    IsNeutral           INTEGER       NOT NULL,
+    InningsNumber       INTEGER       NOT NULL,
+    InningsOrder        INTEGER       NOT NULL,
+    Dismissal           TEXT          NOT NULL,
+    DismissalType       INTEGER       NOT NULL,
+    BowlerId            INTEGER,
+    BowlerName          TEXT,
+    FielderId           INTEGER, -- if caught stumped etc
+    FielderName         TEXT,    -- if caught stumped etc
+    Score               INTEGER,
+    Position            INTEGER       NOT NULL,
+    NotOut              INTEGER       NOT NULL,
+    NotOutAdjustedScore REAL,
+    Balls               INTEGER,
+    Minutes             INTEGER,
+    Fours               INTEGER,
+    Sixes               INTEGER,
+    Hundred             INTEGER       NOT NULL,
+    Fifty               INTEGER       NOT NULL,
+    Duck                INTEGER       NOT NULL,
+    Captain             INTEGER       NOT NULL,
+    WicketKeeper        INTEGER       NOT NULL,
+    TeamCaptain         INTEGER       NOT NULL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE,
+    FOREIGN KEY (PlayerId) REFERENCES Players (Id) ON DELETE CASCADE,
+    FOREIGN KEY (BowlerId) REFERENCES Players (Id) ON DELETE CASCADE,
+    FOREIGN KEY (OpponentsId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (GroundId) REFERENCES Grounds (Id) ON DELETE CASCADE
+);
+
+CREATE TABLE BowlingDetails
+(
+    Id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchId              INTEGER         NOT NULL,
+    GroundId             INTEGER         NOT NULL,
+    SeriesDate           TEXT            NOT NULL,
+    MatchType            TEXT            NOT NULL,
+    PlayerId             INTEGER         NOT NULL,
+    Name                 TEXT            NOT NULL,
+    DidBowl              INTEGER         NOT NULL,
+    Position             INTEGER         NOT NULL,
+    TeamId               INTEGER         NOT NULL,
+    OpponentsId          INTEGER         NOT NULL,
+    IsNeutral            INTEGER         NOT NULL,
+    InningsNumber        INTEGER         NOT NULL,
+    InningsOrder         INTEGER         NOT NULL,
+    Overs                TEXT,
+    Balls                INTEGER,
+    Maidens              INTEGER,
+    Runs                 INTEGER,
+    Wickets              INTEGER,
+    Wides                INTEGER,
+    NoBalls              INTEGER,
+    Dots                 INTEGER,
+    Fours                INTEGER,
+    Sixes                INTEGER,
+    TenFor               INTEGER,
+    Captain              INTEGER         NOT NULL,
+    TeamCaptain          INTEGER         NOT NULL,
+    SyntheticBestBowling REAL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE,
+    FOREIGN KEY (PlayerId) REFERENCES Players (Id) ON DELETE CASCADE,
+    FOREIGN KEY (TeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (OpponentsId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (GroundId) REFERENCES Grounds (Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Fielding
+(
+    Id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchId       INTEGER NOT NULL,
+    PlayerId      INTEGER NOT NULL,
+    TeamId        INTEGER NOT NULL,
+    OpponentsId   INTEGER NOT NULL,
+    InningsNumber INTEGER NOT NULL,
+    MatchType     TEXT    NOT NULL,
+    CaughtF       INTEGER NOT NULL,
+    CaughtWk      INTEGER NOT NULL,
+    Stumped       INTEGER NOT NULL,
+    Dismissals    INTEGER NOT NULL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE,
+    FOREIGN KEY (PlayerId) REFERENCES Players (Id) ON DELETE CASCADE,
+    FOREIGN KEY (TeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (OpponentsId) REFERENCES Teams (Id) ON DELETE CASCADE
+);

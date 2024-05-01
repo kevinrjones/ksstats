@@ -6,7 +6,7 @@ import com.ksstats.feature.showselection.domain.usecase.SelectionUseCases
 import com.ksstats.feature.showselection.domain.usecase.GetSelection
 import com.ksstats.feature.showselection.presentation.selection.SelectionViewModel
 
-fun openingSelectionModule() = module {
+fun selectionModule() = module {
     singleOf(::GetSelection)
     singleOf(::SelectionUseCases)
     factory { SelectionViewModel(get()) }

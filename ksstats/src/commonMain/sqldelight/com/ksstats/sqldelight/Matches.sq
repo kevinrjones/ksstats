@@ -1,0 +1,124 @@
+import kotlinx.datetime.LocalDate;
+
+CREATE TABLE Matches
+(
+    Id                     INTEGER PRIMARY KEY AUTOINCREMENT,
+    CaId                   TEXT UNIQUE NOT NULL,
+    CaUrl                  TEXT        NOT NULL,
+    FileName               TEXT        NOT NULL,
+    MatchInSeries          INTEGER     NOT NULL,
+    SeriesNumber           INTEGER,
+    MatchType              TEXT        NOT NULL,
+    HomeTeamId             INTEGER     NOT NULL,
+    HomeTeamName           TEXT        NOT NULL,
+    AwayTeamId             INTEGER     NOT NULL,
+    AwayTeamName           TEXT        NOT NULL,
+    IsNeutral              INTEGER     NOT NULL,
+    MatchDesignator        TEXT        NOT NULL,
+    MatchTitle             TEXT        NOT NULL,
+    Tournament             TEXT        NOT NULL,
+    Location               TEXT        NOT NULL,
+    LocationId             INTEGER     NOT NULL,
+    GroundNameId           INTEGER     NOT NULL,
+    TossTeamId             INTEGER     NOT NULL,
+    MatchDate              TEXT        NOT NULL,
+    SeriesDate             TEXT        NOT NULL,
+    MatchStartYear         TEXT        NOT NULL,
+    MatchStartDate         INTEGER AS LocalDate,
+    MatchStartDateAsOffset INTEGER,
+    ResultString           TEXT        NOT NULL,
+    HomeCountryId          INTEGER     NOT NULL DEFAULT 0,
+    WhoWonId               INTEGER,
+    WhoLostId              INTEGER,
+    HowMuch                INTEGER     NOT NULL,
+    MarginForSort          INTEGER     NOT NULL,
+    VictoryType            INTEGER     NOT NULL,
+    Duration               INTEGER     NOT NULL, -- in days or MAX_INT for timeless test
+    BallsPerOver           INTEGER     NOT NULL,
+    DayNight               INTEGER     NOT NULL,
+    OversReduced           INTEGER     NOT NULL,
+    AddedDate              INTEGER AS LocalDate NOT NULL,
+    AddedDateAsOffset      INTEGER     NOT NULL,
+
+    FOREIGN KEY (HomeTeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (AwayTeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (TossTeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (WhoWonId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (WhoLostId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (LocationId) REFERENCES Grounds (Id) ON DELETE CASCADE
+);
+
+CREATE TABLE ExtraMatchDetails
+(
+    MatchId     INTEGER NOT NULL,
+    TeamId      INTEGER NOT NULL,
+    OpponentsId INTEGER NOT NULL,
+    MatchType   TEXT    NOT NULL,
+    Result      INTEGER NOT NULL,
+    HomeAway    INTEGER NOT NULL,
+
+    FOREIGN KEY (TeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (OpponentsId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE MatchSubType
+(
+    Id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchType TEXT    NOT NULL, -- 'tt' for t20, 'f' for firstclass, wc for world cup etc
+    MatchId   INTEGER NOT NULL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Innings
+(
+    Id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchId       INTEGER NOT NULL,
+    InningsNumber INTEGER NOT NULL,
+    InningsOrder  INTEGER NOT NULL,
+    TeamId        INTEGER NOT NULL,
+    OpponentsId   INTEGER NOT NULL,
+    DidBat        INTEGER NOT NULL,
+    Total         INTEGER NOT NULL,
+    Wickets       INTEGER NOT NULL,
+    Complete      INTEGER NOT NULL,
+    Minutes       INTEGER NOT NULL,
+    Byes          INTEGER,
+    LegByes       INTEGER,
+    Wides         INTEGER,
+    Noballs       INTEGER,
+    Penalty       INTEGER,
+    Extras        INTEGER,
+    Overs         TEXT    NOT NULL,
+    BallsBowled   INTEGER,
+    BallsPerOver  INTEGER,
+    Declared      INTEGER NOT NULL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE,
+    FOREIGN KEY (TeamId) REFERENCES Teams (Id) ON DELETE CASCADE,
+    FOREIGN KEY (OpponentsId) REFERENCES Teams (Id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE Notes
+(
+    Id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchId INTEGER NOT NULL,
+    Note    TEXT    NOT NULL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE
+
+);
+
+CREATE TABLE CloseOfPlay
+(
+    Id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    MatchId INTEGER NOT NULL,
+    Day     INTEGER NOT NULL,
+    Note    TEXT    NOT NULL,
+
+    FOREIGN KEY (MatchId) REFERENCES Matches (Id) ON DELETE CASCADE
+
+);

@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.ksp)
-
     application
 }
+
 
 sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
@@ -31,7 +31,5 @@ tasks.test {
         events("passed", "skipped", "failed")
     }
 }
-
-
 
 
