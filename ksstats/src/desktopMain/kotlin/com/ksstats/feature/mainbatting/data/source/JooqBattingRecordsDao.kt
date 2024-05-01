@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 import org.jooq.impl.DSL
 import java.sql.DriverManager
 
-class JooqBattingRecordsDao(val databaseConnection: DatabaseConnection) : BattingRecordsDao {
+class JooqBattingRecordsDao(private val databaseConnection: DatabaseConnection) : BattingRecordsDao {
     override fun getMatchTypes(): Flow<MatchTypes> = flow {
         DriverManager.getConnection(
             databaseConnection.connectionString

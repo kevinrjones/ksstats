@@ -13,14 +13,23 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
+
+        all {
+            languageSettings {
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+            }
+        }
+
         val desktopMain by getting
 
-        val generatedDir= layout.projectDirectory.dir("generated/kotlin")
-
-
+        val genDir = layout.buildDirectory.dir("./generated/jooq/kotlin")
+//        val generatedDir = layout.projectDirectory.dir("generated/kotlin")
+//
+//
         commonMain.configure {
             sourceSets {
-                kotlin.srcDir(generatedDir)
+                kotlin.srcDir(genDir)
             }
         }
 
@@ -81,7 +90,9 @@ compose.desktop {
 }
 
 jooq {
+    val output: Provider<Directory> = layout.buildDirectory.dir(".")
     configuration {
+        basedir = "${output.get()}"
         jdbc {
             driver = "org.sqlite.JDBC"
             url = "jdbc:sqlite:/Users/kevinjones/sqlite/cricket.sqlite"
@@ -96,7 +107,7 @@ jooq {
 
             target {
                 packageName = "com.ksstats.db"
-                directory = "generated/kotlin"
+                directory = "generated/jooq/kotlin"
                 isClean = true
             }
         }

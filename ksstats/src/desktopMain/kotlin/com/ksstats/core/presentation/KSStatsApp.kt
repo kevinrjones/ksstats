@@ -19,11 +19,9 @@ import com.ksstats.feature.showselection.presentation.ChooseStatsTypeScreen
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.app_name
 import com.ksstats.ksstats.generated.resources.batting
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
 
 
-@OptIn(ExperimentalResourceApi::class)
 enum class StatsAppScreen(val title: StringResource) {
     Start(title = Res.string.app_name),
     Batting(title = Res.string.batting),

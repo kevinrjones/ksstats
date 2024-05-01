@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package com.ksstats.core.presentation.components
 
 import androidx.compose.material.icons.Icons
@@ -8,10 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ksstats.core.presentation.StatsAppScreen
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KSStatsAppBar(
     currentScreen: StatsAppScreen,

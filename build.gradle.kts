@@ -30,7 +30,31 @@ subprojects {
 
     apply(plugin = "kotlinx-serialization")
 
+    // set this:
+    // https://github.com/JetBrains/compose-multiplatform/blob/master/components/build.gradle.kts
+    // for more configuration options
 
+    plugins.withId("java") {
+        configureIfExists<JavaPluginExtension> {
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
+
+            withJavadocJar()
+            withSourcesJar()
+        }
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
+        kotlinOptions.jvmTarget = "17"
+        dependsOn(tasks["jooqCodegen"])
+    }
+
+    tasks.withType<Test> () {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
 }
 
 project(":shared") {
