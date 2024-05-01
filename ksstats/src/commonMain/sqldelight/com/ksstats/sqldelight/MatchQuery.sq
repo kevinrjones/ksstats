@@ -1,2 +1,0 @@
-selectAllFromMatches:
-SELECT * FROM Matches;

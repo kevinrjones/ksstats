@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.catalogUpdate)
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.jooq) apply false
-    alias(libs.plugins.sqlDelight) apply false
 }
 
 buildscript {

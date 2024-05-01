@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeDesktop)
     alias(libs.plugins.jooq)
-    alias(libs.plugins.sqlDelight)
     alias(libs.plugins.kotlinSerialization)
 }
 
@@ -46,7 +45,6 @@ kotlin {
             implementation(rootProject.libs.koin.compose.jvm)
             implementation(rootProject.libs.koin.annotations)
             implementation(rootProject.libs.jetbtains.compose.navigation)
-            implementation(rootProject.libs.app.cash.sqldelight)
             implementation(rootProject.libs.sqlite)
             implementation(rootProject.libs.jooq)
             implementation(rootProject.libs.jooq.meta)
@@ -81,15 +79,6 @@ compose.desktop {
         }
     }
 }
-
-sqldelight {
-    databases {
-        create("KSStats") {
-            packageName.set("com.ksstats.sqldelight")
-        }
-    }
-}
-
 
 jooq {
     configuration {
