@@ -8,6 +8,7 @@ import com.ksstats.core.presentation.KSStatsApp
 import com.ksstats.di.appModule
 import org.koin.compose.KoinApplication
 import org.koin.core.logger.Level
+import java.awt.Dimension
 
 
 fun main() = application {
@@ -31,6 +32,7 @@ fun main() = application {
         ) {
             // todo: add a version table to the database and a check against the application version (loaded from where?)
 
+            window.minimumSize = Dimension(1200, 800)
             KSStatsApp()
         }
     }

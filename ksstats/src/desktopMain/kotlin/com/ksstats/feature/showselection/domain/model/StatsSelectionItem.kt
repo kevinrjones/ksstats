@@ -1,3 +1,5 @@
 package com.ksstats.feature.showselection.domain.model
 
-data class StatsSelectionItem(val text: String)
+import org.jetbrains.compose.resources.StringResource
+
+data class StatsSelectionItem(val text: StringResource)

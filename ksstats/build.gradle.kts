@@ -18,6 +18,7 @@ kotlin {
             languageSettings {
                 optIn("androidx.compose.material3.ExperimentalMaterial3Api")
                 optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+                optIn("androidx.compose.foundation.ExperimentalFoundationApi")
             }
         }
 
@@ -58,6 +59,7 @@ kotlin {
             implementation(rootProject.libs.jooq)
             implementation(rootProject.libs.jooq.meta)
             implementation(rootProject.libs.jooq.codeGen)
+            implementation(rootProject.libs.logback)
 
             implementation(libs.kotlinx.datetime)
 
