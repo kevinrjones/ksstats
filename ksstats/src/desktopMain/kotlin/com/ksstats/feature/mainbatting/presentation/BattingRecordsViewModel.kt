@@ -1,7 +1,5 @@
 package com.ksstats.feature.mainbatting.presentation
 
-import com.ksstats.core.domain.util.SavedStateStore
-import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.core.domain.util.SortOrder
 import com.ksstats.core.presentation.ViewModel
@@ -9,12 +7,7 @@ import com.ksstats.core.presentation.components.DropDownMenuState
 import com.ksstats.feature.mainbatting.domain.model.*
 import com.ksstats.feature.mainbatting.domain.usecase.BattingUseCases
 import com.ksstats.ksstats.generated.resources.*
-import com.ksstats.ksstats.generated.resources.Res
-import com.ksstats.ksstats.generated.resources.inningsByInningsList
-import com.ksstats.ksstats.generated.resources.playerSummary
-import com.ksstats.ksstats.generated.resources.seriesAverages
 import com.ksstats.shared.now
-import com.ksstats.shared.toSeconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 
 sealed class BattingSearchEvent {
 
@@ -59,8 +51,7 @@ enum class SearchViewFormat(val format: StringResource) {
 }
 
 class BattingRecordsViewModel(
-    val battingUseCases: BattingUseCases,
-    val savedStateStore: SavedStateStore<SearchParameters>
+    val battingUseCases: BattingUseCases
 ) : ViewModel() {
 
     init {
@@ -336,29 +327,6 @@ class BattingRecordsViewModel(
         if (matchType != null) {
             _selectedMatchType.value = _matchTypes.value.find { it.type == matchType } ?: _selectedMatchType.value
         }
-    }
-
-    fun saveSearchParamters() {
-        savedStateStore.put(
-            "battingSearchParameters", SearchParameters(
-                matchType = this.selectedMatchType.value.type,
-                matchSubType = this.selectedCompetition.value.type,
-                teamId = this.selectedTeam.value.id,
-                opponentsId = this.selectedOpposition.value.id,
-                groundId = this.selectedGround.value.id,
-                hostCountryId = this.selectedCountry.value.id,
-                venue = this.venue.value,
-                sortOrder = defaultSortOrder,
-                sortDirection = defaultSortDirection,
-                startDate = this.startDate.value.toSeconds(),
-                endDate = this.endDate.value.toSeconds(),
-                result = this.matchResult.value,
-                season = this.selectedSeriesDate.value,
-                pageSize = this.selectedPageSize.value,
-                startRow = 0,
-                limit = 50,
-            )
-        )
     }
 
     val defaultSortDirection: SortDirection

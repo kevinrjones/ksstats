@@ -26,12 +26,15 @@ fun KSStatsApp(navController: NavHostController = rememberNavController()) {
 
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
+    val previousBackstackEntry = navController.previousBackStackEntry
     // Get the name of the current screen
     val currentScreen = StatsAppScreen.valueOf(
         backStackEntry?.destination?.route
             ?.substringBefore("/")
             ?.substringBefore("?") ?: StatsAppScreen.Start.name
     )
+    println(backStackEntry?.destination?.route)
+    println(previousBackstackEntry?.destination?.route)
     KSStatsTheme {
         Scaffold(
             topBar = {

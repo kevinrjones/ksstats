@@ -1,38 +1,64 @@
 package com.ksstats.feature.mainbatting.search.presentation
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.ksstats.core.presentation.StatsAppScreen
-import com.ksstats.core.presentation.components.*
+import com.ksstats.core.presentation.components.AppDropDownParams
+import com.ksstats.core.presentation.components.DropDownMenuState
 import com.ksstats.feature.mainbatting.presentation.BattingRecordsViewModel
 import com.ksstats.feature.mainbatting.presentation.BattingSearchEvent
 import com.ksstats.feature.mainbatting.presentation.SearchViewFormat
 import com.ksstats.feature.mainbatting.search.presentation.components.*
 import com.ksstats.ksstats.generated.resources.*
-import com.ksstats.ksstats.generated.resources.Res
-import com.ksstats.ksstats.generated.resources.competitionLabel
-import com.ksstats.ksstats.generated.resources.matchTypeLabel
-import com.ksstats.ksstats.generated.resources.teamsLabel
 import com.ksstats.shared.now
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+fun NavGraphBuilder.mainBattingSearchScreenScreen(navigate: (String) -> Unit) {
+    //         route = StatsAppScreen.BattingDetails.name +
+    //                "?matchType={matchType}" +
+    composable(
+        route = StatsAppScreen.BattingSearch.name
+                + "?matchType={matchType}",
+        arguments = listOf(
+            navArgument(name = "matchType") {
+                type = NavType.StringType
+                defaultValue = "t"
+            },
+        )
+    ) {
+        val matchType = it.savedStateHandle.get<String>("matchType")
+//        val matchType = navController.currentBackStackEntry?.savedStateHandle?.get<String>("matchType")
+        MainBattingSearchScreen(
+            matchType = matchType,
+            navigate = {
+                navigate(it)
+            })
+    }
+
+}
 
 @OptIn(FormatStringsInDatetimeFormats::class)
 @Composable
 fun MainBattingSearchScreen(matchType: String?, navigate: (String) -> Unit) {
     val viewModel: BattingRecordsViewModel = koinInject()
 
+    println("MainBattingSearchScreen: $matchType")
     val matchTypes = viewModel.matchTypes.collectAsState()
     val selectedMatchType = viewModel.selectedMatchType.collectAsState()
     val competitions = viewModel.competitions.collectAsState()
@@ -57,7 +83,7 @@ fun MainBattingSearchScreen(matchType: String?, navigate: (String) -> Unit) {
         byUnicodePattern("dd/MM/yyyy")
     }
 
-    viewModel.initializeFromRoute(matchType)
+//    viewModel.initializeFromRoute(matchType)
 
     MainBattingSearchScreenDisplay(
         matchTypeParams = AppDropDownParams(
@@ -120,8 +146,6 @@ fun MainBattingSearchScreen(matchType: String?, navigate: (String) -> Unit) {
 
 fun buildNavUrl(baseUrl: String, viewModel: BattingRecordsViewModel): String {
 
-    viewModel.saveSearchParamters()
-
     return "${baseUrl}?" +
             "matchType=${viewModel.selectedMatchType.value.type}" +
             "&matchSubType=${viewModel.selectedCompetition.value.type}" +
@@ -130,8 +154,8 @@ fun buildNavUrl(baseUrl: String, viewModel: BattingRecordsViewModel): String {
             "&groundId=${viewModel.selectedGround.value.id}" +
             "&hostCountryId=${viewModel.selectedCountry.value.id}" +
             "&venue=${viewModel.venue.value}" +
-            "&sortOrder=${viewModel.defaultSortOrder}" +
-            "&sortDirection=${viewModel.defaultSortDirection}" +
+            "&sortOrder=${viewModel.defaultSortOrder.ordinal}" +
+            "&sortDirection=${viewModel.defaultSortDirection.name}" +
             "&startDate=${viewModel.startDate.value}" +
             "&endDate=${viewModel.endDate.value}" +
             "&result=${viewModel.matchResult}" +
