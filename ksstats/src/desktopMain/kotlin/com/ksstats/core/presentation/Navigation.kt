@@ -7,16 +7,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelStore
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.ksstats.feature.mainbatting.battingrecords.presentation.BattingDetailsScreen
 import com.ksstats.feature.mainbatting.battingrecords.presentation.battingDetailsScreen
-import com.ksstats.feature.mainbatting.search.presentation.MainBattingSearchScreen
-import com.ksstats.feature.mainbatting.search.presentation.mainBattingSearchScreenScreen
-import com.ksstats.feature.showselection.presentation.ChooseStatsTypeScreen
+import com.ksstats.feature.mainbatting.search.presentation.mainBattingSearchScreen
+import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
 
 @Composable
 fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
@@ -29,32 +26,28 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             .padding(innerPadding)
     ) {
 
-        composable(route = StatsAppScreen.Start.name) {
-            ChooseStatsTypeScreen(navigate = {
-                navController.navigate(it)
-            })
-        }
-        composable(
-            route = StatsAppScreen.BattingSearch.name +
-                    "?matchType={matchType}",
-            arguments = listOf(
-                navArgument(name = "matchType") {
-                    type = NavType.StringType
-                    defaultValue = "t"
-                    nullable = true
-                },
-            )
-        ) {
-            val matchType = navController.currentBackStackEntry?.savedStateHandle?.get<String>("matchType")
-            val mt1 = navController.currentBackStackEntry?.arguments?.getString("matchType")
-            val mt = it.arguments?.getString("matchType")
-            MainBattingSearchScreen(
-                matchType = matchType,
-                navigate = {
-                    navController.navigate(it)
-                })
-        }
-//        mainBattingSearchScreenScreen(navigate = { navController.navigate(it) })
+//        val viewModelStore = ViewModelStore()
+//        navController.setViewModelStore(viewModelStore)
+
+        chooseStatsTypeScreen(navigate = {
+            navController.navigate(it) {
+                popUpTo(StatsAppScreen.Start.name) {
+                    saveState = true
+                }
+                restoreState = true
+            }
+
+        })
+        mainBattingSearchScreen(navigate = {
+
+
+            navController.navigate(it) {
+                popUpTo(StatsAppScreen.BattingSearch.name) {
+                    saveState = true
+                }
+                restoreState = true
+            }
+        })
         battingDetailsScreen()
     }
 

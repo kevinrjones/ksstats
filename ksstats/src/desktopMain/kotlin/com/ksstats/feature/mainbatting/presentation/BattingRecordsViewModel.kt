@@ -1,20 +1,23 @@
 package com.ksstats.feature.mainbatting.presentation
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.core.domain.util.SortOrder
-import com.ksstats.core.presentation.ViewModel
 import com.ksstats.core.presentation.components.DropDownMenuState
 import com.ksstats.feature.mainbatting.domain.model.*
 import com.ksstats.feature.mainbatting.domain.usecase.BattingUseCases
 import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.shared.now
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 
@@ -54,9 +57,34 @@ class BattingRecordsViewModel(
     val battingUseCases: BattingUseCases
 ) : ViewModel() {
 
+    var job: Job? = null
+
     init {
-        println()
+        val matchTypes = battingUseCases.getMatchTypes()
+        job = this.viewModelScope.launch {
+
+            withContext(Dispatchers.Main) {
+                _loaded.value = false
+            }
+            withContext(Dispatchers.IO) {
+                matchTypes.collect { matchTypes ->
+                    _matchTypes.value = matchTypes
+                }
+                _selectedMatchType.value = _matchTypes.value[0]
+
+                getPageSizes().collect { pageSizes ->
+                    _pageSizes.value = pageSizes
+                }
+                _selectedPageSize.value = pageSizes.value[0]
+
+                getCompetitions(_selectedMatchType.value)
+            }
+            withContext(Dispatchers.Main) {
+                _loaded.value = true
+            }
+        }
     }
+
 
     fun uiEvent(battingSearchEvent: BattingSearchEvent) {
         when (battingSearchEvent) {
@@ -81,7 +109,9 @@ class BattingRecordsViewModel(
 
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
+                        _loaded.value = false
                         getCompetitions(matchType)
+                        _loaded.value = true
                     }
                 }
 
@@ -94,8 +124,9 @@ class BattingRecordsViewModel(
                             _competitions.value.find { it.subType == battingSearchEvent.menuState.key }
                                 ?: throw Exception("Invalid Competition: ${battingSearchEvent.menuState}")
                         _selectedCompetition.value = competition
-
+                        _loaded.value = false
                         getAllForCompetition(competition)
+                        _loaded.value = true
                     }
                 }
             }
@@ -171,6 +202,9 @@ class BattingRecordsViewModel(
         }
     }
 
+    private val _loaded: MutableState<Boolean> = mutableStateOf(false)
+    val loaded: State<Boolean> = _loaded
+
     private val _matchTypes: MutableStateFlow<List<MatchType>> = MutableStateFlow(listOf<MatchType>())
     val matchTypes: StateFlow<List<MatchType>> = _matchTypes.asStateFlow()
 
@@ -244,25 +278,6 @@ class BattingRecordsViewModel(
     val searchViewFormat = _searchViewFormat.asStateFlow()
 
 
-    init {
-        val matchTypes = battingUseCases.getMatchTypes()
-        this.viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                matchTypes.collect { matchTypes ->
-                    _matchTypes.value = matchTypes
-                }
-                _selectedMatchType.value = _matchTypes.value[0]
-
-                getPageSizes().collect { pageSizes ->
-                    _pageSizes.value = pageSizes
-                }
-                _selectedPageSize.value = pageSizes.value[0]
-
-                getCompetitions(_selectedMatchType.value)
-            }
-        }
-    }
-
     private suspend fun getAllForCompetition(competition: Competition) {
         getTeamsForCompetition(competition)
         getGroundsForCompetition(competition)
@@ -323,10 +338,17 @@ class BattingRecordsViewModel(
         _selectedSeriesDate.value = _seriesDates.value[0]
     }
 
-    fun initializeFromRoute(matchType: String?) {
-        if (matchType != null) {
-            _selectedMatchType.value = _matchTypes.value.find { it.type == matchType } ?: _selectedMatchType.value
+    fun initializeFromRoute(searchParameters: SearchParameters) {
+        this.viewModelScope.launch {
+            _loaded.value = false
+            job?.cancelAndJoin()
+            _selectedMatchType.value =
+                _matchTypes.value.find { it.type == searchParameters.matchType } ?: _selectedMatchType.value
+            getCompetitions(_selectedMatchType.value)
+            _loaded.value = true
         }
+
+
     }
 
     val defaultSortDirection: SortDirection

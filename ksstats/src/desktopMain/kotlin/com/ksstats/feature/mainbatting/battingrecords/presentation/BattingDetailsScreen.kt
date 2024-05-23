@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -15,6 +16,7 @@ import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreen
 import com.ksstats.core.presentation.components.ColumnMetaData
 import com.ksstats.core.presentation.components.TableEx
+import com.ksstats.feature.mainbatting.battingrecords.domain.usecase.BattingDetailsUseCases
 import com.ksstats.shared.toSeconds
 import org.koin.compose.koinInject
 
@@ -32,6 +34,7 @@ fun NavGraphBuilder.battingDetailsScreen() {
                 "&sortDirection={sortDirection}" +
                 "&startDate={startDate}" +
                 "&endDate={endDate}" +
+                "&season={season}" +
                 "&result={result}" +
                 "&limit={limit}" +
                 "&startRow={startRow}" +
@@ -81,6 +84,10 @@ fun NavGraphBuilder.battingDetailsScreen() {
                 type = NavType.LongType
                 defaultValue = 253402214400
             },
+            navArgument(name = "season") {
+                type = NavType.StringType
+                defaultValue = "All"
+            },
             navArgument(name = "result") {
                 type = NavType.IntType
                 defaultValue = 0
@@ -99,12 +106,14 @@ fun NavGraphBuilder.battingDetailsScreen() {
             },
         )
     ) {
-        val viewModel: BattingDetailsScreenViewModel = koinInject()
+        val battingUseCases: BattingDetailsUseCases = koinInject()
+        val viewModel: BattingDetailsScreenViewModel = viewModel {
+            BattingDetailsScreenViewModel(battingUseCases)
+        }
         var hasNavigated by remember { mutableStateOf(false) }
 
         if (!hasNavigated) {
             hasNavigated = true
-            println("Navigated")
 
             val searchParameters = SearchParameters(
                 matchType = it.arguments?.getString("matchType") ?: "t",

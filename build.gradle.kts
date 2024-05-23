@@ -1,10 +1,12 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 
 plugins {
 
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.composeDesktop) apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.versionUpdate)
     alias(libs.plugins.catalogUpdate)
@@ -45,7 +47,7 @@ subprojects {
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
         dependsOn(tasks["jooqCodegen"])
     }
 

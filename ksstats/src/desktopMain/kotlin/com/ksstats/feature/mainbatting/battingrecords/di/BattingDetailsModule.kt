@@ -17,5 +17,5 @@ fun battingDetailsModule() = module {
     singleOf(::JooqBattingRecordsRepository) bind BattingRepository::class
     singleOf(::JooqBattingRecordsDao) bind BattingRecordsDao::class
     factory { JooqBattingRecordsDao(get()) } bind BattingRecordsDao::class
-    factory { BattingDetailsScreenViewModel(get()) }
+//    factory { BattingDetailsScreenViewModel(get()) }
 }

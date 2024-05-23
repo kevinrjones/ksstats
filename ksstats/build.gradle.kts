@@ -4,6 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeDesktop)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jooq)
     alias(libs.plugins.kotlinSerialization)
 }
@@ -48,22 +49,22 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
 
-//            implementation(platform(rootProject.libs.koin.bom))
-//            implementation(platform(rootProject.libs.koin.annotations.bom))
-            implementation(rootProject.libs.koin.core)
-            implementation(rootProject.libs.koin.compose)
-            implementation(rootProject.libs.koin.compose.jvm)
-            implementation(rootProject.libs.koin.annotations)
-            implementation(rootProject.libs.jetbtains.compose.navigation)
-            implementation(rootProject.libs.sqlite)
-            implementation(rootProject.libs.jooq)
-            implementation(rootProject.libs.jooq.meta)
-            implementation(rootProject.libs.jooq.codeGen)
-            implementation(rootProject.libs.logback)
+//            implementation(platform(libs.koin.bom))
+//            implementation(platform(libs.koin.annotations.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.jvm)
+            implementation(libs.koin.annotations)
+            implementation(libs.jetbtains.compose.navigation)
+            implementation(libs.sqlite)
+            implementation(libs.jooq)
+            implementation(libs.jooq.meta)
+            implementation(libs.jooq.codeGen)
+            implementation(libs.logback)
 
             implementation(libs.kotlinx.datetime)
 
-            runtimeOnly(rootProject.libs.kotlin.coroutines.swing)
+            runtimeOnly(libs.kotlin.coroutines.swing)
         }
     }
 

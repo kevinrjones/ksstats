@@ -10,18 +10,18 @@ sourceSets.main {
 
 dependencies {
 
-    implementation(platform(rootProject.libs.koin.bom))
-    implementation(platform(rootProject.libs.koin.annotations.bom))
-    implementation(rootProject.libs.koin.core)
-    implementation(rootProject.libs.koin.annotations)
+    implementation(platform(libs.koin.bom))
+    implementation(platform(libs.koin.annotations.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.annotations)
 
-    implementation(rootProject.libs.logback)
-    implementation(rootProject.libs.kotlin.coroutines)
+    implementation(libs.logback)
+    implementation(libs.kotlin.coroutines)
 
-    ksp(rootProject.libs.koin.ksp.compiler)
+    ksp(libs.koin.ksp.compiler)
 
-    testImplementation(rootProject.libs.junit)
-    testImplementation(rootProject.libs.jUnitEngine)
+    testImplementation(libs.junit)
+    testImplementation(libs.jUnitEngine)
 
 }
 

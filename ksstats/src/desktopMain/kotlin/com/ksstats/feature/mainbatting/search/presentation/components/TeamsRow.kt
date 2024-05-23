@@ -30,7 +30,10 @@ fun TeamsRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember { mutableStateOf(0) }
+            var selectedIndex by remember {
+                val ndx = teamParams.options.indexOf( teamParams.selectedOption )
+                mutableStateOf(ndx)
+            }
             LargeDropdownMenu(
                 label = stringResource(Res.string.teamsLabel),
                 items = teamParams.options,
@@ -60,7 +63,10 @@ fun TeamsRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember { mutableStateOf(0) }
+            var selectedIndex by remember {
+                val ndx = oppositionParams.options.indexOf( oppositionParams.selectedOption )
+                mutableStateOf(ndx)
+            }
             LargeDropdownMenu(
                 label = stringResource(Res.string.opponentsLabel),
                 items = oppositionParams.options,

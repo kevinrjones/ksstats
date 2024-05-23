@@ -14,6 +14,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ButtonRow(
+    isReady: Boolean,
     onBattingEvent: (BattingSearchEvent) -> Unit = {},
 ) {
     Row(
@@ -25,14 +26,14 @@ fun ButtonRow(
         Button(
             onClick = { onBattingEvent(BattingSearchEvent.SearchBatting) },
             modifier = Modifier.width(200.dp),
-
+            enabled = isReady,
             ) {
             Text(text = stringResource(Res.string.mainDisplayLabel))
         }
         Button(
             onClick = { onBattingEvent(BattingSearchEvent.Reset) },
             modifier = Modifier.width(200.dp),
-
+            enabled = isReady,
             ) {
             Text(text = stringResource(Res.string.resetLabel))
         }

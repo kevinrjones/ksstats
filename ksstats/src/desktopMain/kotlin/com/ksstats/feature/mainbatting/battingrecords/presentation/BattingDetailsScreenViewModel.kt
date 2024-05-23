@@ -1,7 +1,8 @@
 package com.ksstats.feature.mainbatting.battingrecords.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.core.presentation.ViewModel
 import com.ksstats.feature.mainbatting.battingrecords.data.BattingSearchResults
 import com.ksstats.feature.mainbatting.battingrecords.domain.usecase.BattingDetailsUseCases
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,6 @@ class BattingDetailsScreenViewModel(
     val battingSearchResults: StateFlow<List<BattingSearchResults>> = _battingSearchResults.asStateFlow()
 
     fun getSearchResults(searchParameters: SearchParameters) {
-        println("Get search results for $searchParameters")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 battingDetailsUseCases.getBattingDetails.invoke(searchParameters)

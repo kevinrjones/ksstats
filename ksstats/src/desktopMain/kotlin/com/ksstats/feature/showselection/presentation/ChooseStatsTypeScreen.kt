@@ -11,24 +11,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.ksstats.core.presentation.StatsAppScreen
 import com.ksstats.feature.showselection.domain.model.StatsSelectionItem
+import com.ksstats.feature.showselection.domain.usecase.SelectionUseCases
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+fun NavGraphBuilder.chooseStatsTypeScreen(navigate: (String) -> Unit) {
+    composable(
+        route = StatsAppScreen.Start.name
+    ) {
+        val useCases: SelectionUseCases = koinInject()
+        val viewModel: SelectionViewModel = viewModel {
+            SelectionViewModel(useCases)
+        }
+        val selections = viewModel.selections.collectAsState()
 
-@Composable
-fun ChooseStatsTypeScreen(navigate: (String) -> Unit) {
+        ChooseStatsTypeScreen(selections.value, onClick = {
+            navigate(it)
+        })
 
-    val viewModel: SelectionViewModel = koinInject()
-    val selections = viewModel.selections.collectAsState()
-
-    ChooseStatsTypeScreenDisplay(selections.value, navigate)
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ChooseStatsTypeScreenDisplay(selections: List<StatsSelectionItem>, onClick: (String) -> Unit) {
+fun ChooseStatsTypeScreen(selections: List<StatsSelectionItem>, onClick: (String) -> Unit) {
 
     Box(
         modifier = Modifier

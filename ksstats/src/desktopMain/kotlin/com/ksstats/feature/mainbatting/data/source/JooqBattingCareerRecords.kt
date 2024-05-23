@@ -28,7 +28,7 @@ object JooqBattingCareerRecords {
         val teamIdCondition = if (searchParameters.teamId != 0) {
             and(BATTINGDETAILS.TEAMID.eq(searchParameters.teamId))
         } else null
-        val opponentsIdCondition = if (searchParameters.teamId != 0) {
+        val opponentsIdCondition = if (searchParameters.opponentsId != 0) {
             and(BATTINGDETAILS.OPPONENTSID.eq(searchParameters.opponentsId))
         } else null
         val groundCondition = if (searchParameters.groundId != 0) {
@@ -80,12 +80,12 @@ object JooqBattingCareerRecords {
                                 .and(MATCHES.MATCHTYPE.eq(searchParameters.matchType))
                                 .and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate))
                                 .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate))
-                                .and(teamIdCondition)
-                                .and(opponentsIdCondition)
-                                .and(groundCondition)
                                 .and(homeCountryIdCondition)
                                 .and(seasonCondition)
                         )
+                            .and(teamIdCondition)
+                            .and(opponentsIdCondition)
+                            .and(groundCondition)
                     )
                     .and(
                         field("matchid")

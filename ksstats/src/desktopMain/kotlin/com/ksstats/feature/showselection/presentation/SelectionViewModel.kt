@@ -1,9 +1,10 @@
 package com.ksstats.feature.showselection.presentation
 
-import com.ksstats.core.presentation.ViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.ksstats.core.presentation.StatsAppScreen
 import com.ksstats.feature.showselection.domain.model.StatsSelectionItem
 import com.ksstats.feature.showselection.domain.usecase.SelectionUseCases
-import com.ksstats.core.presentation.StatsAppScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 

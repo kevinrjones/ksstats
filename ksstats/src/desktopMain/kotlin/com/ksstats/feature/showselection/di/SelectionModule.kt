@@ -9,6 +9,5 @@ import com.ksstats.feature.showselection.presentation.SelectionViewModel
 fun selectionModule() = module {
     singleOf(::GetSelection)
     singleOf(::SelectionUseCases)
-    factory { SelectionViewModel(get()) }
 }
 

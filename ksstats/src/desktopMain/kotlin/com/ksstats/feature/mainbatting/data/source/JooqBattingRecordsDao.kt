@@ -106,7 +106,7 @@ class JooqBattingRecordsDao(private val databaseConnection: DatabaseConnection) 
         ).use { conn ->
             val context = DSL.using(conn, databaseConnection.dialect)
             val result = context.select(
-                GROUNDSMATCHTYPES.ID,
+                GROUNDSMATCHTYPES.GROUNDID,
                 GROUNDSMATCHTYPES.grounds.KNOWNAS,
             ).from(GROUNDSMATCHTYPES)
                 .where(GROUNDSMATCHTYPES.MATCHTYPE.eq(matchType))
@@ -115,7 +115,7 @@ class JooqBattingRecordsDao(private val databaseConnection: DatabaseConnection) 
 
             val grounds = mutableListOf<Ground>()
             result.forEach { matchSubType ->
-                val id = matchSubType.getValue("Id", Int::class.java)
+                val id = matchSubType.getValue("GroundId", Int::class.java)
                 val name = matchSubType.getValue("KnownAs", String::class.java)
 
                 grounds.add(Ground(id, name))

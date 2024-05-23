@@ -9,6 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -16,6 +18,7 @@ import androidx.navigation.navArgument
 import com.ksstats.core.presentation.StatsAppScreen
 import com.ksstats.core.presentation.components.AppDropDownParams
 import com.ksstats.core.presentation.components.DropDownMenuState
+import com.ksstats.feature.mainbatting.domain.usecase.BattingUseCases
 import com.ksstats.feature.mainbatting.presentation.BattingRecordsViewModel
 import com.ksstats.feature.mainbatting.presentation.BattingSearchEvent
 import com.ksstats.feature.mainbatting.presentation.SearchViewFormat
@@ -29,122 +32,112 @@ import kotlinx.datetime.format.byUnicodePattern
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-fun NavGraphBuilder.mainBattingSearchScreenScreen(navigate: (String) -> Unit) {
-    //         route = StatsAppScreen.BattingDetails.name +
-    //                "?matchType={matchType}" +
+@OptIn(FormatStringsInDatetimeFormats::class)
+fun NavGraphBuilder.mainBattingSearchScreen(navigate: (String) -> Unit) {
     composable(
         route = StatsAppScreen.BattingSearch.name
                 + "?matchType={matchType}",
         arguments = listOf(
             navArgument(name = "matchType") {
                 type = NavType.StringType
-                defaultValue = "t"
+                nullable = true
             },
         )
     ) {
-        val matchType = it.savedStateHandle.get<String>("matchType")
-//        val matchType = navController.currentBackStackEntry?.savedStateHandle?.get<String>("matchType")
-        MainBattingSearchScreen(
-            matchType = matchType,
-            navigate = {
-                navigate(it)
-            })
-    }
 
-}
 
-@OptIn(FormatStringsInDatetimeFormats::class)
-@Composable
-fun MainBattingSearchScreen(matchType: String?, navigate: (String) -> Unit) {
-    val viewModel: BattingRecordsViewModel = koinInject()
-
-    println("MainBattingSearchScreen: $matchType")
-    val matchTypes = viewModel.matchTypes.collectAsState()
-    val selectedMatchType = viewModel.selectedMatchType.collectAsState()
-    val competitions = viewModel.competitions.collectAsState()
-    val selectedCompetition = viewModel.selectedCompetition.collectAsState()
-    val teams = viewModel.teams.collectAsState()
-    val selectedTeam = viewModel.selectedTeam.collectAsState()
-    val selectedOpposition = viewModel.selectedOpposition.collectAsState()
-    val grounds = viewModel.grounds.collectAsState()
-    val selectedGround = viewModel.selectedGround.collectAsState()
-    val countries = viewModel.countries.collectAsState()
-    val selectedCountry = viewModel.selectedCountry.collectAsState()
-    val seriesDates = viewModel.seriesDates.collectAsState()
-    val selectedSeriesDate = viewModel.selectedSeriesDate.collectAsState()
-    val pageSizes = viewModel.pageSizes.collectAsState()
-    val selectedPageSize = viewModel.selectedPageSize.collectAsState()
-    val minimumRuns = viewModel.minimumRuns.collectAsState()
-    val startDate = viewModel.startDate.collectAsState()
-    val endDate = viewModel.endDate.collectAsState()
-    val searchViewFormat = viewModel.searchViewFormat.collectAsState()
-
-    val dateTimeFormat = LocalDate.Format {
-        byUnicodePattern("dd/MM/yyyy")
-    }
-
-//    viewModel.initializeFromRoute(matchType)
-
-    MainBattingSearchScreenDisplay(
-        matchTypeParams = AppDropDownParams(
-            matchTypes.value.map { DropDownMenuState(it.type, it.description) },
-            DropDownMenuState(selectedMatchType.value.type, selectedMatchType.value.description),
-            stringResource(Res.string.matchTypeLabel)
-        ),
-        competitionParams = AppDropDownParams(
-            competitions.value.map { DropDownMenuState(it.subType, it.competition) },
-            DropDownMenuState(selectedCompetition.value.type, selectedCompetition.value.competition),
-            stringResource(Res.string.competitionLabel)
-        ),
-        teamParams = AppDropDownParams(
-            teams.value.map { DropDownMenuState(it.id.toString(), it.name) },
-            DropDownMenuState(selectedTeam.value.id.toString(), selectedTeam.value.name),
-            stringResource(Res.string.teamsLabel)
-        ),
-
-        oppositionParams = AppDropDownParams(
-            teams.value.map { DropDownMenuState(it.id.toString(), it.name) },
-            DropDownMenuState(selectedOpposition.value.id.toString(), selectedOpposition.value.name),
-            stringResource(Res.string.opponentsLabel)
-        ),
-        groundsParams = AppDropDownParams(
-            grounds.value.map { DropDownMenuState(it.id.toString(), it.name) },
-            DropDownMenuState(selectedGround.value.id.toString(), selectedGround.value.name),
-            stringResource(Res.string.groundsLabel)
-        ),
-        countriesParams = AppDropDownParams(
-            countries.value.map { DropDownMenuState(it.id.toString(), it.name) },
-            DropDownMenuState(selectedCountry.value.id.toString(), selectedCountry.value.name),
-            stringResource(Res.string.countriesLabel)
-        ),
-        seriesDatesParams = AppDropDownParams(
-            seriesDates.value.map { DropDownMenuState(it, it) },
-            DropDownMenuState(selectedSeriesDate.value, selectedSeriesDate.value),
-            stringResource(Res.string.seriesDatesLabel)
-        ),
-        pageSizesParams = AppDropDownParams(
-            pageSizes.value.map { DropDownMenuState(it.toString(), it.toString()) },
-            DropDownMenuState(selectedPageSize.value.toString(), selectedPageSize.value.toString()),
-            stringResource(Res.string.pageSizeLabel)
-        ),
-        minimumRuns = minimumRuns.value,
-        minimumRunsLabel = stringResource(Res.string.minimumRunsLabel),
-        startDateLabel = startDate.value.format(dateTimeFormat), // displayLabel = ldt?.format(dateTimeFormat)!!
-        startDate = startDate.value,
-        endDateLabel = endDate.value.format(dateTimeFormat),
-        endDate = endDate.value,
-        searchViewFormat = searchViewFormat.value,
-        onBattingEvent = { evt: BattingSearchEvent ->
-            viewModel.uiEvent(evt)
-        },
-        navigate = {
-            val navUrl = buildNavUrl(it, viewModel)
-            navigate(navUrl)
+        val battingUseCases: BattingUseCases = koinInject()
+        val viewModel: BattingRecordsViewModel = viewModel {
+            BattingRecordsViewModel(battingUseCases)
         }
-    )
+
+        val matchTypes = viewModel.matchTypes.collectAsState()
+        val selectedMatchType = viewModel.selectedMatchType.collectAsState()
+        val competitions = viewModel.competitions.collectAsState()
+        val selectedCompetition = viewModel.selectedCompetition.collectAsState()
+        val teams = viewModel.teams.collectAsState()
+        val selectedTeam = viewModel.selectedTeam.collectAsState()
+        val selectedOpposition = viewModel.selectedOpposition.collectAsState()
+        val grounds = viewModel.grounds.collectAsState()
+        val selectedGround = viewModel.selectedGround.collectAsState()
+        val countries = viewModel.countries.collectAsState()
+        val selectedCountry = viewModel.selectedCountry.collectAsState()
+        val seriesDates = viewModel.seriesDates.collectAsState()
+        val selectedSeriesDate = viewModel.selectedSeriesDate.collectAsState()
+        val pageSizes = viewModel.pageSizes.collectAsState()
+        val selectedPageSize = viewModel.selectedPageSize.collectAsState()
+        val minimumRuns = viewModel.minimumRuns.collectAsState()
+        val startDate = viewModel.startDate.collectAsState()
+        val endDate = viewModel.endDate.collectAsState()
+        val searchViewFormat = viewModel.searchViewFormat.collectAsState()
+
+        val dateTimeFormat = LocalDate.Format {
+            byUnicodePattern("dd/MM/yyyy")
+        }
+
+        MainBattingSearchScreen(
+            matchTypeParams = AppDropDownParams(
+                matchTypes.value.map { DropDownMenuState(it.type, it.description) },
+                DropDownMenuState(selectedMatchType.value.type, selectedMatchType.value.description),
+                stringResource(Res.string.matchTypeLabel)
+            ),
+            competitionParams = AppDropDownParams(
+                competitions.value.map { DropDownMenuState(it.subType, it.competition) },
+                DropDownMenuState(selectedCompetition.value.type, selectedCompetition.value.competition),
+                stringResource(Res.string.competitionLabel)
+            ),
+            teamParams = AppDropDownParams(
+                teams.value.map { DropDownMenuState(it.id.toString(), it.name) },
+                DropDownMenuState(selectedTeam.value.id.toString(), selectedTeam.value.name),
+                stringResource(Res.string.teamsLabel)
+            ),
+
+            oppositionParams = AppDropDownParams(
+                teams.value.map { DropDownMenuState(it.id.toString(), it.name) },
+                DropDownMenuState(selectedOpposition.value.id.toString(), selectedOpposition.value.name),
+                stringResource(Res.string.opponentsLabel)
+            ),
+            groundsParams = AppDropDownParams(
+                grounds.value.map { DropDownMenuState(it.id.toString(), it.name) },
+                DropDownMenuState(selectedGround.value.id.toString(), selectedGround.value.name),
+                stringResource(Res.string.groundsLabel)
+            ),
+            countriesParams = AppDropDownParams(
+                countries.value.map { DropDownMenuState(it.id.toString(), it.name) },
+                DropDownMenuState(selectedCountry.value.id.toString(), selectedCountry.value.name),
+                stringResource(Res.string.countriesLabel)
+            ),
+            seriesDatesParams = AppDropDownParams(
+                seriesDates.value.map { DropDownMenuState(it, it) },
+                DropDownMenuState(selectedSeriesDate.value, selectedSeriesDate.value),
+                stringResource(Res.string.seriesDatesLabel)
+            ),
+            pageSizesParams = AppDropDownParams(
+                pageSizes.value.map { DropDownMenuState(it.toString(), it.toString()) },
+                DropDownMenuState(selectedPageSize.value.toString(), selectedPageSize.value.toString()),
+                stringResource(Res.string.pageSizeLabel)
+            ),
+            minimumRuns = minimumRuns.value,
+            minimumRunsLabel = stringResource(Res.string.minimumRunsLabel),
+            startDateLabel = startDate.value.format(dateTimeFormat), // displayLabel = ldt?.format(dateTimeFormat)!!
+            startDate = startDate.value,
+            endDateLabel = endDate.value.format(dateTimeFormat),
+            endDate = endDate.value,
+            searchViewFormat = searchViewFormat.value,
+            isLoaded = viewModel.loaded.value,
+            onBattingEvent = { evt: BattingSearchEvent ->
+                viewModel.uiEvent(evt)
+            },
+            navigate = { baseUrl ->
+                val navUrl = buildNavUrl(baseUrl, viewModel)
+                navigate(navUrl)
+            }
+        )
+    }
 }
 
 fun buildNavUrl(baseUrl: String, viewModel: BattingRecordsViewModel): String {
+
 
     return "${baseUrl}?" +
             "matchType=${viewModel.selectedMatchType.value.type}" +
@@ -158,39 +151,17 @@ fun buildNavUrl(baseUrl: String, viewModel: BattingRecordsViewModel): String {
             "&sortDirection=${viewModel.defaultSortDirection.name}" +
             "&startDate=${viewModel.startDate.value}" +
             "&endDate=${viewModel.endDate.value}" +
+            "&season=${viewModel.selectedSeriesDate.value}" +
             "&result=${viewModel.matchResult}" +
             "&limit=${viewModel.minimumRuns.value}" +
             "&startRow=0" +
             "&pageSize=${viewModel.selectedPageSize.value}"
-}
 
-@Preview
-@Composable
-fun MainBattingSearchScreenDisplayPreview() {
-    MainBattingSearchScreenDisplay(
-        matchTypeParams = AppDropDownParams(),
-        competitionParams = AppDropDownParams(),
-        teamParams = AppDropDownParams(),
-        oppositionParams = AppDropDownParams(),
-        groundsParams = AppDropDownParams(),
-        countriesParams = AppDropDownParams(),
-        seriesDatesParams = AppDropDownParams(),
-        pageSizesParams = AppDropDownParams(),
-        minimumRuns = 100,
-        minimumRunsLabel = stringResource(Res.string.minimumRunsLabel),
-        startDateLabel = "Start Date",
-        startDate = LocalDate.now(),
-        endDateLabel = "End Date",
-        endDate = LocalDate.now(),
-        searchViewFormat = SearchViewFormat.PlayerSummary,
-        onBattingEvent = {},
-        navigate = {}
-    )
 }
 
 
 @Composable
-fun MainBattingSearchScreenDisplay(
+fun MainBattingSearchScreen(
     matchTypeParams: AppDropDownParams,
     competitionParams: AppDropDownParams,
     teamParams: AppDropDownParams,
@@ -206,6 +177,7 @@ fun MainBattingSearchScreenDisplay(
     endDateLabel: String,
     endDate: LocalDate,
     searchViewFormat: SearchViewFormat,
+    isLoaded: Boolean,
     onBattingEvent: (BattingSearchEvent) -> Unit = {},
     navigate: (String) -> Unit,
 ) {
@@ -222,7 +194,7 @@ fun MainBattingSearchScreenDisplay(
         DateRangeRow(seriesDatesParams, startDateLabel, startDate, endDateLabel, endDate, onBattingEvent)
         ResultRow(onBattingEvent)
         ViewFormatRow(searchViewFormat, onBattingEvent)
-        ButtonRow(onBattingEvent = {
+        ButtonRow(isLoaded, onBattingEvent = {
             when (it) {
                 is BattingSearchEvent.SearchBatting -> navigate(StatsAppScreen.BattingDetails.name)
                 else -> {
@@ -231,4 +203,29 @@ fun MainBattingSearchScreenDisplay(
             }
         })
     }
+}
+
+@Preview
+@Composable
+fun MainBattingSearchScreenPreview() {
+    MainBattingSearchScreen(
+        matchTypeParams = AppDropDownParams(),
+        competitionParams = AppDropDownParams(),
+        teamParams = AppDropDownParams(),
+        oppositionParams = AppDropDownParams(),
+        groundsParams = AppDropDownParams(),
+        countriesParams = AppDropDownParams(),
+        seriesDatesParams = AppDropDownParams(),
+        pageSizesParams = AppDropDownParams(),
+        minimumRuns = 100,
+        minimumRunsLabel = stringResource(Res.string.minimumRunsLabel),
+        startDateLabel = "Start Date",
+        startDate = LocalDate.now(),
+        endDateLabel = "End Date",
+        endDate = LocalDate.now(),
+        searchViewFormat = SearchViewFormat.PlayerSummary,
+        isLoaded = true,
+        onBattingEvent = {},
+        navigate = {}
+    )
 }

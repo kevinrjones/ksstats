@@ -33,8 +33,6 @@ fun KSStatsApp(navController: NavHostController = rememberNavController()) {
             ?.substringBefore("/")
             ?.substringBefore("?") ?: StatsAppScreen.Start.name
     )
-    println(backStackEntry?.destination?.route)
-    println(previousBackstackEntry?.destination?.route)
     KSStatsTheme {
         Scaffold(
             topBar = {
