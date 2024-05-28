@@ -206,7 +206,7 @@ object JooqBattingCareerRecords {
                                 field("innings.playerid", Int::class.java)
                             )
                     ).and(field("${teamsCteName}.matchType", String::class.java).eq(searchParameters.matchType))
-                    .where(coalesce(field("innings.runs").ge(0)))
+                    .where(coalesce(field("innings.runs").ge(searchParameters.limit)))
             )
 
         return cte

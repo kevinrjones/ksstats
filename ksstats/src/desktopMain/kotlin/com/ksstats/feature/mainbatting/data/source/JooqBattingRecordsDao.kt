@@ -223,7 +223,7 @@ class JooqBattingRecordsDao(private val databaseConnection: DatabaseConnection) 
                 .with(cteStep4Name).`as`(bcrto_count)
                 .select().from(cteStep3Name).join(cteStep4Name).on()
                 .orderBy(sortSpecification)
-                .limit(0, 50).fetch()
+                .limit(searchParameters.startRow, searchParameters.pageSize).fetch()
 
             val results = mutableListOf<BattingSearchResults>()
             databaseResults.forEach {
