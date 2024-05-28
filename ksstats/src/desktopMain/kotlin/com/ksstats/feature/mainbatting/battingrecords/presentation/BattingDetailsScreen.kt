@@ -110,11 +110,8 @@ fun NavGraphBuilder.battingDetailsScreen() {
         val viewModel: BattingDetailsScreenViewModel = viewModel {
             BattingDetailsScreenViewModel(battingUseCases)
         }
-        var hasNavigated by remember { mutableStateOf(false) }
 
-        if (!hasNavigated) {
-            hasNavigated = true
-
+        LaunchedEffect(Unit) {
             val searchParameters = SearchParameters(
                 matchType = it.arguments?.getString("matchType") ?: "t",
                 matchSubType = it.arguments?.getString("matchSubType") ?: "t",
