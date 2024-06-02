@@ -7,12 +7,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelStore
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.ksstats.feature.mainbatting.battingrecords.presentation.battingDetailsScreen
-import com.ksstats.feature.mainbatting.search.presentation.mainBattingSearchScreen
+import com.ksstats.feature.battingrecordsdisplay.presentation.battingDetailsScreen
+import com.ksstats.feature.recordsearch.feature.mainbattingsearch.search.presentation.mainBattingSearchScreen
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
 
 @Composable
@@ -48,7 +46,7 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 restoreState = true
             }
         })
-        battingDetailsScreen()
+        battingDetailsScreen(navigate = {navController.navigate(it) })
     }
 
 }

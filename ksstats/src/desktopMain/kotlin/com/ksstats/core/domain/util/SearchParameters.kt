@@ -19,7 +19,6 @@ package com.ksstats.core.domain.util
  */
 
 data class SearchParameters(
-    val fromNavigation:Boolean = false,
     val matchType: String = "t",
     val matchSubType: String = "t",
     val teamId: Int? = null,

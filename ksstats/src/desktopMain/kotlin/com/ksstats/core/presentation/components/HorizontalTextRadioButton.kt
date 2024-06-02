@@ -37,6 +37,7 @@ fun HorizontalTextRadioButton(height: Dp = 40.dp, selected: Boolean, text: Strin
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = 16.dp)
         )
     }

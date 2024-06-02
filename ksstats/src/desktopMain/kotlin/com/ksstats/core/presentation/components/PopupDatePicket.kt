@@ -32,6 +32,7 @@ fun PopupDatePicker(
     buttonCancelText: String = "Cancel",
     onConfirm: (LocalDate?) -> Unit,
 ) {
+
     var showDialog by remember { mutableStateOf(false) }
 
     val today = LocalDate.now().year
@@ -43,8 +44,11 @@ fun PopupDatePicker(
             yearRange = 1772..today
         )
 
+    datePickerState.selectedDateMillis = date.toJavaLocalDate().toEpochSecond(LocalTime.now(), ZoneOffset.UTC) * 1000
+
 
     var displayLabel by remember { mutableStateOf(label) }
+    displayLabel = label
 
     if (showDialog) {
         DatePickerDialog(

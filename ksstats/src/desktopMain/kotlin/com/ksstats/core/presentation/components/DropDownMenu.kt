@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -36,6 +37,7 @@ data class AppDropDownParams(
 
 @Composable
 fun AppDropDownMenu(
+    modifier: Modifier = Modifier,
     options: List<DropDownMenuState>,
     selectedOption: DropDownMenuState,
     label: String,
@@ -47,7 +49,8 @@ fun AppDropDownMenu(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = Modifier
+        modifier = modifier
+
     ) {
         OutlinedTextField(
             readOnly = true,

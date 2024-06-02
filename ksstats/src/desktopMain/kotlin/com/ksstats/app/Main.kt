@@ -32,7 +32,7 @@ fun main() = application {
         ) {
             // todo: add a version table to the database and a check against the application version (loaded from where?)
 
-            window.minimumSize = Dimension(1200, 800)
+            window.minimumSize = Dimension(1200, 1200)
             KSStatsApp()
         }
     }

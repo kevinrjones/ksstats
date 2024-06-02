@@ -13,8 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -83,7 +81,7 @@ fun RowScope.TableCell(
 data class ColumnMetaData(val name: String, val width: Dp, val weight: Float = 0f)
 
 @Composable
-fun Table(
+fun TableOld(
     data: List<List<String>>,
     metaData: List<ColumnMetaData>
 ) {
@@ -123,7 +121,85 @@ fun Table(
 }
 
 @Composable
-fun TableEx(
+fun Table(
+    modifier: Modifier = Modifier,
+    rowModifier: Modifier = Modifier,
+    verticalLazyListState: LazyListState = rememberLazyListState(),
+    horizontalScrollState: ScrollState = rememberScrollState(),
+    columnCount: Int,
+    rowCount: Int,
+    metaData: List<ColumnMetaData>,
+    beforeRow: (@Composable (rowIndex: Int) -> Unit)? = null,
+    afterRow: (@Composable (rowIndex: Int) -> Unit)? = null,
+    cellContent: @Composable (columnIndex: Int, rowIndex: Int) -> String?
+) {
+    val columnWidths = remember { mutableStateMapOf<Int, Int>() }
+
+    Box(modifier = modifier.then(Modifier.horizontalScroll(horizontalScrollState))) {
+        LazyColumn(state = verticalLazyListState) {
+            stickyHeader {
+                Row(Modifier.background(Color.Gray)) {
+                    metaData.forEachIndexed { index, header ->
+
+                        TableCell(
+                            text = header.name,
+                            color = Color.White,
+                            cellBackgroundColor = Color.Gray,
+                            width = header.width,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+                }
+            }
+
+            items(rowCount) { rowIndex ->
+                Column {
+                    beforeRow?.invoke(rowIndex)
+
+                    Row(modifier = rowModifier) {
+
+                        (0 until columnCount).forEach { columnIndex ->
+                            Box(modifier = Modifier.layout { measurable, constraints ->
+                                val placeable = measurable.measure(constraints)
+
+                                val existingWidth = columnWidths[columnIndex] ?: 0
+                                val maxWidth = maxOf(existingWidth, placeable.width)
+
+                                if (maxWidth > existingWidth) {
+                                    columnWidths[columnIndex] = maxWidth
+                                }
+
+                                layout(width = maxWidth, height = placeable.height) {
+                                    placeable.placeRelative(0, 0)
+                                }
+                            }) {
+                                cellContent(columnIndex, rowIndex)?.let { content ->
+                                    if (rowIndex % 2 == 0)
+                                        this@Row.TableCell(
+                                            text = content,
+                                            showTooltip = content.length > 10,
+                                            width = metaData[columnIndex].width
+                                        )
+                                    else
+                                        this@Row.TableCell(
+                                            showTooltip = content.length > 10,
+                                            text = content,
+                                            cellBackgroundColor = Color.LightGray,
+                                            width = metaData[columnIndex].width
+                                        )
+                                }
+                            }
+                        }
+                    }
+                    afterRow?.invoke(rowIndex)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Table1(
     modifier: Modifier = Modifier,
     rowModifier: Modifier = Modifier,
     verticalLazyListState: LazyListState = rememberLazyListState(),
