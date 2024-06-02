@@ -35,9 +35,13 @@ object JooqBattingCareerRecords {
         val homeCountryIdCondition = if (searchParameters.hostCountryId != 0) {
             and(MATCHES.HOMECOUNTRYID.eq(searchParameters.hostCountryId))
         } else null
-        val seasonCondition = if (searchParameters.season != "All") {
+        val dateOrSeasonCondition = if (searchParameters.season != "All") {
             and(MATCHES.SERIESDATE.eq(searchParameters.season))
-        } else null
+        } else {
+            and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate))
+                .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate))
+        }
+
         val matchResultCondition = if (searchParameters.result != 0) {
             and(EXTRAMATCHDETAILS.RESULT.bitAnd(searchParameters.result).notEqual(0))
         } else null
@@ -76,10 +80,8 @@ object JooqBattingCareerRecords {
                                     )
                                 )
                                 .and(MATCHES.MATCHTYPE.eq(searchParameters.matchType))
-                                .and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate))
-                                .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate))
                                 .and(homeCountryIdCondition)
-                                .and(seasonCondition)
+                                .and(dateOrSeasonCondition)
                         )
                             .and(teamIdCondition)
                             .and(opponentsIdCondition)
@@ -129,7 +131,7 @@ object JooqBattingCareerRecords {
     fun createResultsCte(
         searchParameters: SearchParameters,
         batCteName: String,
-        teamsCteName: String
+        teamsCteName: String,
     ): SelectJoinStep<Record18<Int?, String?, String?, Int, Int, Int, Int, Double, Int, Int, Int, Int, Int, Int, String, Serializable, Serializable, Serializable>> {
         val completedInnings =
             field(
