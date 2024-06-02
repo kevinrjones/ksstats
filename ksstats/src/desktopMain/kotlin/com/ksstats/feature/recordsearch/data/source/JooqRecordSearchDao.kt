@@ -68,33 +68,6 @@ class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : 
         }
     }
 
-    override fun getTeamsForCompetitionEx(matchType: String): Flow<List<Team>> = flow {
-
-        DriverManager.getConnection(
-            databaseConnection.connectionString
-        ).use { conn ->
-            val context = DSL.using(conn, databaseConnection.dialect)
-            val result = context.select(
-                TEAMSMATCHTYPES.teams.ID,
-                TEAMSMATCHTYPES.teams.NAME,
-            ).from(TEAMSMATCHTYPES)
-                .where(TEAMSMATCHTYPES.MATCHTYPE.eq(matchType))
-                .orderBy(TEAMSMATCHTYPES.teams.NAME)
-                .fetch()
-
-            val teams = mutableListOf<Team>()
-            result.forEach { matchSubType ->
-                val id = matchSubType.getValue("Id", Int::class.java)
-                val name = matchSubType.getValue("Name", String::class.java)
-
-                teams.add(Team(id, name))
-            }
-
-            teams.add(0, Team(0, "All"))
-            emit(teams)
-
-        }
-    }
 
     override fun getGroundsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Ground>> = flow {
 

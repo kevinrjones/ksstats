@@ -14,10 +14,6 @@ class JooqMainSearchRepository(private val recordSearchDao: RecordSearchDao) : M
         return recordSearchDao.getCompetitions(matchType)
     }
 
-    override fun getTeamsForCompetitionEx(matchType: String): Flow<List<Team>> {
-        return recordSearchDao.getTeamsForCompetitionEx(matchType)
-    }
-
     override fun getGroundsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Ground>> {
         return recordSearchDao.getGroundsForCompetitionAndCountry(matchType, countryId)
     }

@@ -9,16 +9,6 @@ import java.io.Serializable
 
 object JooqBattingCareerRecords {
 
-    /*
-    Also need to process these
-
-
-          join extramatchdetails emd
-               on emd.MatchId = bd.MatchId
-                   and emd.TeamId = bd.TeamId
-                   and ((@matchResult = 0) OR (emd.result & @matchResult))
-                   and ((@homeOrAway = 0) OR (emd.HomeAway & @homeOrAway));
-     */
     fun createTemporaryBattingCte(
         searchParameters: SearchParameters,
     ): SelectJoinStep<Record15<Int, String, Int, Int, Int, Int, Int, Int, Double, Int, Int, Int, Int, Int, Int>> {
