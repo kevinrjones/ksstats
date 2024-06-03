@@ -1,7 +1,6 @@
 package com.ksstats.core.domain.util
 
 
-
 enum class SortOrder {
     SortNamePart,
     Team,
@@ -21,9 +20,15 @@ enum class SortOrder {
     Ducks,
     SR,
     BI,
+    None,
 }
 
 enum class SortDirection(val direction: String) {
     Ascending(""),
     Descending("desc"),
+}
+enum class DisplaySortDirection {
+    None,
+    Ascending,
+    Descending,
 }

@@ -24,9 +24,6 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             .padding(innerPadding)
     ) {
 
-//        val viewModelStore = ViewModelStore()
-//        navController.setViewModelStore(viewModelStore)
-
         chooseStatsTypeScreen(navigate = {
             navController.navigate(it) {
                 popUpTo(StatsAppScreen.Start.name) {

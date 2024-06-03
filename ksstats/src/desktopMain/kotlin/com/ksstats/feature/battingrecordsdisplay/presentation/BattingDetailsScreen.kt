@@ -213,6 +213,8 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
             startRow = navBackStackEntry.arguments?.getInt("startRow") ?: 0,
             limit = navBackStackEntry.arguments?.getInt("limit") ?: 100,
             rowCount = count,
+            sortOrder = searchParameters.sortOrder,
+            sortDirection = searchParameters.sortDirection,
             onPageChanged = {
                 pagingParameters = calculatePagingParameters(it, pagingParameters, count)
                 searchParameters = searchParameters.copy(
@@ -223,6 +225,31 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
 
                 val navUrl = buildNavUrl(StatsAppScreen.BattingDetails.name, searchParameters)
                 navigate(navUrl)
+            },
+            onSort = { order ->
+
+                // reverse the sort direction if the order is the same otherwise keep it the same
+                val sortDirectionText = navBackStackEntry.arguments?.getString("sortDirection") ?: "DESC"
+                val sortOrderFromNav = SortOrder.entries[navBackStackEntry.arguments?.getInt("sortOrder") ?: 3]
+
+                val sortDirection = if (sortOrderFromNav == order) {
+                    if (sortDirectionText.lowercase() == "ascending") {
+                        SortDirection.Descending
+                    } else {
+                        SortDirection.Ascending
+                    }
+                } else {
+                    SortDirection.valueOf(sortDirectionText)
+                }
+
+                searchParameters = searchParameters.copy(
+                    sortOrder = order,
+                    sortDirection = sortDirection
+                )
+
+                val navUrl = buildNavUrl(StatsAppScreen.BattingDetails.name, searchParameters)
+                navigate(navUrl)
+
             }
         )
     }
@@ -269,6 +296,7 @@ fun getHighestScoreString(highestScore: Double): String {
 
 fun buildNavUrl(baseUrl: String, searchParameters: SearchParameters): String {
 
+    val sortOrder = searchParameters.sortOrder.ordinal
 
     return "${baseUrl}?" +
             "matchType=${searchParameters.matchType}" +
@@ -278,7 +306,7 @@ fun buildNavUrl(baseUrl: String, searchParameters: SearchParameters): String {
             "&groundId=${searchParameters.groundId}" +
             "&hostCountryId=${searchParameters.hostCountryId}" +
             "&venue=${searchParameters.venue}" +
-            "&sortOrder=${searchParameters.sortOrder}" +
+            "&sortOrder=${sortOrder}" +
             "&sortDirection=${searchParameters.sortDirection}" +
             "&startDate=${searchParameters.startDate}" +
             "&endDate=${searchParameters.endDate}" +
@@ -320,7 +348,10 @@ fun BattingDetailsScreen(
     startRow: Int,
     limit: Int,
     rowCount: Int,
+    sortOrder: SortOrder,
+    sortDirection: SortDirection,
     onPageChanged: (PageChangedNavigation) -> Unit,
+    onSort: (SortOrder) -> Unit,
 ) {
 
     Column(
@@ -347,22 +378,212 @@ fun BattingDetailsScreen(
         Row {
             val metaData = listOf(
                 ColumnMetaData("", 60.dp),
-                ColumnMetaData("Name", 100.dp),
-                ColumnMetaData("Teams", 200.dp),
-                ColumnMetaData("Matches", 100.dp),
-                ColumnMetaData("Innings", 100.dp),
-                ColumnMetaData("Not Outs", 100.dp),
-                ColumnMetaData("Runs", 100.dp),
-                ColumnMetaData("Highest Score", 100.dp),
-                ColumnMetaData("Hundreds", 100.dp),
-                ColumnMetaData("Fifties", 100.dp),
-                ColumnMetaData("Ducks", 100.dp),
-                ColumnMetaData("Fours", 100.dp),
-                ColumnMetaData("Sixes", 100.dp),
-                ColumnMetaData("Balls", 100.dp),
-                ColumnMetaData("Avg", 100.dp),
-                ColumnMetaData("SR", 100.dp),
-                ColumnMetaData("BI", 100.dp),
+                ColumnMetaData(
+                    "Name",
+                    170.dp,
+                    sortOrder = SortOrder.SortNamePart,
+                    sortDirection = if (sortOrder == SortOrder.SortNamePart) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "Teams", 200.dp, sortOrder = SortOrder.Team,
+                    sortDirection = if (sortOrder == SortOrder.Team) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "M",
+                    70.dp,
+                    sortOrder = SortOrder.Matches,
+                    sortDirection = if (sortOrder == SortOrder.Matches) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+
+                ),
+                ColumnMetaData(
+                    "I",
+                    70.dp,
+                    sortOrder = SortOrder.Innings,
+                    sortDirection = if (sortOrder == SortOrder.Innings) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+
+                ),
+                ColumnMetaData(
+                    "N/Os",
+                    90.dp,
+                    sortOrder = SortOrder.NotOuts,
+                    sortDirection = if (sortOrder == SortOrder.NotOuts) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+
+                ),
+                ColumnMetaData(
+                    "Runs", 100.dp, sortOrder = SortOrder.Runs,
+                    sortDirection = if (sortOrder == SortOrder.Runs) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "HS",
+                    90.dp,
+                    sortOrder = SortOrder.HighestScore,
+                    sortDirection = if (sortOrder == SortOrder.HighestScore) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+
+                ),
+                ColumnMetaData(
+                    "100s", 90.dp, sortOrder = SortOrder.Hundreds,
+                    sortDirection = if (sortOrder == SortOrder.Hundreds) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "50s", 90.dp, sortOrder = SortOrder.Fifties,
+                    sortDirection = if (sortOrder == SortOrder.Fifties) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "0s", 90.dp, sortOrder = SortOrder.Ducks,
+                    sortDirection = if (sortOrder == SortOrder.Ducks) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "4s", 90.dp, sortOrder = SortOrder.Fours,
+                    sortDirection = if (sortOrder == SortOrder.Fours) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "6s", 90.dp, sortOrder = SortOrder.Sixes,
+                    sortDirection = if (sortOrder == SortOrder.Sixes) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "Balls", 90.dp, sortOrder = SortOrder.Balls,
+                    sortDirection = if (sortOrder == SortOrder.Balls) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "Avg", 90.dp, sortOrder = SortOrder.Avg,
+                    sortDirection = if (sortOrder == SortOrder.Avg) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "SR", 90.dp, sortOrder = SortOrder.SR,
+                    sortDirection = if (sortOrder == SortOrder.SR) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                ),
+                ColumnMetaData(
+                    "BI", 90.dp, sortOrder = SortOrder.BI,
+                    sortDirection = if (sortOrder == SortOrder.BI) {
+                        if (sortDirection == SortDirection.Ascending) {
+                            DisplaySortDirection.Ascending
+                        } else {
+                            DisplaySortDirection.Descending
+                        }
+                    } else {
+                        DisplaySortDirection.None
+                    }
+                )
             )
             Table(
                 columnCount = metaData.size,
@@ -373,7 +594,10 @@ fun BattingDetailsScreen(
                     else
                         null
                 },
-                metaData = metaData
+                metaData = metaData,
+                onSort = { order ->
+                    onSort(order)
+                }
             )
         }
     }
