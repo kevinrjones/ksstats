@@ -1,6 +1,9 @@
 package com.ksstats.core.presentation.components
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.HoverInteraction
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -9,7 +12,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -53,6 +57,7 @@ fun CellText(
 fun HeaderCellText(
     text: String,
     cellBackgroundColor: Color = Color.Gray,
+    cellHoverColor: Color = Color.LightGray,
     style: TextStyle = LocalTextStyle.current,
     width: Dp,
     color: Color = Color.Black,
@@ -60,12 +65,30 @@ fun HeaderCellText(
     sortOrder: SortOrder,
     onSort: (SortOrder) -> Unit,
 ) {
+
+    var backgroundColor by remember { mutableStateOf(cellBackgroundColor) }
+    val interactionSource = remember { MutableInteractionSource() }
+
+    LaunchedEffect(Unit) {
+        interactionSource.interactions.collect {interaction: Interaction ->
+            when (interaction) {
+                is HoverInteraction.Enter -> {
+                    backgroundColor = cellHoverColor
+                }
+                is HoverInteraction.Exit -> {
+                    backgroundColor = cellBackgroundColor
+                }
+            }
+        }
+    }
+
     TextButton(
         modifier = Modifier
             .border(1.dp, Color.Black)
             .width(width)
-            .background(cellBackgroundColor),
+            .background(backgroundColor),
         contentPadding = PaddingValues(3.dp),
+        interactionSource = interactionSource ,
         onClick = {
             onSort(sortOrder)
         }

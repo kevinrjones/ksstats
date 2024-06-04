@@ -1,9 +1,15 @@
 package com.ksstats.feature.battingrecordsdisplay.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -194,6 +200,7 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
         }
 
         val searchResults = viewModel.battingSearchResults.collectAsState()
+        val searching = viewModel.searching.collectAsState()
 
         val count = searchResults.value.firstOrNull()?.count ?: 0
         val startRow = (navBackStackEntry.arguments?.getInt("startRow") ?: 0)
@@ -207,6 +214,7 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
 
         BattingDetailsScreen(
             displayRecords = displayRecords,
+            searching = searching,
             title = "Player Batting Summary",
             summary = summaryString,
             pageSize = navBackStackEntry.arguments?.getInt("pageSize") ?: 50,
@@ -342,6 +350,7 @@ fun calculatePagingParameters(
 @Composable
 fun BattingDetailsScreen(
     displayRecords: List<List<String>>,
+    searching: State<Boolean>,
     summary: String,
     title: String,
     pageSize: Int,
@@ -354,251 +363,268 @@ fun BattingDetailsScreen(
     onSort: (SortOrder) -> Unit,
 ) {
 
-    Column(
-        // initial height needed as the grid is empty, setting it to 0 is fine (it appears!)
+    // initial height needed as the grid is empty, setting it to 0 is fine (it appears!)
+    Box(
         modifier = Modifier
             .height(0.dp)
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color.Transparent)
     ) {
+        if (searching.value) {
 
-        TitleRow(title = title)
-        SummaryRow(summary = summary)
-        SearchLimitRow(searchLimit = limit)
-        NavigationRow(
-            pageNumber = 1,
-            pageSize = pageSize,
-            maxPages = pageSize.calculateMaxPages(rowCount),
-            firstRowNumber = startRow + 1,
-            lastRowNumber = rowCount,
-            onPageChanged = { onPageChanged(it) }
-        )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) { }
+                .background(Color.Gray)
+            ) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
 
-        Row {
-            val metaData = listOf(
-                ColumnMetaData("", 60.dp),
-                ColumnMetaData(
-                    "Name",
-                    170.dp,
-                    sortOrder = SortOrder.SortNamePart,
-                    sortDirection = if (sortOrder == SortOrder.SortNamePart) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
-                        } else {
-                            DisplaySortDirection.Descending
-                        }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "Teams", 200.dp, sortOrder = SortOrder.Team,
-                    sortDirection = if (sortOrder == SortOrder.Team) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
-                        } else {
-                            DisplaySortDirection.Descending
-                        }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "M",
-                    70.dp,
-                    sortOrder = SortOrder.Matches,
-                    sortDirection = if (sortOrder == SortOrder.Matches) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
-                        } else {
-                            DisplaySortDirection.Descending
-                        }
-                    } else {
-                        DisplaySortDirection.None
-                    }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-                ),
-                ColumnMetaData(
-                    "I",
-                    70.dp,
-                    sortOrder = SortOrder.Innings,
-                    sortDirection = if (sortOrder == SortOrder.Innings) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
-                        } else {
-                            DisplaySortDirection.Descending
-                        }
-                    } else {
-                        DisplaySortDirection.None
-                    }
 
-                ),
-                ColumnMetaData(
-                    "N/Os",
-                    90.dp,
-                    sortOrder = SortOrder.NotOuts,
-                    sortDirection = if (sortOrder == SortOrder.NotOuts) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
-                        } else {
-                            DisplaySortDirection.Descending
-                        }
-                    } else {
-                        DisplaySortDirection.None
-                    }
+            TitleRow(title = title)
+            SummaryRow(summary = summary)
+            SearchLimitRow(searchLimit = limit)
+            NavigationRow(
+                pageNumber = 1,
+                pageSize = pageSize,
+                maxPages = pageSize.calculateMaxPages(rowCount),
+                firstRowNumber = startRow + 1,
+                lastRowNumber = rowCount,
+                onPageChanged = { onPageChanged(it) }
+            )
 
-                ),
-                ColumnMetaData(
-                    "Runs", 100.dp, sortOrder = SortOrder.Runs,
-                    sortDirection = if (sortOrder == SortOrder.Runs) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+            Row {
+                val metaData = listOf(
+                    ColumnMetaData("", 60.dp),
+                    ColumnMetaData(
+                        "Name",
+                        170.dp,
+                        sortOrder = SortOrder.SortNamePart,
+                        sortDirection = if (sortOrder == SortOrder.SortNamePart) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "HS",
-                    90.dp,
-                    sortOrder = SortOrder.HighestScore,
-                    sortDirection = if (sortOrder == SortOrder.HighestScore) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "Teams", 200.dp, sortOrder = SortOrder.Teams,
+                        sortDirection = if (sortOrder == SortOrder.Teams) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
+                    ),
+                    ColumnMetaData(
+                        "M",
+                        70.dp,
+                        sortOrder = SortOrder.Matches,
+                        sortDirection = if (sortOrder == SortOrder.Matches) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
 
-                ),
-                ColumnMetaData(
-                    "100s", 90.dp, sortOrder = SortOrder.Hundreds,
-                    sortDirection = if (sortOrder == SortOrder.Hundreds) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "I",
+                        70.dp,
+                        sortOrder = SortOrder.Innings,
+                        sortDirection = if (sortOrder == SortOrder.Innings) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "50s", 90.dp, sortOrder = SortOrder.Fifties,
-                    sortDirection = if (sortOrder == SortOrder.Fifties) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+
+                    ),
+                    ColumnMetaData(
+                        "N/Os",
+                        90.dp,
+                        sortOrder = SortOrder.NotOuts,
+                        sortDirection = if (sortOrder == SortOrder.NotOuts) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "0s", 90.dp, sortOrder = SortOrder.Ducks,
-                    sortDirection = if (sortOrder == SortOrder.Ducks) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+
+                    ),
+                    ColumnMetaData(
+                        "Runs", 100.dp, sortOrder = SortOrder.Runs,
+                        sortDirection = if (sortOrder == SortOrder.Runs) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "4s", 90.dp, sortOrder = SortOrder.Fours,
-                    sortDirection = if (sortOrder == SortOrder.Fours) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "HS",
+                        90.dp,
+                        sortOrder = SortOrder.HighestScore,
+                        sortDirection = if (sortOrder == SortOrder.HighestScore) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "6s", 90.dp, sortOrder = SortOrder.Sixes,
-                    sortDirection = if (sortOrder == SortOrder.Sixes) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+
+                    ),
+                    ColumnMetaData(
+                        "100s", 90.dp, sortOrder = SortOrder.Hundreds,
+                        sortDirection = if (sortOrder == SortOrder.Hundreds) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "Balls", 90.dp, sortOrder = SortOrder.Balls,
-                    sortDirection = if (sortOrder == SortOrder.Balls) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "50s", 90.dp, sortOrder = SortOrder.Fifties,
+                        sortDirection = if (sortOrder == SortOrder.Fifties) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "Avg", 90.dp, sortOrder = SortOrder.Avg,
-                    sortDirection = if (sortOrder == SortOrder.Avg) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "0s", 90.dp, sortOrder = SortOrder.Ducks,
+                        sortDirection = if (sortOrder == SortOrder.Ducks) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "SR", 90.dp, sortOrder = SortOrder.SR,
-                    sortDirection = if (sortOrder == SortOrder.SR) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "4s", 90.dp, sortOrder = SortOrder.Fours,
+                        sortDirection = if (sortOrder == SortOrder.Fours) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
-                    }
-                ),
-                ColumnMetaData(
-                    "BI", 90.dp, sortOrder = SortOrder.BI,
-                    sortDirection = if (sortOrder == SortOrder.BI) {
-                        if (sortDirection == SortDirection.Ascending) {
-                            DisplaySortDirection.Ascending
+                    ),
+                    ColumnMetaData(
+                        "6s", 90.dp, sortOrder = SortOrder.Sixes,
+                        sortDirection = if (sortOrder == SortOrder.Sixes) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
                         } else {
-                            DisplaySortDirection.Descending
+                            DisplaySortDirection.None
                         }
-                    } else {
-                        DisplaySortDirection.None
+                    ),
+                    ColumnMetaData(
+                        "Balls", 90.dp, sortOrder = SortOrder.Balls,
+                        sortDirection = if (sortOrder == SortOrder.Balls) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    ColumnMetaData(
+                        "Avg", 90.dp, sortOrder = SortOrder.Avg,
+                        sortDirection = if (sortOrder == SortOrder.Avg) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    ColumnMetaData(
+                        "SR", 90.dp, sortOrder = SortOrder.SR,
+                        sortDirection = if (sortOrder == SortOrder.SR) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    ColumnMetaData(
+                        "BI", 90.dp, sortOrder = SortOrder.BI,
+                        sortDirection = if (sortOrder == SortOrder.BI) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    )
+                )
+                Table(
+                    columnCount = metaData.size,
+                    rowCount = displayRecords.size,
+                    cellContent = { column, row ->
+                        if (displayRecords.isNotEmpty())
+                            displayRecords[row][column]
+                        else
+                            null
+                    },
+                    metaData = metaData,
+                    onSort = { order ->
+                        onSort(order)
                     }
                 )
-            )
-            Table(
-                columnCount = metaData.size,
-                rowCount = displayRecords.size,
-                cellContent = { column, row ->
-                    if (displayRecords.isNotEmpty())
-                        displayRecords[row][column]
-                    else
-                        null
-                },
-                metaData = metaData,
-                onSort = { order ->
-                    onSort(order)
-                }
-            )
+            }
         }
     }
 }

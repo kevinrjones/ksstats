@@ -41,23 +41,30 @@ class BattingDetailsScreenViewModel(
     private val _battingSearchResults: MutableStateFlow<List<BattingSearchResults>> = MutableStateFlow(listOf())
     val battingSearchResults: StateFlow<List<BattingSearchResults>> = _battingSearchResults.asStateFlow()
 
-    private val _summary = MutableStateFlow<SummaryResult>(SummaryResult(
-        team = "",
-        opponents = "",
-        ground = "",
-        hostCountry = "",
-        matchType = "",
-        competition = ""
-    ))
+    private val _searching = MutableStateFlow<Boolean>(false)
+    val searching = _searching.asStateFlow()
+
+    private val _summary = MutableStateFlow<SummaryResult>(
+        SummaryResult(
+            team = "",
+            opponents = "",
+            ground = "",
+            hostCountry = "",
+            matchType = "",
+            competition = ""
+        )
+    )
     val summary = _summary.asStateFlow()
 
     fun getSearchResults(searchParameters: SearchParameters) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                _searching.value = true
                 battingDetailsUseCases.getBattingDetails(searchParameters)
                     .collect {
                         _battingSearchResults.value = it
                     }
+                _searching.value = false
             }
         }
     }
