@@ -2,14 +2,18 @@ package com.ksstats.feature.battingrecordsdisplay.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -347,6 +351,7 @@ fun calculatePagingParameters(
     return newPagingParameters
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BattingDetailsScreen(
     displayRecords: List<List<String>>,
@@ -363,24 +368,14 @@ fun BattingDetailsScreen(
     onSort: (SortOrder) -> Unit,
 ) {
 
-    // initial height needed as the grid is empty, setting it to 0 is fine (it appears!)
     Box(
         modifier = Modifier
             .height(0.dp)
             .background(Color.Transparent)
     ) {
-        if (searching.value) {
-
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) { }
-                .background(Color.Gray)
-            ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-        }
 
         Column(
+            // initial height needed as the grid is empty, setting it to 0 is fine (it appears!)
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
@@ -624,6 +619,17 @@ fun BattingDetailsScreen(
                         onSort(order)
                     }
                 )
+            }
+        }
+        if (searching.value) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    // this prevents the pointer events propagating to the child composables (the Column in this case)
+                }
+                .background(Color.Gray.copy(alpha = 0.5F))
+            ) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
