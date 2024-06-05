@@ -30,7 +30,7 @@ fun CountriesGroundsRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember {
+            var selectedIndex by remember(countriesParams.selectedOption) {
                 val ndx = countriesParams.options.indexOf( countriesParams.selectedOption )
                 mutableStateOf(ndx)
             }
@@ -63,7 +63,7 @@ fun CountriesGroundsRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember {
+            var selectedIndex by remember(groundsParams.selectedOption) {
                 val ndx = groundsParams.options.indexOf( groundsParams.selectedOption )
                 mutableStateOf(ndx)
             }

@@ -67,8 +67,8 @@ fun DateRangeRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember {
-                val ndx = seriesDatesParams.options.indexOf( seriesDatesParams.selectedOption )
+            var selectedIndex by remember(seriesDatesParams.selectedOption) {
+                val ndx = seriesDatesParams.options.indexOf(seriesDatesParams.selectedOption)
                 mutableStateOf(ndx)
             }
             LargeDropdownMenu(

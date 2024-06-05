@@ -1,6 +1,5 @@
 package com.ksstats.feature.recordsearch.di
 
-import com.ksstats.core.domain.usecases.GetSearchRecordsPageSizes
 import com.ksstats.feature.recordsearch.data.repository.JooqMainSearchRepository
 import com.ksstats.feature.recordsearch.data.source.JooqRecordSearchDao
 import com.ksstats.feature.recordsearch.data.source.RecordSearchDao
@@ -12,15 +11,10 @@ import org.koin.dsl.module
 
 
 fun mainSearchModule() = module {
-    singleOf(::GetMatchTypes)
-    singleOf(::GetCompetitions)
-    singleOf(::GetTeamsForCompetitionAndCountry)
-    singleOf(::GetGroundsForCompetitionAndCountry)
-    singleOf(::GetCountriesForCompetition)
-    singleOf(::GetSeriesDatesForCompetition)
-    singleOf(::GetStartAndEndDatesForCompetition)
-    singleOf(::GetSearchRecordsPageSizes)
-    singleOf(::GetTeamsForCountry)
+    singleOf(::InitialiseSearchUseCase)
+    singleOf(::GetSearchDataForCompetitionAndCountryUseCase)
+    singleOf(::GetCompetitionsForMatchTypeAndCountryUseCase)
+    singleOf(::GetTeamsAndGroundsForCompetitionAndCountryUseCase)
     singleOf(::RecordSearchUseCases)
     singleOf(::JooqMainSearchRepository) bind MainSearchRepository::class
     singleOf(::JooqRecordSearchDao) bind RecordSearchDao::class

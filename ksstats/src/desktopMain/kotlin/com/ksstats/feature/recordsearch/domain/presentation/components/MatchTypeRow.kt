@@ -43,7 +43,7 @@ fun MatchTypeRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 5.dp, end = 5.dp)
@@ -55,7 +55,7 @@ fun MatchTypeRow(
                 onSelectMenuItem = { onBattingEvent(BattingSearchEvent.MatchTypeSelectionEvent(it)) }
             )
         }
-        Column(
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 5.dp, end = 5.dp)
@@ -67,7 +67,7 @@ fun MatchTypeRow(
                 onSelectMenuItem = { onBattingEvent(BattingSearchEvent.CompetitionSelectionEvent(it)) }
             )
         }
-        Column(
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 5.dp, end = 5.dp)
@@ -81,8 +81,7 @@ fun MatchTypeRow(
                 }
             )
         }
-        Column(modifier = Modifier.weight(1f)) {
-
+        Box(modifier = Modifier.weight(1f)) {
             OutlinedTextField(
                 modifier = Modifier,
                 value = minimumRuns.toString(),

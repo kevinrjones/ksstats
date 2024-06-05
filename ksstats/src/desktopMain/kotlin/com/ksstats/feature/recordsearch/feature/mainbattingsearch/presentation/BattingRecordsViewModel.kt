@@ -12,11 +12,12 @@ import com.ksstats.feature.recordsearch.domain.model.*
 import com.ksstats.feature.recordsearch.domain.usecase.RecordSearchUseCases
 import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.shared.now
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.ksstats.shared.toSeconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -64,29 +65,51 @@ class BattingRecordsViewModel(
     var job: Job? = null
 
     init {
-        val matchTypes = recordSearchUseCases.getMatchTypes()
         job = this.viewModelScope.launch {
-
             withContext(Dispatchers.Main) {
                 _loaded.value = false
             }
+
+
             withContext(Dispatchers.IO) {
-                matchTypes.collect { matchTypes ->
-                    _matchTypes.value = matchTypes
+                recordSearchUseCases.initialiseSearch(Country.defaultCountry()).collect { searchResult ->
+                    initialiseStateFromSearchData(searchResult)
                 }
-                _selectedMatchType.value = _matchTypes.value[0]
-
-                getPageSizes().collect { pageSizes ->
-                    _pageSizes.value = pageSizes
-                }
-                _selectedPageSize.value = pageSizes.value[0]
-
-                getCompetitions(_selectedMatchType.value)
             }
+
             withContext(Dispatchers.Main) {
                 _loaded.value = true
             }
         }
+    }
+
+    private fun initialiseStateFromSearchData(searchResult: SearchData) {
+        _matchTypes.value = searchResult.matchTypes
+        _selectedMatchType.value = _matchTypes.value[0]
+
+        _pageSizes.value = searchResult.pageSizes
+        _selectedPageSize.value = pageSizes.value[0]
+
+        _competitions.value = searchResult.competitions
+        _selectedCompetition.value = _competitions.value[0]
+
+        _teams.value = searchResult.teams
+        _selectedTeam.value = _teams.value[0]
+        _selectedOpposition.value = _teams.value[0]
+
+        _grounds.value = searchResult.grounds
+        _selectedGround.value = _grounds.value[0]
+
+        _countries.value = searchResult.countries
+        _selectedCountry.value = _countries.value[0]
+
+        _startDate.value =
+            Instant.fromEpochSeconds(searchResult.startAndEndDate.start).toLocalDateTime(TimeZone.UTC).date
+        _endDate.value = Instant.fromEpochSeconds(searchResult.startAndEndDate.end).toLocalDateTime(TimeZone.UTC).date
+
+
+        _seriesDates.value = searchResult.seriesDates
+        _selectedSeriesDate.value = searchResult.seriesDates[0]
     }
 
 
@@ -109,13 +132,22 @@ class BattingRecordsViewModel(
                 val matchType =
                     _matchTypes.value.find { it.type == battingSearchEvent.menuState.key }
                         ?: throw Exception("Invalid Match Type: ${battingSearchEvent.menuState}")
-                _selectedMatchType.value = matchType
 
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
                         _loaded.value = false
-                        getCompetitions(matchType)
-                        _loaded.value = true
+                        recordSearchUseCases.getCompetitionsForMatchTypeAndCountry(matchType, _selectedCountry.value)
+                            .collect { result ->
+                                val searchResult =
+                                    result.copy(
+                                        matchTypes = _matchTypes.value,
+                                        pageSizes = _pageSizes.value,
+                                    )
+
+                                // copy everything over but reset the matchtype
+                                initialiseStateFromSearchData(searchResult)
+                                _selectedMatchType.value = matchType
+                            }
                     }
                 }
 
@@ -124,12 +156,26 @@ class BattingRecordsViewModel(
             is BattingSearchEvent.CompetitionSelectionEvent -> {
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
+                        val matchType = _selectedMatchType.value
                         val competition =
                             _competitions.value.find { it.subType == battingSearchEvent.menuState.key }
                                 ?: throw Exception("Invalid Competition: ${battingSearchEvent.menuState}")
-                        _selectedCompetition.value = competition
                         _loaded.value = false
-                        getAllForCompetition(competition, selectedCountry.value)
+                        recordSearchUseCases.getSearchDataForCompetitionAndCountry(competition, selectedCountry.value)
+                            .collect { result ->
+
+                                val searchResult =
+                                    result.copy(
+                                        matchTypes = _matchTypes.value,
+                                        pageSizes = _pageSizes.value,
+                                        competitions = _competitions.value
+                                    )
+
+                                initialiseStateFromSearchData(searchResult)
+                                // copy everything over but reset the matchtype and competition
+                                _selectedCompetition.value = competition
+                                _selectedMatchType.value = matchType
+                            }
                         _loaded.value = true
                     }
                 }
@@ -147,11 +193,37 @@ class BattingRecordsViewModel(
             }
 
             is BattingSearchEvent.CountrySelectionEvent -> {
-                _selectedCountry.value =
-                    Country(battingSearchEvent.menuState.key.toInt(), battingSearchEvent.menuState.value)
                 viewModelScope.launch {
+                    val matchType = _selectedMatchType.value
+                    val competition = _selectedCompetition.value
+
                     withContext(Dispatchers.IO) {
-                        getAllForCountry(_selectedCompetition.value, _selectedCountry.value)
+                        recordSearchUseCases.getTeamsAndGroundsForCompetitionAndCountry(
+                            _selectedCompetition.value,
+                            _selectedCountry.value
+                        ).collect { result ->
+                            val searchResult =
+                                result.copy(
+                                    matchTypes = _matchTypes.value,
+                                    pageSizes = _pageSizes.value,
+                                    competitions = _competitions.value,
+                                    countries = _countries.value,
+                                    seriesDates = seriesDates.value,
+                                    startAndEndDate = StartEndDate(
+                                        _startDate.value.toSeconds(),
+                                        _endDate.value.toSeconds()
+                                    )
+                                )
+
+                            initialiseStateFromSearchData(searchResult)
+                            // copy everything over but reset the matchtype and competition
+                            _selectedCompetition.value = competition
+                            _selectedMatchType.value = matchType
+                            _selectedCountry.value =
+                                Country(battingSearchEvent.menuState.key.toInt(), battingSearchEvent.menuState.value)
+
+                        }
+
                     }
                 }
             }
@@ -251,7 +323,7 @@ class BattingRecordsViewModel(
     val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
     private val _selectedCountry: MutableStateFlow<Country> =
-        MutableStateFlow(Country(id = 0, name = "Loading..."))
+        MutableStateFlow(Country.defaultCountry())
     val selectedCountry: StateFlow<Country> = _selectedCountry.asStateFlow()
 
     private val _seriesDates: MutableStateFlow<List<String>> = MutableStateFlow(listOf<String>())
@@ -288,95 +360,12 @@ class BattingRecordsViewModel(
     val searchViewFormat = _searchViewFormat.asStateFlow()
 
 
-    private suspend fun getAllForCompetition(competition: Competition, country: Country) {
-        getTeamsForCompetition(competition)
-        getGroundsForCompetitionAndCountry(competition, country.id)
-        getCountriesForCompetition(competition)
-        getSeriesDatesForCompetition(competition)
-        getStartAndEndDatesForCompetition(competition)
-    }
-
-    private suspend fun getAllForCountry(competition: Competition, country: Country) {
-        getTeamsForCountry(country)
-        getGroundsForCompetitionAndCountry(competition, country.id)
-    }
-
-
     // todo: do I need to get the pages sizes this way
     // if so then I also need to do this in the PageSize composable
-    private fun getPageSizes(): Flow<List<Int>> {
-        return recordSearchUseCases.getPageSizes()
+    private fun getPageSizes(): Flow<List<Int>> = flow  {
+        emit(listOf(50, 100, 150, 200))
     }
 
-    private suspend fun getCompetitions(matchType: MatchType) {
-        val competitions = recordSearchUseCases.getCompetitions(matchType.type)
-
-        competitions.collect { competition ->
-            _competitions.value = competition
-        }
-        _selectedCompetition.value = _competitions.value[0]
-        getAllForCompetition(_selectedCompetition.value, selectedCountry.value)
-    }
-
-    private suspend fun getTeamsForCompetition(competition: Competition) {
-        val teams: Flow<List<Team>> =
-            recordSearchUseCases.getTeamsForCompetitionAndCountry(competition.subType, selectedCountry.value.id)
-
-        teams.collect { team ->
-            _teams.value = team
-        }
-        _selectedTeam.value = _teams.value[0]
-        _selectedOpposition.value = _teams.value[0]
-
-    }
-
-    private suspend fun getGroundsForCompetitionAndCountry(competition: Competition, countryId: Int) {
-        val grounds = recordSearchUseCases.getGroundsForCompetitionAndCountry(competition.subType, countryId)
-
-        grounds.collect { team ->
-            _grounds.value = team
-        }
-        _selectedGround.value = _grounds.value[0]
-    }
-
-    private suspend fun getCountriesForCompetition(competition: Competition) {
-        val grounds = recordSearchUseCases.getCountriesForCompetition(competition.subType)
-
-        grounds.collect { country ->
-            _countries.value = country
-        }
-        _selectedCountry.value = _countries.value[0]
-    }
-
-    private suspend fun getSeriesDatesForCompetition(competition: Competition) {
-        val grounds = recordSearchUseCases.getSeriesDatesForCompetition(competition.subType)
-
-        grounds.collect { date ->
-            _seriesDates.value = date
-        }
-        _selectedSeriesDate.value = _seriesDates.value[0]
-    }
-
-    private suspend fun getTeamsForCountry(country: Country) {
-        val teams: Flow<List<Team>> =
-            recordSearchUseCases.getTeamsForCountry(selectedCompetition.value.subType, country.id)
-
-        teams.collect { team ->
-            _teams.value = team
-        }
-        _selectedTeam.value = _teams.value[0]
-        _selectedOpposition.value = _teams.value[0]
-
-    }
-
-    private suspend fun getStartAndEndDatesForCompetition(competition: Competition) {
-        val startEndDates = recordSearchUseCases.getStartAndEndDatesForCompetition(competition.subType)
-
-        startEndDates.collect { startEndDates ->
-            _startDate.value = Instant.fromEpochSeconds(startEndDates.start).toLocalDateTime(TimeZone.UTC).date
-            _endDate.value = Instant.fromEpochSeconds(startEndDates.end).toLocalDateTime(TimeZone.UTC).date
-        }
-    }
 
 
     val defaultSortDirection: SortDirection

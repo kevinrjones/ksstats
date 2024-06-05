@@ -29,8 +29,8 @@ fun TeamsRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember {
-                val ndx = teamParams.options.indexOf( teamParams.selectedOption )
+            var selectedIndex by remember(teamParams.selectedOption) {
+                val ndx = teamParams.options.indexOf(teamParams.selectedOption)
                 mutableStateOf(ndx)
             }
             LargeDropdownMenu(
@@ -52,7 +52,7 @@ fun TeamsRow(
                         onClick = onClick,
                     )
                 },
-                filterItem = {item, filter ->
+                filterItem = { item, filter ->
                     item.value.lowercase().contains(filter.lowercase())
                 }
             )
@@ -62,8 +62,8 @@ fun TeamsRow(
                 .width(300.dp)
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            var selectedIndex by remember {
-                val ndx = oppositionParams.options.indexOf( oppositionParams.selectedOption )
+            var selectedIndex by remember(oppositionParams.selectedOption) {
+                val ndx = oppositionParams.options.indexOf(oppositionParams.selectedOption)
                 mutableStateOf(ndx)
             }
             LargeDropdownMenu(
@@ -85,7 +85,7 @@ fun TeamsRow(
                         onClick = onClick,
                     )
                 },
-                filterItem = {item, filter ->
+                filterItem = { item, filter ->
                     item.value.lowercase().contains(filter.lowercase())
                 }
             )
