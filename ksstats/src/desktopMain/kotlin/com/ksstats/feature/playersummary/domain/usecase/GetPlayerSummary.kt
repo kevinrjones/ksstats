@@ -1,12 +1,12 @@
-package com.ksstats.feature.battingrecordsdisplay.domain.usecase
+package com.ksstats.feature.playersummary.domain.usecase
 
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.feature.battingrecordsdisplay.data.BattingSearchResults
+import com.ksstats.shared.data.BattingSearchResults
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.domain.repository.BattingRecordsRepository
 import kotlinx.coroutines.flow.Flow
 
-class GetBattingDetails(val repository: BattingRecordsRepository) {
+class GetPlayerSummary(val repository: BattingRecordsRepository) {
     operator fun invoke(searchParameters: SearchParameters): Flow<List<BattingSearchResults>> {
-        return repository.getBattingDetails(searchParameters)
+        return repository.getPlayerSummary(searchParameters)
     }
 }

@@ -1,6 +1,6 @@
 package com.ksstats.di
 
-import com.ksstats.feature.battingrecordsdisplay.di.battingDetailsModule
+import com.ksstats.feature.playersummary.di.playerSummaryModule
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.di.battingRecordsModule
 import com.ksstats.feature.recordsearch.di.mainSearchModule
 import com.ksstats.feature.showselection.di.selectionModule
@@ -21,5 +21,5 @@ fun appModule() = module {
     includes(summaryModule())
     includes(battingRecordsModule())
     includes(mainSearchModule())
-    includes(battingDetailsModule())
+    includes(playerSummaryModule())
 }

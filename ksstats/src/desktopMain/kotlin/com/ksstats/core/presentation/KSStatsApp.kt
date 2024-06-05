@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.StringResource
 enum class StatsAppScreen(val title: StringResource) {
     Start(title = Res.string.app_name),
     BattingSearch(title = Res.string.batting),
-    BattingDetails(title = Res.string.battingDetails),
+    PlayerSummary(title = Res.string.battingDetails),
 }
 
 @Composable

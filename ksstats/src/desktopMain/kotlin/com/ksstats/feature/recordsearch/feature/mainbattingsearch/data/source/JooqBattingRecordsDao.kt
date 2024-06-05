@@ -2,7 +2,7 @@ package com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source
 
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.domain.util.SortDirection
-import com.ksstats.feature.battingrecordsdisplay.data.BattingSearchResults
+import com.ksstats.shared.data.BattingSearchResults
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source.JooqBattingCareerRecords.createResultsCte
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source.JooqBattingCareerRecords.createTemporaryTeamsCte
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source.JooqBattingCareerRecords.totalCountsCte
@@ -13,7 +13,7 @@ import org.jooq.impl.DSL
 import org.jooq.impl.DSL.field
 import java.sql.DriverManager
 class JooqBattingRecordsDao(private val databaseConnection: DatabaseConnection) : BattingRecordsDao {
-    override fun getBattingDetails(searchParameters: SearchParameters): Flow<List<BattingSearchResults>> = flow {
+    override fun getPlayerSummary(searchParameters: SearchParameters): Flow<List<BattingSearchResults>> = flow {
         DriverManager.getConnection(
             databaseConnection.connectionString
         ).use { conn ->

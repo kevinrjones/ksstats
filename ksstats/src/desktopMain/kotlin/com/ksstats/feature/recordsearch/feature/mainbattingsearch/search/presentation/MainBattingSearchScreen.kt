@@ -194,7 +194,7 @@ fun MainBattingSearchScreen(
         ViewFormatRow(searchViewFormat, onBattingEvent)
         ButtonRow(isLoaded, onBattingEvent = {
             when (it) {
-                is BattingSearchEvent.SearchBatting -> navigate(StatsAppScreen.BattingDetails.name)
+                is BattingSearchEvent.SearchBatting -> navigate(StatsAppScreen.PlayerSummary.name)
                 else -> {
                     onBattingEvent(it)
                 }

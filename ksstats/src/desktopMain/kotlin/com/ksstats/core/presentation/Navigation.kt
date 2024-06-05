@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.ksstats.feature.battingrecordsdisplay.presentation.battingDetailsScreen
+import com.ksstats.feature.playersummary.presentation.playerSummaryScreen
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.search.presentation.mainBattingSearchScreen
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
 
@@ -43,7 +43,7 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 restoreState = true
             }
         })
-        battingDetailsScreen(navigate = {navController.navigate(it) })
+        playerSummaryScreen(navigate = {navController.navigate(it) })
     }
 
 }

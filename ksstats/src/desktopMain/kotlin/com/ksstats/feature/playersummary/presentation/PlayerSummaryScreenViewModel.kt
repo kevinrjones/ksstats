@@ -1,10 +1,10 @@
-package com.ksstats.feature.battingrecordsdisplay.presentation
+package com.ksstats.feature.playersummary.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.feature.battingrecordsdisplay.data.BattingSearchResults
-import com.ksstats.feature.battingrecordsdisplay.domain.usecase.BattingDetailsUseCases
+import com.ksstats.shared.data.BattingSearchResults
+import com.ksstats.feature.playersummary.domain.usecase.PlayerSummaryUseCases
 import com.ksstats.feature.summary.domain.model.SummaryResult
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
@@ -20,8 +20,8 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 
-class BattingDetailsScreenViewModel(
-    private val battingDetailsUseCases: BattingDetailsUseCases,
+class PlayerSummaryScreenViewModel(
+    private val playerSummaryUseCases: PlayerSummaryUseCases,
     private val summaryUseCase: SummaryUseCases,
 
     ) : ViewModel() {
@@ -60,7 +60,7 @@ class BattingDetailsScreenViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _searching.value = true
-                battingDetailsUseCases.getBattingDetails(searchParameters)
+                playerSummaryUseCases.getPlayerSummary(searchParameters)
                     .collect {
                         _battingSearchResults.value = it
                     }

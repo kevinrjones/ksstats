@@ -1,4 +1,4 @@
-package com.ksstats.feature.battingrecordsdisplay.data
+package com.ksstats.shared.data
 
 data class BattingSearchResults(
     val playerId: Int,

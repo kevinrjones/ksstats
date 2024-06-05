@@ -1,11 +1,6 @@
-package com.ksstats.feature.battingrecordsdisplay.presentation
+package com.ksstats.feature.playersummary.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.forEachGesture
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
@@ -23,16 +18,16 @@ import androidx.navigation.navArgument
 import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreen
 import com.ksstats.core.presentation.components.*
-import com.ksstats.feature.battingrecordsdisplay.data.BattingSearchResults
-import com.ksstats.feature.battingrecordsdisplay.domain.usecase.BattingDetailsUseCases
+import com.ksstats.shared.data.BattingSearchResults
+import com.ksstats.feature.playersummary.domain.usecase.PlayerSummaryUseCases
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
 import org.koin.compose.koinInject
 
-fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
+fun NavGraphBuilder.playerSummaryScreen(navigate: (String) -> Unit) {
     composable(
-        route = StatsAppScreen.BattingDetails.name +
+        route = StatsAppScreen.PlayerSummary.name +
                 "?matchType={matchType}" +
                 "&matchSubType={matchSubType}" +
                 "&teamId={teamId}" +
@@ -133,10 +128,10 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
         }
 
 
-        val battingUseCases: BattingDetailsUseCases = koinInject()
+        val battingUseCases: PlayerSummaryUseCases = koinInject()
         val summaryUseCases: SummaryUseCases = koinInject()
-        val viewModel: BattingDetailsScreenViewModel = viewModel {
-            BattingDetailsScreenViewModel(battingUseCases, summaryUseCases)
+        val viewModel: PlayerSummaryScreenViewModel = viewModel {
+            PlayerSummaryScreenViewModel(battingUseCases, summaryUseCases)
         }
         val summary = viewModel.summary.collectAsState()
 
@@ -216,7 +211,7 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
         var summaryString: String by remember { mutableStateOf("") }
         summaryString = summary.value.buildSummary(startDate, endDate)
 
-        BattingDetailsScreen(
+        PlayerSummaryScreen(
             displayRecords = displayRecords,
             searching = searching,
             title = "Player Batting Summary",
@@ -235,7 +230,7 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
                     startRow = pagingParameters.startRow
                 )
 
-                val navUrl = buildNavUrl(StatsAppScreen.BattingDetails.name, searchParameters)
+                val navUrl = buildNavUrl(StatsAppScreen.PlayerSummary.name, searchParameters)
                 navigate(navUrl)
             },
             onSort = { order ->
@@ -259,7 +254,7 @@ fun NavGraphBuilder.battingDetailsScreen(navigate: (String) -> Unit) {
                     sortDirection = sortDirection
                 )
 
-                val navUrl = buildNavUrl(StatsAppScreen.BattingDetails.name, searchParameters)
+                val navUrl = buildNavUrl(StatsAppScreen.PlayerSummary.name, searchParameters)
                 navigate(navUrl)
 
             }
@@ -353,7 +348,7 @@ fun calculatePagingParameters(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BattingDetailsScreen(
+fun PlayerSummaryScreen(
     displayRecords: List<List<String>>,
     searching: State<Boolean>,
     summary: String,
