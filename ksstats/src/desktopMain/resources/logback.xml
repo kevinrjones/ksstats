@@ -31,5 +31,3 @@
 </configuration>
 
 
-<!-- log4j.logger.com.zaxxer.hikari=DEBUG
-log4j.additivity.com.zaxxer.hikari=false -->

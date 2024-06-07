@@ -23,12 +23,12 @@ kotlin {
             }
         }
 
-        val desktopMain by getting
 
         val genDir = layout.buildDirectory.dir("./generated/jooq/kotlin")
 //        val generatedDir = layout.projectDirectory.dir("generated/kotlin")
 //
 //
+        val desktopMain by getting
         commonMain.configure {
             sourceSets {
                 kotlin.srcDir(genDir)
@@ -43,9 +43,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-        }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
 
@@ -60,9 +57,16 @@ kotlin {
             implementation(libs.jooq)
             implementation(libs.jooq.meta)
             implementation(libs.jooq.codeGen)
-            implementation(libs.logback)
+//            implementation(libs.logback)
+            implementation(libs.log4j.core)
+            implementation(libs.log4j.api)
+            implementation(libs.log4j.sfl4j)
 
             implementation(libs.kotlinx.datetime)
+        }
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.sqlite)
 
             runtimeOnly(libs.kotlin.coroutines.swing)
         }
@@ -82,11 +86,14 @@ repositories {
 
 compose.desktop {
     application {
+
         mainClass = "com.ksstats.app.MainKt"
 
         nativeDistributions {
+            modules("java.sql", "java.management")
+//            includeAllModules = true
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Pkg)
-            packageName = "distance"
+            packageName = "ksstats"
             packageVersion = "1.0.0"
         }
     }
@@ -94,11 +101,13 @@ compose.desktop {
 
 jooq {
     val output: Provider<Directory> = layout.buildDirectory.dir(".")
+    val dir = "${layout.projectDirectory}/../"
+    val sqliteUrl = "jdbc:sqlite:${dir}/database/cricket.sqlite"
     configuration {
         basedir = "${output.get()}"
         jdbc {
             driver = "org.sqlite.JDBC"
-            url = "jdbc:sqlite:/Users/kevinjones/sqlite/cricket.sqlite"
+            url = sqliteUrl
             user = ""
             password = ""
         }

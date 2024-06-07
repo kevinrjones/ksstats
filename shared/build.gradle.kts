@@ -15,7 +15,11 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.annotations)
 
-    implementation(libs.logback)
+//    implementation(libs.logback)
+    implementation(libs.log4j.core)
+    implementation(libs.log4j.api)
+    implementation(libs.log4j.sfl4j)
+
     implementation(libs.kotlin.coroutines)
 
     ksp(libs.koin.ksp.compiler)

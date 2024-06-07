@@ -10,10 +10,10 @@ import org.jooq.SQLDialect
 import org.koin.dsl.module
 
 
-fun appModule() = module {
+fun appModule(connectionString: String) = module {
     factory {
         DatabaseConnection(
-            connectionString = "jdbc:sqlite:/Users/kevinjones/sqlite/cricket.sqlite",
+            connectionString = connectionString,
             dialect = SQLDialect.SQLITE
         )
     }
