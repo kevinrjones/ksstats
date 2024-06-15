@@ -90,14 +90,22 @@ compose.desktop {
         mainClass = "com.ksstats.app.MainKt"
 
         nativeDistributions {
-            modules("java.sql", "java.management")
-//            includeAllModules = true
+//            modules("java.sql", "java.management")
+            includeAllModules = true
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Pkg)
             packageName = "ksstats"
             packageVersion = "1.0.0"
         }
+
+        buildTypes.release.proguard {
+            obfuscate.set(false)
+            isEnabled.set(true)
+            configurationFiles.from(project.file("compose-desktop.pro"))
+        }
     }
 }
+
+
 
 jooq {
     val output: Provider<Directory> = layout.buildDirectory.dir(".")
