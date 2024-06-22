@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 
 plugins {
@@ -9,6 +10,17 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 }
 
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
+    compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+    dependsOn(tasks["jooqCodegen"])
+}
+
+// this is a fix for an issue in JOOQ 3.19.10 (https://github.com/jOOQ/jOOQ/issues/16842)
+// should be able to remove this when 3.19.11 appears
+sourceSets {
+    create("main")
+}
 
 kotlin {
     jvm("desktop")
@@ -22,7 +34,6 @@ kotlin {
                 optIn("androidx.compose.foundation.ExperimentalFoundationApi")
             }
         }
-
 
         val genDir = layout.buildDirectory.dir("./generated/jooq/kotlin")
 //        val generatedDir = layout.projectDirectory.dir("generated/kotlin")

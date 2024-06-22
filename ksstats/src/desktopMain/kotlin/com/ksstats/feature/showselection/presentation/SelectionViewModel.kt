@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.*
 class SelectionViewModel(val selectionUseCases: SelectionUseCases) : ViewModel() {
 
     // see this:https://medium.com/@alexandre.genet7/android-viewmodel-repository-room-and-retrofit-with-jetpack-compose-2b652d8ff3b9
-    private val _selections: MutableStateFlow<List<StatsSelectionItem>> = MutableStateFlow(listOf<StatsSelectionItem>())
+    private val _selections: MutableStateFlow<List<StatsSelectionItem>> = MutableStateFlow(listOf())
     val selections: StateFlow<List<StatsSelectionItem>> = _selections.asStateFlow()
     private var getStatsSelectionsJob: Job? = null
 

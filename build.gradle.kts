@@ -46,11 +46,6 @@ subprojects {
         }
     }
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
-        dependsOn(tasks["jooqCodegen"])
-    }
-
     tasks.withType<Test> () {
         useJUnitPlatform()
         testLogging {

@@ -1,19 +1,23 @@
 package com.ksstats.di
 
 import com.ksstats.feature.playersummary.di.playerSummaryModule
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.di.battingRecordsModule
 import com.ksstats.feature.recordsearch.di.mainSearchModule
+import com.ksstats.feature.recordsearch.feature.mainbattingsearch.di.battingRecordsModule
 import com.ksstats.feature.showselection.di.selectionModule
 import com.ksstats.feature.summary.di.summaryModule
 import com.ksstats.shared.DatabaseConnection
+import com.ksstats.shared.DatabaseConnections
 import org.jooq.SQLDialect
 import org.koin.dsl.module
 
 
-fun appModule(connectionString: String) = module {
+fun appModule(databaseConnections: DatabaseConnections) = module {
+    factory {
+        databaseConnections
+    }
     factory {
         DatabaseConnection(
-            connectionString = connectionString,
+            connectionString = databaseConnections.connections["f"]!!.connectionString,
             dialect = SQLDialect.SQLITE
         )
     }

@@ -40,8 +40,6 @@ class InitialiseSearchUseCase(private val repository: MainSearchRepository) {
 
         emit(getCompetitionsForMatchTypeAndCountry(repository, matchTypes[0], selectedCountry, searchData))
     }
-
-
 }
 
 private suspend fun getCompetitionsForMatchTypeAndCountry(

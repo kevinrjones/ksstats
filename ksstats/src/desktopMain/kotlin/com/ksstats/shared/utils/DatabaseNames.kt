@@ -1,0 +1,26 @@
+package com.ksstats.shared.utils
+
+val matchTypesToDatabaseName = mapOf(
+    "itt" to "itt",
+    "t" to "test",
+    "o" to "oneday",
+    "f" to "first",
+    "tt" to "tt",
+    "a" to "lista",
+    "minc" to "minorc",
+    "mint" to "minorc",
+    "mintt" to "minorc",
+    "sec" to "secondXI",
+    "set" to "secondXI",
+    "sett" to "secondXI",
+    "wtt" to "women",
+    "witt" to "women",
+    "wf" to "women",
+    "wt" to "women",
+    "wa" to "women",
+    "wo" to "women",
+    "wmisc" to "women",
+    "ut" to "under19",
+    "uo" to "under19",
+    "uitt" to "under19",
+)

@@ -4,13 +4,20 @@ import com.ksstats.db.tables.references.*
 import com.ksstats.feature.summary.domain.model.SummaryResult
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.shared.DatabaseConnection
+import com.ksstats.shared.DatabaseConnections
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jooq.impl.DSL
 import java.sql.DriverManager
 
-class JooqSummaryDao(private val databaseConnection: DatabaseConnection) : SummaryDao {
+class JooqSummaryDao(private val databaseConnections: DatabaseConnections) : SummaryDao {
     override fun getSearchSummary(searchParameters: SummarySearchParameters): Flow<SummaryResult> = flow {
+
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type ${searchParameters.matchType} not found")
+
         DriverManager.getConnection(
             databaseConnection.connectionString
         ).use { conn ->

@@ -70,7 +70,6 @@ class BattingRecordsViewModel(
                 _loaded.value = false
             }
 
-
             withContext(Dispatchers.IO) {
                 recordSearchUseCases.initialiseSearch(Country.defaultCountry()).collect { searchResult ->
                     initialiseStateFromSearchData(searchResult)
@@ -148,6 +147,7 @@ class BattingRecordsViewModel(
                                 initialiseStateFromSearchData(searchResult)
                                 _selectedMatchType.value = matchType
                             }
+                        _loaded.value = true
                     }
                 }
 
@@ -362,10 +362,9 @@ class BattingRecordsViewModel(
 
     // todo: do I need to get the pages sizes this way
     // if so then I also need to do this in the PageSize composable
-    private fun getPageSizes(): Flow<List<Int>> = flow  {
+    private fun getPageSizes(): Flow<List<Int>> = flow {
         emit(listOf(50, 100, 150, 200))
     }
-
 
 
     val defaultSortDirection: SortDirection

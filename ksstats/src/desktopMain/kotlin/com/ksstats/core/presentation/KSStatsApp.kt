@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ksstats.core.presentation.components.KSStatsAppBar
+import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.app_name
 import com.ksstats.ksstats.generated.resources.batting
@@ -18,7 +19,12 @@ import org.jetbrains.compose.resources.StringResource
 enum class StatsAppScreen(val title: StringResource) {
     Start(title = Res.string.app_name),
     BattingSearch(title = Res.string.batting),
-    PlayerSummary(title = Res.string.battingDetails),
+    BowingSearch(title = Res.string.bowling),
+    PlayersSearch(title = Res.string.players),
+    PartnershipSearch(title = Res.string.partnerships),
+    FieldingSearch(title = Res.string.fielding),
+    OfficialsSearch(title = Res.string.officials),
+    PlayerSummary(title = Res.string.playerSummary),
 }
 
 @Composable

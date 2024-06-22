@@ -7,13 +7,19 @@ import com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source.Jo
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source.JooqBattingCareerRecords.createTemporaryTeamsCte
 import com.ksstats.feature.recordsearch.feature.mainbattingsearch.data.source.JooqBattingCareerRecords.totalCountsCte
 import com.ksstats.shared.DatabaseConnection
+import com.ksstats.shared.DatabaseConnections
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.field
 import java.sql.DriverManager
-class JooqBattingRecordsDao(private val databaseConnection: DatabaseConnection) : BattingRecordsDao {
+class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections) : BattingRecordsDao {
     override fun getPlayerSummary(searchParameters: SearchParameters): Flow<List<BattingSearchResults>> = flow {
+    val databaseConnection = databaseConnections.connections[searchParameters.matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type ${searchParameters.matchType} not found")
+
         DriverManager.getConnection(
             databaseConnection.connectionString
         ).use { conn ->

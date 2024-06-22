@@ -59,15 +59,17 @@ fun ChooseStatsTypeScreen(selections: List<StatsSelectionItem>, onClick: (String
             stickyHeader {
                 Text("Choose the statistics you want ", fontWeight = FontWeight.Bold)
             }
-            selections.forEach {
+            selections.forEach { selection ->
                 item {
                     Row {
                         Button(
-                            onClick = { onClick(StatsAppScreen.BattingSearch.name) },
+                            onClick = {
+                                onClick(selection.screen.name)
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
-                            Text(text = stringResource(it.text))
+                            Text(text = stringResource(selection.text))
                         }
                     }
                 }

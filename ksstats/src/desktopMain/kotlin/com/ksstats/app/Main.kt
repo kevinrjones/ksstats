@@ -10,6 +10,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import com.ksstats.core.presentation.KSStatsApp
 import com.ksstats.di.appModule
+import com.ksstats.shared.DatabaseConnection
+import com.ksstats.shared.DatabaseConnections
+import com.ksstats.shared.utils.matchTypesToDatabaseName
+import org.jooq.SQLDialect
 import org.koin.compose.KoinApplication
 import org.koin.core.logger.Level
 import java.awt.Dimension
@@ -27,14 +31,24 @@ fun main() = application {
     val home = System.getProperty("user.home")
     val ksstats = ".ksstats"
     val separator = File.separatorChar
+    val fileName = "itt"
 
     val databaseDirectory = "${home}$separator${ksstats}$separator"
 
-    val connectionString = "jdbc:sqlite:${databaseDirectory}cricket.sqlite"
+    val connectionString = "jdbc:sqlite:${databaseDirectory}${fileName}.sqlite"
+
+    val connectionStrings = matchTypesToDatabaseName.map { it ->
+        it.key to DatabaseConnection(
+            connectionString = "jdbc:sqlite:${databaseDirectory}${it.value}.sqlite",
+            dialect = SQLDialect.SQLITE
+        )
+    }.toMap()
+
+    val databaseConnections = DatabaseConnections(connectionStrings)
 
     KoinApplication(
         application = {
-            modules(appModule(connectionString))
+            modules(appModule(databaseConnections))
             printLogger(Level.DEBUG)
         }
     ) {
@@ -45,17 +59,17 @@ fun main() = application {
             state = state,
         ) {
             // todo: add a version table to the database and a check against the application version (loaded from where?)
+            // todo: licensing - should match the filename vs the license
 
             window.minimumSize = Dimension(800, 800)
 
-            val expectedFileName = "${databaseDirectory}cricket.sqlite"
+            val expectedFileName = "${databaseDirectory}${fileName}.sqlite"
 
             if (!Files.exists(Paths.get(expectedFileName))) {
                 DatabaseNotFoundDialog(expectedFileName)
             } else {
                 KSStatsApp()
             }
-
         }
     }
 }

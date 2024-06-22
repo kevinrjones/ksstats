@@ -2,7 +2,7 @@ package com.ksstats.feature.recordsearch.data.source
 
 import com.ksstats.db.tables.references.*
 import com.ksstats.feature.recordsearch.domain.model.*
-import com.ksstats.shared.DatabaseConnection
+import com.ksstats.shared.DatabaseConnections
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.jooq.DSLContext
@@ -10,36 +10,51 @@ import org.jooq.Record1
 import org.jooq.SelectSeekStep1
 import org.jooq.SortField
 import org.jooq.impl.DSL
-import org.jooq.impl.DSL.*
+import org.jooq.impl.DSL.and
+import org.jooq.impl.DSL.select
 import java.sql.DriverManager
 
-class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : RecordSearchDao {
+class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) : RecordSearchDao {
     override fun getMatchTypes(): Flow<List<MatchType>> = flow {
-        DriverManager.getConnection(
-            databaseConnection.connectionString
-        ).use { conn ->
-            val context = DSL.using(conn, databaseConnection.dialect)
-            val result = context.select(
-                MATCHTYPES.ID,
-                MATCHTYPES.MATCHTYPE,
-                MATCHTYPES.DESCRIPTION
-            ).from(MATCHTYPES).fetch()
+        // todo: Get all the match types from all the databases and amalgamate them
 
-            val matchTypes = mutableListOf<MatchType>()
-            result.forEach { matchSubType ->
-                val id = matchSubType.getValue("Id", Int::class.java)
-                val type = matchSubType.getValue("MatchType", String::class.java)
-                val description = matchSubType.getValue("Description", String::class.java)
+        val uniqueConnections = databaseConnections.connections.map { it.value }.distinct()
 
-                matchTypes.add(MatchType(id, type, description))
+        val matchTypes = mutableListOf<MatchType>()
+
+        uniqueConnections.forEach { databaseConnection ->
+
+            DriverManager.getConnection(
+                databaseConnection.connectionString
+            ).use { conn ->
+                val context = DSL.using(conn, databaseConnection.dialect)
+                val result = context.select(
+                    MATCHTYPES.ID,
+                    MATCHTYPES.MATCHTYPE,
+                    MATCHTYPES.DESCRIPTION
+                ).from(MATCHTYPES).fetch()
+
+
+                result.forEach { matchSubType ->
+                    val id = matchSubType.getValue("Id", Int::class.java)
+                    val type = matchSubType.getValue("MatchType", String::class.java)
+                    val description = matchSubType.getValue("Description", String::class.java)
+
+                    matchTypes.add(MatchType(id, type, description))
+                }
+
+                emit(matchTypes.distinct())
+
             }
-
-            emit(matchTypes)
-
         }
     }
 
     override fun getCompetitions(matchType: String): Flow<List<Competition>> = flow {
+        val databaseConnection = databaseConnections.connections[matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type $matchType not found")
+
         DriverManager.getConnection(
             databaseConnection.connectionString
         ).use { conn ->
@@ -70,7 +85,10 @@ class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : 
 
 
     override fun getGroundsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Ground>> = flow {
+        val databaseConnection = databaseConnections.connections[matchType]
 
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -110,6 +128,10 @@ class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : 
     }
 
     override fun getCountriesForCompetition(matchType: String): Flow<List<Country>> = flow {
+        val databaseConnection = databaseConnections.connections[matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -140,6 +162,10 @@ class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : 
     }
 
     override fun getSeriesDateForCompetition(matchType: String): Flow<List<String>> = flow {
+        val databaseConnection = databaseConnections.connections[matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -178,6 +204,11 @@ class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : 
 
 
     override fun getStartAndEndDatesForCompetition(matchType: String): Flow<StartEndDate> = flow {
+        val databaseConnection = databaseConnections.connections[matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type $matchType not found")
+
         DriverManager.getConnection(
             databaseConnection.connectionString
         ).use { conn ->
@@ -217,6 +248,10 @@ class JooqRecordSearchDao(private val databaseConnection: DatabaseConnection) : 
 
 
     override fun getTeamsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Team>> = flow {
+        val databaseConnection = databaseConnections.connections[matchType]
+
+        if(databaseConnection == null)
+            throw Exception("Database connection for matcht type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
