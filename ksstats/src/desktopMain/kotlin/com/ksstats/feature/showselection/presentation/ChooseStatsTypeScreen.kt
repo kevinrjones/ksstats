@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.ksstats.core.presentation.StatsAppScreen
+import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.feature.showselection.domain.model.StatsSelectionItem
 import com.ksstats.feature.showselection.domain.usecase.SelectionUseCases
 import org.jetbrains.compose.resources.stringResource
@@ -22,7 +22,7 @@ import org.koin.compose.koinInject
 
 fun NavGraphBuilder.chooseStatsTypeScreen(navigate: (String) -> Unit) {
     composable(
-        route = StatsAppScreen.Start.name
+        route = StatsAppScreens.Start.name
     ) {
         val useCases: SelectionUseCases = koinInject()
         val viewModel: SelectionViewModel = viewModel {

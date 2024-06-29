@@ -10,12 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ksstats.core.presentation.components.TextCheckBox
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.presentation.BattingSearchEvent
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 import com.ksstats.ksstats.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun VenueRow(onBattingEvent: (BattingSearchEvent) -> Unit = {}) {
+fun VenueRow(onBattingEvent: (MainSearchEvent) -> Unit = {}) {
     Row(
         modifier = Modifier
             .padding(bottom = 10.dp, start = 5.dp),
@@ -29,15 +29,15 @@ fun VenueRow(onBattingEvent: (BattingSearchEvent) -> Unit = {}) {
 
         TextCheckBox(text = stringResource(Res.string.homeLabel), state = home, onStateChange = {
             onHomeStateChange(it)
-            onBattingEvent(BattingSearchEvent.VenueSelectionEvent(!home, away, neutral))
+            onBattingEvent(MainSearchEvent.VenueSelectionEvent(!home, away, neutral))
         })
         TextCheckBox(text = stringResource(Res.string.awayLabel), state = away, onStateChange = {
             onAwayStateChange(it)
-            onBattingEvent(BattingSearchEvent.VenueSelectionEvent(home, !away, neutral))
+            onBattingEvent(MainSearchEvent.VenueSelectionEvent(home, !away, neutral))
         })
         TextCheckBox(text = stringResource(Res.string.neutralLabel), state = neutral, onStateChange = {
             onNeutralStateChange(it)
-            onBattingEvent(BattingSearchEvent.VenueSelectionEvent(home, away, !neutral))
+            onBattingEvent(MainSearchEvent.VenueSelectionEvent(home, away, !neutral))
         })
     }
 

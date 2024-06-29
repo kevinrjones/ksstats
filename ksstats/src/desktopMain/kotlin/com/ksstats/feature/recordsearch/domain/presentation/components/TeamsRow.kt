@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.dp
 import com.ksstats.core.presentation.components.AppDropDownParams
 import com.ksstats.core.presentation.components.LargeDropdownMenu
 import com.ksstats.core.presentation.components.LargeDropdownMenuItem
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.presentation.BattingSearchEvent
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.opponentsLabel
 import com.ksstats.ksstats.generated.resources.teamsLabel
@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.stringResource
 fun TeamsRow(
     teamParams: AppDropDownParams,
     oppositionParams: AppDropDownParams,
-    onBattingEvent: (BattingSearchEvent) -> Unit = {},
+    onBattingEvent: (MainSearchEvent) -> Unit = {},
 ) {
     Row(
         modifier = Modifier.padding(bottom = 10.dp)
@@ -42,7 +42,7 @@ fun TeamsRow(
                 },
                 onItemSelected = { index, option ->
                     selectedIndex = index
-                    onBattingEvent(BattingSearchEvent.TeamSelectionEvent(option))
+                    onBattingEvent(MainSearchEvent.TeamSelectionEvent(option))
                 },
                 drawItem = { item, selected, itemEnabled, onClick ->
                     LargeDropdownMenuItem(
@@ -75,7 +75,7 @@ fun TeamsRow(
                 },
                 onItemSelected = { index, option ->
                     selectedIndex = index
-                    onBattingEvent(BattingSearchEvent.OpponentSelectionEvent(option))
+                    onBattingEvent(MainSearchEvent.OpponentSelectionEvent(option))
                 },
                 drawItem = { item, selected, itemEnabled, onClick ->
                     LargeDropdownMenuItem(

@@ -10,7 +10,7 @@ import com.ksstats.core.presentation.components.AppDropDownParams
 import com.ksstats.core.presentation.components.LargeDropdownMenu
 import com.ksstats.core.presentation.components.LargeDropdownMenuItem
 import com.ksstats.core.presentation.components.PopupDatePicker
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.presentation.BattingSearchEvent
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.datesLabel
 import com.ksstats.ksstats.generated.resources.seriesDateLabel
@@ -24,7 +24,7 @@ fun DateRangeRow(
     startDate: LocalDate,
     endDateLabel: String,
     endDate: LocalDate,
-    onBattingEvent: (BattingSearchEvent) -> Unit = {},
+    onBattingEvent: (MainSearchEvent) -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -49,7 +49,7 @@ fun DateRangeRow(
                 .padding(start = 5.dp, end = 5.dp)
         ) {
             PopupDatePicker(label = startDateLabel, date = startDate) {
-                onBattingEvent(BattingSearchEvent.StartDateChangedEvent(it))
+                onBattingEvent(MainSearchEvent.StartDateChangedEvent(it))
             }
         }
         Column(
@@ -58,7 +58,7 @@ fun DateRangeRow(
                 .padding(start = 5.dp, end = 5.dp)
         ) {
             PopupDatePicker(label = endDateLabel, date = endDate) {
-                onBattingEvent(BattingSearchEvent.EndDateChangedEvent(it))
+                onBattingEvent(MainSearchEvent.EndDateChangedEvent(it))
             }
         }
 
@@ -80,7 +80,7 @@ fun DateRangeRow(
                 },
                 onItemSelected = { index, option ->
                     selectedIndex = index
-                    onBattingEvent(BattingSearchEvent.SeriesDateSelectionEvent(option))
+                    onBattingEvent(MainSearchEvent.SeriesDateSelectionEvent(option))
                 },
                 drawItem = { item, selected, itemEnabled, onClick ->
                     LargeDropdownMenuItem(

@@ -7,25 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ksstats.core.presentation.components.KSStatsAppBar
-import com.ksstats.ksstats.generated.resources.*
-import com.ksstats.ksstats.generated.resources.Res
-import com.ksstats.ksstats.generated.resources.app_name
-import com.ksstats.ksstats.generated.resources.batting
-import com.ksstats.ksstats.generated.resources.battingDetails
 import com.ksstats.ui.theme.KSStatsTheme
-import org.jetbrains.compose.resources.StringResource
 
-
-enum class StatsAppScreen(val title: StringResource) {
-    Start(title = Res.string.app_name),
-    BattingSearch(title = Res.string.batting),
-    BowingSearch(title = Res.string.bowling),
-    PlayersSearch(title = Res.string.players),
-    PartnershipSearch(title = Res.string.partnerships),
-    FieldingSearch(title = Res.string.fielding),
-    OfficialsSearch(title = Res.string.officials),
-    PlayerSummary(title = Res.string.playerSummary),
-}
 
 @Composable
 fun KSStatsApp(navController: NavHostController = rememberNavController()) {
@@ -34,10 +17,10 @@ fun KSStatsApp(navController: NavHostController = rememberNavController()) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val previousBackstackEntry = navController.previousBackStackEntry
     // Get the name of the current screen
-    val currentScreen = StatsAppScreen.valueOf(
+    val currentScreen = StatsAppScreens.valueOf(
         backStackEntry?.destination?.route
             ?.substringBefore("/")
-            ?.substringBefore("?") ?: StatsAppScreen.Start.name
+            ?.substringBefore("?") ?: StatsAppScreens.Start.name
     )
     KSStatsTheme {
         Scaffold(

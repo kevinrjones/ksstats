@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ksstats.core.presentation.components.TextCheckBox
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.presentation.BattingSearchEvent
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.drawnLabel
@@ -19,7 +19,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ResultRow(
-    onBattingEvent: (BattingSearchEvent) -> Unit = {},
+    onBattingEvent: (MainSearchEvent) -> Unit = {},
 ) {
     Row(modifier = Modifier.padding(bottom = 10.dp)) {
         val (wonState, onWonStateChange) = remember { mutableStateOf(false) }
@@ -30,19 +30,19 @@ fun ResultRow(
         Text(stringResource(Res.string.resultsLabel), modifier = Modifier.padding(start = 5.dp, top = 16.dp))
         TextCheckBox(text = stringResource(Res.string.wonLabel), state = wonState, onStateChange = {
             onWonStateChange(it)
-            onBattingEvent(BattingSearchEvent.ResultSelectionEvent(!wonState, lostState, drawnState, tiedState))
+            onBattingEvent(MainSearchEvent.ResultSelectionEvent(!wonState, lostState, drawnState, tiedState))
         })
         TextCheckBox(text = stringResource(Res.string.lostLabel), state = lostState, onStateChange = {
             onLostStateChange(it)
-            onBattingEvent(BattingSearchEvent.ResultSelectionEvent(wonState, !lostState, drawnState, tiedState))
+            onBattingEvent(MainSearchEvent.ResultSelectionEvent(wonState, !lostState, drawnState, tiedState))
         })
         TextCheckBox(text = stringResource(Res.string.drawnLabel), state = drawnState, onStateChange = {
             onDrawnStateChange(it)
-            onBattingEvent(BattingSearchEvent.ResultSelectionEvent(wonState, lostState, !drawnState, tiedState))
+            onBattingEvent(MainSearchEvent.ResultSelectionEvent(wonState, lostState, !drawnState, tiedState))
         })
         TextCheckBox(text = stringResource(Res.string.tiedLabel), state = tiedState, onStateChange = {
             onTiedStateChange(it)
-            onBattingEvent(BattingSearchEvent.ResultSelectionEvent(wonState, lostState, drawnState, !tiedState))
+            onBattingEvent(MainSearchEvent.ResultSelectionEvent(wonState, lostState, drawnState, !tiedState))
         })
 
 

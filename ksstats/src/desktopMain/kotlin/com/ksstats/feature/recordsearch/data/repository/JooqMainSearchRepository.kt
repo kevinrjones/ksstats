@@ -14,24 +14,24 @@ class JooqMainSearchRepository(private val recordSearchDao: RecordSearchDao) : M
         return recordSearchDao.getCompetitions(matchType)
     }
 
-    override fun getGroundsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Ground>> {
-        return recordSearchDao.getGroundsForCompetitionAndCountry(matchType, countryId)
+    override fun getGroundsForCompetitionAndCountry(matchType: String, matchSubType: String, countryId: Int): Flow<List<Ground>> {
+        return recordSearchDao.getGroundsForCompetitionAndCountry(matchType, matchSubType, countryId)
     }
 
-    override fun getCountriesForCompetition(matchType: String): Flow<List<Country>> {
-        return recordSearchDao.getCountriesForCompetition(matchType)
+    override fun getCountriesForCompetition(matchType: String, matchSubType: String): Flow<List<Country>> {
+        return recordSearchDao.getCountriesForCompetition(matchType, matchSubType)
     }
 
-    override fun getSeriesDatesForCompetition(matchType: String): Flow<List<String>> {
-        return recordSearchDao.getSeriesDateForCompetition(matchType)
+    override fun getSeriesDatesForCompetition(matchType: String, matchSubType: String): Flow<List<String>> {
+        return recordSearchDao.getSeriesDateForCompetition(matchType, matchSubType)
     }
 
 
-    override fun getStartAndEndDatesForCompetition(matchType: String): Flow<StartEndDate> {
-        return recordSearchDao.getStartAndEndDatesForCompetition(matchType)
+    override fun getStartAndEndDatesForCompetition(matchType: String, matchSubType: String): Flow<StartEndDate> {
+        return recordSearchDao.getStartAndEndDatesForCompetition(matchType, matchSubType)
     }
 
-    override fun getTeamsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Team>> {
-        return recordSearchDao.getTeamsForCompetitionAndCountry(matchType, countryId)
+    override fun getTeamsForCompetitionAndCountry(matchType: String, matchSubType: String, countryId: Int): Flow<List<Team>> {
+        return recordSearchDao.getTeamsForCompetitionAndCountry(matchType, matchSubType, countryId)
     }
 }

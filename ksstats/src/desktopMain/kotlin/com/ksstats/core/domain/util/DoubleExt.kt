@@ -6,8 +6,6 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 fun Double.round(places: Int) : String {
-
-
     val size = 10.0.pow(places)
     val roundedValue =  (this * size).roundToInt() / size
     return String.format("%.${places}f", roundedValue)

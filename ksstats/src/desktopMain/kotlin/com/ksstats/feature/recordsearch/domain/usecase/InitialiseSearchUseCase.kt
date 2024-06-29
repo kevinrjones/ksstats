@@ -91,7 +91,7 @@ private suspend fun getTeamsForCompetition(
 
     val teams = mutableListOf<Team>()
 
-    repository.getTeamsForCompetitionAndCountry(competition.subType, selectedCountry.id).collect { team ->
+    repository.getTeamsForCompetitionAndCountry(competition.type, competition.subType, selectedCountry.id).collect { team ->
         teams.addAll(team)
     }
     return teams
@@ -103,7 +103,7 @@ private suspend fun getCountriesForCompetition(
 ): MutableList<Country> {
     val countries = mutableListOf<Country>()
 
-    repository.getCountriesForCompetition(competition.subType).collect { country ->
+    repository.getCountriesForCompetition(competition.type, competition.subType).collect { country ->
         countries.addAll(country)
     }
     return countries
@@ -115,7 +115,7 @@ private suspend fun getSeriesDatesForCompetition(
 ): MutableList<String> {
     val seriesDates = mutableListOf<String>()
 
-    repository.getSeriesDatesForCompetition(competition.subType).collect { date ->
+    repository.getSeriesDatesForCompetition(competition.type, competition.subType).collect { date ->
         seriesDates.addAll(date)
     }
 
@@ -129,7 +129,7 @@ private suspend fun getStartAndEndDatesForCompetition(
     LocalDate.now()
     var startEndDates = StartEndDate(0, 0)
 
-    repository.getStartAndEndDatesForCompetition(competition.subType).collect { date: StartEndDate ->
+    repository.getStartAndEndDatesForCompetition(competition.type, competition.subType).collect { date: StartEndDate ->
         startEndDates = date
     }
 
@@ -143,7 +143,7 @@ private suspend fun getGroundsForCompetitionAndCountry(
 ): MutableList<Ground> {
     val grounds = mutableListOf<Ground>()
 
-    repository.getGroundsForCompetitionAndCountry(competition.subType, country.id).collect { ground ->
+    repository.getGroundsForCompetitionAndCountry(competition.type, competition.subType, country.id).collect { ground ->
         grounds.addAll(ground)
     }
 
@@ -168,7 +168,7 @@ private suspend fun getTeamsForCompetitionAndCountry(
 ): MutableList<Team> {
     val teams = mutableListOf<Team>()
 
-    repository.getTeamsForCompetitionAndCountry(competition.subType, country.id).collect { team ->
+    repository.getTeamsForCompetitionAndCountry(competition.type, competition.subType, country.id).collect { team ->
         teams.addAll(team)
     }
 

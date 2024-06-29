@@ -16,7 +16,6 @@ import java.sql.DriverManager
 
 class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) : RecordSearchDao {
     override fun getMatchTypes(): Flow<List<MatchType>> = flow {
-        // todo: Get all the match types from all the databases and amalgamate them
 
         val uniqueConnections = databaseConnections.connections.map { it.value }.distinct()
 
@@ -43,17 +42,17 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
                     matchTypes.add(MatchType(id, type, description))
                 }
 
-                emit(matchTypes.distinct())
 
             }
         }
+        emit(matchTypes.distinctBy { it.type })
     }
 
     override fun getCompetitions(matchType: String): Flow<List<Competition>> = flow {
         val databaseConnection = databaseConnections.connections[matchType]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for matcht type $matchType not found")
+            throw Exception("Database connection for match type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -84,11 +83,11 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
     }
 
 
-    override fun getGroundsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Ground>> = flow {
+    override fun getGroundsForCompetitionAndCountry(matchType: String, matchSubType: String, countryId: Int): Flow<List<Ground>> = flow {
         val databaseConnection = databaseConnections.connections[matchType]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for matcht type $matchType not found")
+            throw Exception("Database connection for match type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -108,7 +107,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
                 GROUNDSMATCHTYPES.GROUNDID,
                 GROUNDSMATCHTYPES.grounds.KNOWNAS,
             ).from(GROUNDSMATCHTYPES)
-                .where(GROUNDSMATCHTYPES.MATCHTYPE.eq(matchType))
+                .where(GROUNDSMATCHTYPES.MATCHTYPE.eq(matchSubType))
                 .and(countryClause)
                 .orderBy(GROUNDSMATCHTYPES.grounds.KNOWNAS)
                 .fetch()
@@ -127,11 +126,11 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
         }
     }
 
-    override fun getCountriesForCompetition(matchType: String): Flow<List<Country>> = flow {
+    override fun getCountriesForCompetition(matchType: String, matchSubType: String): Flow<List<Country>> = flow {
         val databaseConnection = databaseConnections.connections[matchType]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for matcht type $matchType not found")
+            throw Exception("Database connection for match type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -142,7 +141,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
                 GROUNDS.COUNTRYNAME,
             ).from(GROUNDS)
                 .join(GROUNDSMATCHTYPES).on(GROUNDSMATCHTYPES.GROUNDID.eq(GROUNDS.ID))
-                .where(GROUNDSMATCHTYPES.MATCHTYPE.eq(matchType))
+                .where(GROUNDSMATCHTYPES.MATCHTYPE.eq(matchSubType))
                 .orderBy(GROUNDS.COUNTRYNAME)
                 .fetch()
 
@@ -161,11 +160,11 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
         }
     }
 
-    override fun getSeriesDateForCompetition(matchType: String): Flow<List<String>> = flow {
+    override fun getSeriesDateForCompetition(matchType: String, matchSubType: String): Flow<List<String>> = flow {
         val databaseConnection = databaseConnections.connections[matchType]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for matcht type $matchType not found")
+            throw Exception("Database connection for match type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -180,7 +179,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
                         DSL.select(MATCHSUBTYPE.MATCHID).from(
                             MATCHSUBTYPE.where(
                                 MATCHSUBTYPE.MATCHTYPE.eq(
-                                    matchType
+                                    matchSubType
                                 )
                             )
                         )
@@ -203,11 +202,11 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
     }
 
 
-    override fun getStartAndEndDatesForCompetition(matchType: String): Flow<StartEndDate> = flow {
+    override fun getStartAndEndDatesForCompetition(matchType: String, matchSubType: String): Flow<StartEndDate> = flow {
         val databaseConnection = databaseConnections.connections[matchType]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for matcht type $matchType not found")
+            throw Exception("Database connection for match type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -218,7 +217,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
             val context = DSL.using(conn, databaseConnection.dialect)
             var orderBy = MATCHES.MATCHSTARTDATEASOFFSET.desc()
 
-            var query = getInitialQuery(context, orderBy, matchType)
+            var query = getInitialQuery(context, orderBy, matchSubType)
 
             val endDateQuery = query
                 .limit(1)
@@ -230,7 +229,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
             }
 
             orderBy = MATCHES.MATCHSTARTDATEASOFFSET.asc()
-            query = getInitialQuery(context, orderBy, matchType)
+            query = getInitialQuery(context, orderBy, matchSubType)
 
             val startDateQuery = query
                 .limit(1)
@@ -247,11 +246,11 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
     }
 
 
-    override fun getTeamsForCompetitionAndCountry(matchType: String, countryId: Int): Flow<List<Team>> = flow {
+    override fun getTeamsForCompetitionAndCountry(matchType: String, matchSubType: String, countryId: Int): Flow<List<Team>> = flow {
         val databaseConnection = databaseConnections.connections[matchType]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for matcht type $matchType not found")
+            throw Exception("Database connection for match type $matchType not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString
@@ -275,7 +274,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
                         select(MATCHSUBTYPE.MATCHID).from(
                             MATCHSUBTYPE.where(
                                 MATCHSUBTYPE.MATCHTYPE.eq(
-                                    matchType
+                                    matchSubType
                                 )
                             )
                         )
@@ -302,7 +301,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
     private fun getInitialQuery(
         context: DSLContext,
         orderBy: SortField<Long?>,
-        matchType: String,
+        matchSubType: String,
     ): SelectSeekStep1<Record1<Long?>, Long?> {
         val endInitialQuery = context.select(
             MATCHES.MATCHSTARTDATEASOFFSET
@@ -312,7 +311,7 @@ class JooqRecordSearchDao(private val databaseConnections: DatabaseConnections) 
                     select(MATCHSUBTYPE.MATCHID).from(
                         MATCHSUBTYPE.where(
                             MATCHSUBTYPE.MATCHTYPE.eq(
-                                matchType
+                                matchSubType
                             )
                         )
                     )

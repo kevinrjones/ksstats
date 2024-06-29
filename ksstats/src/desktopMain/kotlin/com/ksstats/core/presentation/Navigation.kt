@@ -9,15 +9,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.ksstats.feature.playersummary.presentation.playerSummaryScreen
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.search.presentation.mainBattingSearchScreen
+import com.ksstats.core.domain.util.SortOrder
+import com.ksstats.feature.playerbattingsummary.presentation.playerBattingSummaryScreen
+import com.ksstats.feature.playerbowlingsummary.presentation.playerBowlingSummaryScreen
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.mainSearchScreen
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
+import com.ksstats.ksstats.generated.resources.Res
+import com.ksstats.ksstats.generated.resources.minimumRunsLabel
+import com.ksstats.ksstats.generated.resources.minimumWicketsLabel
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
     NavHost(
         navController = navController,
-        startDestination = StatsAppScreen.Start.name,
+        startDestination = StatsAppScreens.Start.name,
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
@@ -26,24 +33,37 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
 
         chooseStatsTypeScreen(navigate = {
             navController.navigate(it) {
-                popUpTo(StatsAppScreen.Start.name) {
+                popUpTo(StatsAppScreens.Start.name) {
                     saveState = true
                 }
                 restoreState = true
             }
 
         })
-        mainBattingSearchScreen(navigate = {
-
-
+        mainSearchScreen(MainSearchType.Batting,
+            defaultSortOrder = SortOrder.Runs,
+            limitLabel = Res.string.minimumRunsLabel,
+            navigate = {
+                navController.navigate(it) {
+                    popUpTo(StatsAppScreens.BattingSearch.name) {
+                        saveState = true
+                    }
+                    restoreState = true
+                }
+            })
+        mainSearchScreen(MainSearchType.Bowling,
+            defaultSortOrder = SortOrder.Wickets,
+            limitLabel = Res.string.minimumWicketsLabel,
+            navigate = {
             navController.navigate(it) {
-                popUpTo(StatsAppScreen.BattingSearch.name) {
+                popUpTo(StatsAppScreens.BowlingSearch.name) {
                     saveState = true
                 }
                 restoreState = true
             }
         })
-        playerSummaryScreen(navigate = {navController.navigate(it) })
+        playerBattingSummaryScreen(navigate = { navController.navigate(it) })
+        playerBowlingSummaryScreen(navigate = { navController.navigate(it) })
     }
 
 }

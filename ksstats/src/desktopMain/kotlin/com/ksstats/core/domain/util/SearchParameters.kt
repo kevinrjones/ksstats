@@ -34,5 +34,6 @@ data class SearchParameters(
     val result: Int = 0,
     val limit: Int = 50,
     val startRow: Int = 0,
-    val pageSize: Int = 50
+    val pageSize: Int = 50,
+    val fivesLimit: Int = 5
 )

@@ -12,7 +12,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ksstats.core.presentation.components.AppDropDownMenu
 import com.ksstats.core.presentation.components.AppDropDownParams
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.presentation.BattingSearchEvent
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 
 
 @Preview
@@ -34,7 +34,7 @@ fun MatchTypeRow(
     pageSizesParams: AppDropDownParams,
     minimumRuns: Int,
     minimumRunsLabel: String,
-    onBattingEvent: (BattingSearchEvent) -> Unit = {},
+    onBattingEvent: (MainSearchEvent) -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -52,7 +52,7 @@ fun MatchTypeRow(
                 options = matchTypeParams.options,
                 selectedOption = matchTypeParams.selectedOption,
                 label = matchTypeParams.label,
-                onSelectMenuItem = { onBattingEvent(BattingSearchEvent.MatchTypeSelectionEvent(it)) }
+                onSelectMenuItem = { onBattingEvent(MainSearchEvent.MatchTypeSelectionEvent(it)) }
             )
         }
         Box(
@@ -64,7 +64,7 @@ fun MatchTypeRow(
                 options = competitionParams.options,
                 selectedOption = competitionParams.selectedOption,
                 label = competitionParams.label,
-                onSelectMenuItem = { onBattingEvent(BattingSearchEvent.CompetitionSelectionEvent(it)) }
+                onSelectMenuItem = { onBattingEvent(MainSearchEvent.CompetitionSelectionEvent(it)) }
             )
         }
         Box(
@@ -77,7 +77,7 @@ fun MatchTypeRow(
                 selectedOption = pageSizesParams.selectedOption,
                 label = pageSizesParams.label,
                 onSelectMenuItem = { state ->
-                    onBattingEvent(BattingSearchEvent.PageSizeChangedEvent(state.value))
+                    onBattingEvent(MainSearchEvent.PageSizeChangedEvent(state.value))
                 }
             )
         }
@@ -85,7 +85,7 @@ fun MatchTypeRow(
             OutlinedTextField(
                 modifier = Modifier,
                 value = minimumRuns.toString(),
-                onValueChange = { onBattingEvent(BattingSearchEvent.MinimumValueChangedEvent(it)) },
+                onValueChange = { onBattingEvent(MainSearchEvent.MinimumValueChangedEvent(it)) },
                 label = { Text(minimumRunsLabel) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

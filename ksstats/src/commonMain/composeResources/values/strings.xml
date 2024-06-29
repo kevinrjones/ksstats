@@ -21,6 +21,7 @@
     <string name="seriesDateLabel">Series Date</string>
     <string name="pageSizeLabel">Page Size</string>
     <string name="minimumRunsLabel">Minimum Runs</string>
+    <string name="minimumWicketsLabel">Minimum Wickets</string>
     <string name="startDateLabel">Start Date</string>
     <string name="endDateLabel">End Date</string>
     <string name="homeLabel">Home</string>

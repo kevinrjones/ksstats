@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.dp
 import com.ksstats.core.presentation.components.AppDropDownParams
 import com.ksstats.core.presentation.components.LargeDropdownMenu
 import com.ksstats.core.presentation.components.LargeDropdownMenuItem
-import com.ksstats.feature.recordsearch.feature.mainbattingsearch.presentation.BattingSearchEvent
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.countryLabel
 import com.ksstats.ksstats.generated.resources.groundLabel
@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.stringResource
 fun CountriesGroundsRow(
     groundsParams: AppDropDownParams,
     countriesParams: AppDropDownParams,
-    onBattingEvent: (BattingSearchEvent) -> Unit = {},
+    onBattingEvent: (MainSearchEvent) -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -43,7 +43,7 @@ fun CountriesGroundsRow(
                 },
                 onItemSelected = { index, option ->
                     selectedIndex = index
-                    onBattingEvent(BattingSearchEvent.CountrySelectionEvent(option))
+                    onBattingEvent(MainSearchEvent.CountrySelectionEvent(option))
                 },
                 drawItem = { item, selected, itemEnabled, onClick ->
                     LargeDropdownMenuItem(
@@ -76,7 +76,7 @@ fun CountriesGroundsRow(
                 },
                 onItemSelected = { index, option ->
                     selectedIndex = index
-                    onBattingEvent(BattingSearchEvent.GroundSelectionEvent(option))
+                    onBattingEvent(MainSearchEvent.GroundSelectionEvent(option))
                 },
                 drawItem = { item, selected, itemEnabled, onClick ->
                     LargeDropdownMenuItem(

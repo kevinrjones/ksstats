@@ -2,7 +2,7 @@ package com.ksstats.feature.showselection.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ksstats.core.presentation.StatsAppScreen
+import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.feature.showselection.domain.model.StatsSelectionItem
 import com.ksstats.feature.showselection.domain.usecase.SelectionUseCases
 import kotlinx.coroutines.Job
@@ -28,7 +28,7 @@ class SelectionViewModel(val selectionUseCases: SelectionUseCases) : ViewModel()
         }.launchIn(viewModelScope)
     }
 
-    fun onClick(statsAppScreen: StatsAppScreen) {
+    fun onClick(statsAppScreens: StatsAppScreens) {
         TODO("Not yet implemented")
     }
 }

@@ -1,0 +1,33 @@
+package com.ksstats.feature.playerbowlingsummary.data
+
+data class BowlingSummary(
+    val playerId: Int,
+    val name: String,
+    val sortNamePart: String,
+    val team: String,
+    val opponents: String,
+    val matches: Int,
+    val innings: Int,
+    val balls: Int,
+    val maidens: Int,
+    val runs: Int,
+    val dots: Int,
+    val noballs: Int,
+    val wides: Int,
+    val wickets: Int,
+    val average: Double,
+    val economy: Double,
+    val strikeRate: Double,
+    val bowlingImpact: Double,
+    val fours: Int,
+    val sixes: Int,
+    val fivefor: Int,
+    val tenfor: Int,
+    val bestBowlingInnings: Double,
+    val bestBowlingMatch: Double,
+    val year: String,
+    val ground: String,
+    val countryName: String,
+    val count: Int,
+)
+

@@ -2,7 +2,7 @@ package com.ksstats.feature.summary.di
 
 import com.ksstats.feature.showselection.domain.repository.SummaryRepository
 import com.ksstats.feature.summary.data.repository.JooqSummaryRepository
-import com.ksstats.feature.summary.data.source.JooqSummaryDao
+import com.ksstats.feature.summary.data.source.JooqBattingSummaryDao
 import com.ksstats.feature.summary.data.source.SummaryDao
 import com.ksstats.feature.summary.domain.usecase.GetSummaryUseCase
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
@@ -14,5 +14,5 @@ fun summaryModule() = module {
     singleOf(::SummaryUseCases)
     singleOf(::GetSummaryUseCase)
     singleOf(::JooqSummaryRepository) bind SummaryRepository::class
-    factory { JooqSummaryDao(get()) } bind SummaryDao::class
+    factory { JooqBattingSummaryDao(get()) } bind SummaryDao::class
 }

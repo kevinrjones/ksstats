@@ -20,7 +20,14 @@ enum class SortOrder {
     Ducks,
     SR,
     BI,
+    Maidens,
     None,
+    BBI,
+    BBM,
+    Econ,
+    FiveFor,
+    TenFor,
+    Wickets,
 }
 
 enum class SortDirection(val direction: String) {
