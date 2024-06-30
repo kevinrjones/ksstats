@@ -21,7 +21,7 @@ import java.sql.DriverManager
 
 class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections) : BowlingRecordsDao {
     override fun getBowlingSummary(searchParameters: SearchParameters): Flow<List<BowlingSummary>> = flow {
-        val databaseConnection = databaseConnections.connections[searchParameters.matchType]
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
 
         if (databaseConnection == null)
             throw Exception("Database connection for match type ${searchParameters.matchType} not found")

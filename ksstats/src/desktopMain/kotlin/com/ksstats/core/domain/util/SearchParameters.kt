@@ -1,26 +1,10 @@
 package com.ksstats.core.domain.util
 
-/*
- matchType: String,
-   matchSubType: String,
-   teamId: Int?,
-   opponentsId: Int?,
-   groundId: Int?,
-   hostCountryId: Int?,
-   venue: Int?,
-   sortOrder: Int?,
-   sortDirection: String?,
-   startDate: Int?,
-   endDate: Int?,
-   result: Int?,
-   limit: Int?,
-   startRow: Int?,
-   pageSize: Int?
- */
+import com.ksstats.core.types.MatchType
 
 data class SearchParameters(
-    val matchType: String = "t",
-    val matchSubType: String = "t",
+    val matchType: MatchType = MatchType("t"),
+    val matchSubType: MatchType = MatchType("t"),
     val teamId: Int? = null,
     val opponentsId: Int? = null,
     val groundId: Int? = null,

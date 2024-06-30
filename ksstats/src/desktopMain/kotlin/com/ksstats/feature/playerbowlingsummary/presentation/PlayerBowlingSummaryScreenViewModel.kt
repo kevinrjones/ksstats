@@ -3,7 +3,7 @@ package com.ksstats.feature.playerbowlingsummary.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.core.domain.util.isMultiInningsType
+import com.ksstats.core.types.MatchType
 import com.ksstats.feature.playerbowlingsummary.data.BowlingSummary
 import com.ksstats.feature.playerbowlingsummary.domain.usecase.PlayerBowlingSummaryUseCases
 import com.ksstats.feature.summary.domain.model.SummaryResult
@@ -51,8 +51,8 @@ class PlayerBowlingSummaryScreenViewModel(
             opponents = "",
             ground = "",
             hostCountry = "",
-            matchType = "",
-            competition = ""
+            matchType = MatchType.default(),
+            competition = MatchType.default()
         )
     )
     val summary = _summary.asStateFlow()
@@ -81,7 +81,7 @@ class PlayerBowlingSummaryScreenViewModel(
         }
     }
 
-    fun getFivesLimitForMatchType(matchType: String): Int
+    fun getFivesLimitForMatchType(matchType: MatchType): Int
         = if(matchType.isMultiInningsType()) 4 else 5
 
 

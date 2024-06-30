@@ -18,6 +18,8 @@ import androidx.navigation.navArgument
 import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
+import com.ksstats.core.types.MatchType
+import com.ksstats.core.types.toMatchType
 import com.ksstats.feature.playerbattingsummary.data.BattingSummary
 import com.ksstats.feature.playerbattingsummary.domain.usecase.PlayerBattingSummaryUseCases
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
@@ -117,8 +119,8 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
         var summarySearchParameters by remember {
             mutableStateOf(
                 SummarySearchParameters(
-                    "",
-                    "",
+                    MatchType.default(),
+                    MatchType.default(),
                     0,
                     0,
                     0,
@@ -136,8 +138,8 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
         val summary = viewModel.summary.collectAsState()
 
         LaunchedEffect(Unit) {
-            val matchType = navBackStackEntry.arguments?.getString("matchType") ?: "t"
-            val matchSubType = navBackStackEntry.arguments?.getString("matchSubType") ?: "t"
+            val matchType = (navBackStackEntry.arguments?.getString("matchType") ?: "t").toMatchType()
+            val matchSubType = (navBackStackEntry.arguments?.getString("matchSubType") ?: "t").toMatchType()
             val teamId = navBackStackEntry.arguments?.getInt("teamId") ?: 0
             val opponentsId = navBackStackEntry.arguments?.getInt("opponentsId") ?: 0
             val groundId = navBackStackEntry.arguments?.getInt("groundId") ?: 0

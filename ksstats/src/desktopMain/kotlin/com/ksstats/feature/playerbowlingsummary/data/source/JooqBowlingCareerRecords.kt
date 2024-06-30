@@ -72,7 +72,7 @@ object JooqBowlingCareerRecords {
                                             .from(BOWLINGDETAILS)
                                     )
                                 )
-                                .and(MATCHES.MATCHTYPE.eq(searchParameters.matchType))
+                                .and(MATCHES.MATCHTYPE.eq(searchParameters.matchType.value))
                                 .and(homeCountryIdCondition)
                                 .and(dateOrSeasonCondition)
                         )
@@ -84,7 +84,7 @@ object JooqBowlingCareerRecords {
                         field("matchid")
                             .`in`(
                                 select(MATCHSUBTYPE.MATCHID).from(MATCHSUBTYPE)
-                                    .where(MATCHSUBTYPE.MATCHTYPE.eq(searchParameters.matchSubType))
+                                    .where(MATCHSUBTYPE.MATCHTYPE.eq(searchParameters.matchSubType.value))
                             )
                     )
                     .and(BOWLINGDETAILS.PLAYERID.ne(1)).asTable("bd")
@@ -113,8 +113,8 @@ object JooqBowlingCareerRecords {
         ).from(PLAYERSTEAMS)
             .join(TEAMS).on(TEAMS.ID.eq(PLAYERSTEAMS.TEAMID))
             .join(TEAMSMATCHTYPES).on(TEAMS.ID.eq(TEAMSMATCHTYPES.TEAMID))
-            .and(TEAMSMATCHTYPES.MATCHTYPE.eq(searchParameters.matchType))
-            .and(PLAYERSTEAMS.MATCHTYPE.eq(searchParameters.matchType))
+            .and(TEAMSMATCHTYPES.MATCHTYPE.eq(searchParameters.matchType.value))
+            .and(PLAYERSTEAMS.MATCHTYPE.eq(searchParameters.matchType.value))
             .groupBy(PLAYERSTEAMS.PLAYERID, TEAMSMATCHTYPES.MATCHTYPE)
 
 
@@ -201,7 +201,7 @@ object JooqBowlingCareerRecords {
                             .eq(
                                 field("innings.playerid", Int::class.java)
                             )
-                    ).and(field("${teamsCteName}.matchType", String::class.java).eq(searchParameters.matchType))
+                    ).and(field("${teamsCteName}.matchType", String::class.java).eq(searchParameters.matchType.value))
                     .leftJoin(TEAMS.`as`("O")).on(field("O.id").eq(searchParameters.opponentsId))
                     .leftJoin(fivesCteName)
                     .on(

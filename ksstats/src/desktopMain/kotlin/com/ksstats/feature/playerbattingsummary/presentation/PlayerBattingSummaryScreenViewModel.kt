@@ -3,6 +3,7 @@ package com.ksstats.feature.playerbattingsummary.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.domain.util.SearchParameters
+import com.ksstats.core.types.MatchType
 import com.ksstats.feature.playerbattingsummary.data.BattingSummary
 import com.ksstats.feature.playerbattingsummary.domain.usecase.PlayerBattingSummaryUseCases
 import com.ksstats.feature.summary.domain.model.SummaryResult
@@ -50,8 +51,8 @@ class PlayerBattingSummaryScreenViewModel(
             opponents = "",
             ground = "",
             hostCountry = "",
-            matchType = "",
-            competition = ""
+            matchType = MatchType.default(),
+            competition = MatchType.default()
         )
     )
     val summary = _summary.asStateFlow()

@@ -30,9 +30,9 @@ fun SummaryResult.buildSummary(startDate: Long, endDate: Long): String {
     }
 
     val competitionString = if (this.matchType == this.competition) {
-        this.matchType
+        this.matchType.value
     } else {
-        "${this.matchType} (${this.competition})"
+        "${this.matchType.value} (${this.competition})"
     }
 
 
