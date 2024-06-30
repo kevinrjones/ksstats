@@ -18,9 +18,10 @@ import androidx.navigation.navArgument
 import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
+import com.ksstats.core.types.MatchType
+import com.ksstats.core.types.toMatchType
 import com.ksstats.feature.playerbowlingsummary.domain.usecase.PlayerBowlingSummaryUseCases
 import com.ksstats.feature.playerbowlingsummary.data.BowlingSummary
-import com.ksstats.feature.recordsearch.domain.model.MatchType
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
@@ -118,8 +119,8 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
         var summarySearchParameters by remember {
             mutableStateOf(
                 SummarySearchParameters(
-                    "",
-                    "",
+                    MatchType.default(),
+                    MatchType.default(),
                     0,
                     0,
                     0,
@@ -137,8 +138,8 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
         val summary = viewModel.summary.collectAsState()
 
         LaunchedEffect(Unit) {
-            val matchType = navBackStackEntry.arguments?.getString("matchType") ?: "t"
-            val matchSubType = navBackStackEntry.arguments?.getString("matchSubType") ?: "t"
+            val matchType = (navBackStackEntry.arguments?.getString("matchType") ?: "t").toMatchType()
+            val matchSubType = (navBackStackEntry.arguments?.getString("matchSubType") ?: "t").toMatchType()
             val teamId = navBackStackEntry.arguments?.getInt("teamId") ?: 0
             val opponentsId = navBackStackEntry.arguments?.getInt("opponentsId") ?: 0
             val groundId = navBackStackEntry.arguments?.getInt("groundId") ?: 0
@@ -199,7 +200,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
             )
 
         }
-        val matchType = navBackStackEntry.arguments?.getString("matchType") ?: "t"
+        val matchType = (navBackStackEntry.arguments?.getString("matchType") ?: "t").toMatchType()
         val searchResults = viewModel.bowlingSummary.collectAsState()
         val searching = viewModel.searching.collectAsState()
 
@@ -273,7 +274,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
 private fun getDisplayRecords(
     searchResults: List<BowlingSummary>,
     startRow: Int,
-    matchType: String,
+    matchType: MatchType,
 ): List<List<String>> {
     return searchResults.mapIndexed { index, searchResult ->
 
@@ -367,7 +368,7 @@ private fun calculatePagingParameters(
 @Composable
 fun PlayerBowlingSummaryScreen(
     displayRecords: List<List<String>>,
-    matchType: String,
+    matchType: MatchType,
     searching: State<Boolean>,
     summary: String,
     title: String,

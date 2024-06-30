@@ -14,7 +14,7 @@ import org.jooq.impl.DSL.field
 import java.sql.DriverManager
 class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections) : BattingRecordsDao {
     override fun getBattingSummary(searchParameters: SearchParameters): Flow<List<BattingSummary>> = flow {
-    val databaseConnection = databaseConnections.connections[searchParameters.matchType]
+    val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
 
         if(databaseConnection == null)
             throw Exception("Database connection for match type ${searchParameters.matchType} not found")

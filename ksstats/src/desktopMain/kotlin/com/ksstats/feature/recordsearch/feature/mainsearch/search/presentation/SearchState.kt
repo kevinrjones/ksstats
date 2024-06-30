@@ -6,8 +6,8 @@ import kotlinx.datetime.LocalDate
 
 data class SearchState(
     val loaded: Boolean = false,
-    val matchTypes: List<MatchType> = emptyList(),
-    val selectedMatchType: MatchType = MatchType(id = 0, type = "", description = "Loading..."),
+    val matchTypes: List<MatchTypeEntity> = emptyList(),
+    val selectedMatchType: MatchTypeEntity = MatchTypeEntity(id = 0, type = "", description = "Loading..."),
     val competitions: List<Competition> = emptyList(),
     val selectedCompetition: Competition = Competition(id = 0, type = "", subType = "", competition = "Loading..."),
     val teams: List<Team> = emptyList(),

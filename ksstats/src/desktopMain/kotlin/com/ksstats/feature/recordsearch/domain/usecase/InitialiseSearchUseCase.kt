@@ -1,5 +1,7 @@
 package com.ksstats.feature.recordsearch.domain.usecase
 
+import com.ksstats.core.types.MatchType
+import com.ksstats.core.types.toMatchType
 import com.ksstats.feature.recordsearch.domain.model.*
 import com.ksstats.feature.recordsearch.domain.repository.MainSearchRepository
 import com.ksstats.shared.now
@@ -28,7 +30,7 @@ class GetTeamsAndGroundsForCompetitionAndCountryUseCase(private val repository: 
 class InitialiseSearchUseCase(private val repository: MainSearchRepository) {
     suspend operator fun invoke(selectedCountry: Country): Flow<SearchData> = flow {
 
-        val matchTypes = mutableListOf<MatchType>()
+        val matchTypes = mutableListOf<MatchTypeEntity>()
 
         repository.getMatchTypes().collect {
             matchTypes.addAll(it)
@@ -38,7 +40,7 @@ class InitialiseSearchUseCase(private val repository: MainSearchRepository) {
 
         val searchData = SearchData(matchTypes = matchTypes, pageSizes = pageSizes)
 
-        emit(getCompetitionsForMatchTypeAndCountry(repository, matchTypes[0], selectedCountry, searchData))
+        emit(getCompetitionsForMatchTypeAndCountry(repository, matchTypes[0].toMatchType(), selectedCountry, searchData))
     }
 }
 
@@ -50,7 +52,7 @@ private suspend fun getCompetitionsForMatchTypeAndCountry(
 ): SearchData {
     val competitions = mutableListOf<Competition>()
 
-    repository.getCompetitions(matchType.type).collect { competition ->
+    repository.getCompetitions(matchType).collect { competition ->
         competitions.addAll(competition)
     }
     return getAllForCompetition(
@@ -91,7 +93,11 @@ private suspend fun getTeamsForCompetition(
 
     val teams = mutableListOf<Team>()
 
-    repository.getTeamsForCompetitionAndCountry(competition.type, competition.subType, selectedCountry.id).collect { team ->
+    repository.getTeamsForCompetitionAndCountry(
+        MatchType(competition.type),
+        MatchType(competition.subType),
+        selectedCountry.id
+    ).collect { team ->
         teams.addAll(team)
     }
     return teams
@@ -103,9 +109,10 @@ private suspend fun getCountriesForCompetition(
 ): MutableList<Country> {
     val countries = mutableListOf<Country>()
 
-    repository.getCountriesForCompetition(competition.type, competition.subType).collect { country ->
-        countries.addAll(country)
-    }
+    repository.getCountriesForCompetition(MatchType(competition.type), MatchType(competition.subType))
+        .collect { country ->
+            countries.addAll(country)
+        }
     return countries
 }
 
@@ -115,9 +122,10 @@ private suspend fun getSeriesDatesForCompetition(
 ): MutableList<String> {
     val seriesDates = mutableListOf<String>()
 
-    repository.getSeriesDatesForCompetition(competition.type, competition.subType).collect { date ->
-        seriesDates.addAll(date)
-    }
+    repository.getSeriesDatesForCompetition(MatchType(competition.type), MatchType(competition.subType))
+        .collect { date ->
+            seriesDates.addAll(date)
+        }
 
     return seriesDates
 }
@@ -129,9 +137,10 @@ private suspend fun getStartAndEndDatesForCompetition(
     LocalDate.now()
     var startEndDates = StartEndDate(0, 0)
 
-    repository.getStartAndEndDatesForCompetition(competition.type, competition.subType).collect { date: StartEndDate ->
-        startEndDates = date
-    }
+    repository.getStartAndEndDatesForCompetition(MatchType(competition.type), MatchType(competition.subType))
+        .collect { date: StartEndDate ->
+            startEndDates = date
+        }
 
     return startEndDates
 }
@@ -143,7 +152,11 @@ private suspend fun getGroundsForCompetitionAndCountry(
 ): MutableList<Ground> {
     val grounds = mutableListOf<Ground>()
 
-    repository.getGroundsForCompetitionAndCountry(competition.type, competition.subType, country.id).collect { ground ->
+    repository.getGroundsForCompetitionAndCountry(
+        MatchType(competition.type),
+        MatchType(competition.subType),
+        country.id
+    ).collect { ground ->
         grounds.addAll(ground)
     }
 
@@ -158,7 +171,7 @@ private suspend fun getTeamsAndGroundsForCountry(
     val teams = getTeamsForCompetitionAndCountry(repository, competition, country)
     val grounds = getGroundsForCompetitionAndCountry(repository, competition, country)
 
-    return(SearchData(teams = teams, grounds = grounds))
+    return (SearchData(teams = teams, grounds = grounds))
 }
 
 private suspend fun getTeamsForCompetitionAndCountry(
@@ -168,9 +181,10 @@ private suspend fun getTeamsForCompetitionAndCountry(
 ): MutableList<Team> {
     val teams = mutableListOf<Team>()
 
-    repository.getTeamsForCompetitionAndCountry(competition.type, competition.subType, country.id).collect { team ->
-        teams.addAll(team)
-    }
+    repository.getTeamsForCompetitionAndCountry(MatchType(competition.type), MatchType(competition.subType), country.id)
+        .collect { team ->
+            teams.addAll(team)
+        }
 
     return teams
 }

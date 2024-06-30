@@ -1,5 +1,6 @@
 package com.ksstats.feature.summary.data.source
 
+import com.ksstats.core.types.MatchType
 import com.ksstats.db.tables.references.*
 import com.ksstats.feature.summary.domain.model.SummaryResult
 import com.ksstats.feature.summary.util.SummarySearchParameters
@@ -12,7 +13,7 @@ import java.sql.DriverManager
 class JooqBattingSummaryDao(private val databaseConnections: DatabaseConnections) : SummaryDao {
     override fun getSearchSummary(searchParameters: SummarySearchParameters): Flow<SummaryResult> = flow {
 
-        val databaseConnection = databaseConnections.connections[searchParameters.matchType]
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
 
         if(databaseConnection == null)
             throw Exception("Database connection for match type ${searchParameters.matchType} not found")
@@ -72,18 +73,18 @@ class JooqBattingSummaryDao(private val databaseConnections: DatabaseConnections
             }
             val matchType = context
                 .select(MATCHTYPES.DESCRIPTION)
-                .from(MATCHTYPES.where(MATCHTYPES.MATCHTYPE.eq(searchParameters.matchType)))
+                .from(MATCHTYPES.where(MATCHTYPES.MATCHTYPE.eq(searchParameters.matchType.value)))
                 .map { it -> it.get(MATCHTYPES.DESCRIPTION, String::class.java) }.first()
             val competition = context
                 .select(COMPETITIONS.COMPETITION)
-                .from(COMPETITIONS.where(COMPETITIONS.MATCHSUBTYPE.eq(searchParameters.matchSubType)))
+                .from(COMPETITIONS.where(COMPETITIONS.MATCHSUBTYPE.eq(searchParameters.matchSubType.value)))
                 .map { it -> it.get(COMPETITIONS.COMPETITION, String::class.java) }.first()
 
             emit(SummaryResult(
                 team = teamName,
                 opponents = opponentsName,
-                matchType = matchType,
-                competition = competition,
+                matchType = MatchType(matchType),
+                competition = MatchType(competition),
                 ground = ground,
                 hostCountry = hostCountry
             ))

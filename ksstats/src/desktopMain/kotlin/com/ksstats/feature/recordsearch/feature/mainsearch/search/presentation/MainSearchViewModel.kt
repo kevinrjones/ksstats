@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.core.domain.util.SortOrder
+import com.ksstats.core.types.toMatchType
 import com.ksstats.feature.recordsearch.domain.model.*
 import com.ksstats.feature.recordsearch.domain.usecase.RecordSearchUseCases
 import com.ksstats.shared.toSeconds
@@ -94,7 +95,7 @@ class MainSearchViewModel(
                     withContext(Dispatchers.IO) {
                         _state.value = _state.value.copy(loaded = false)
                         recordSearchUseCases.getCompetitionsForMatchTypeAndCountry(
-                            matchType,
+                            matchType.toMatchType(),
                             state.value.selectedCountry
                         )
                             .collect { result ->
