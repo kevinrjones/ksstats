@@ -1,6 +1,8 @@
 package com.ksstats.core.domain.util
 
+import com.ksstats.core.types.EpochSeconds
 import com.ksstats.core.types.MatchType
+import com.ksstats.core.types.PagingParameters
 
 data class SearchParameters(
     val matchType: MatchType = MatchType("t"),
@@ -12,12 +14,10 @@ data class SearchParameters(
     val venue: Int? = null,
     val sortOrder: SortOrder = SortOrder.Runs,
     val sortDirection: SortDirection = SortDirection.Ascending,
-    val startDate: Long = -8520336000,
-    val endDate: Long = 253402214400,
+    val startDate: EpochSeconds = EpochSeconds.minimum(),
+    val endDate: EpochSeconds = EpochSeconds.now(),
     val season: String? = null,
     val result: Int = 0,
-    val limit: Int = 50,
-    val startRow: Int = 0,
-    val pageSize: Int = 50,
-    val fivesLimit: Int = 5
+    val pagingParameters: PagingParameters,
+    val fivesLimit: Int = 5,
 )

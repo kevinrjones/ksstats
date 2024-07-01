@@ -7,10 +7,8 @@ import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRec
 import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createBbmAll
 import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createFives
 import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createResultsCte
-import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createRuns
 import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createTemporaryTeamsCte
 import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createTens
-import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.createWickets
 import com.ksstats.feature.playerbowlingsummary.data.source.JooqBowlingCareerRecords.totalCountsCte
 import com.ksstats.shared.DatabaseConnections
 import kotlinx.coroutines.flow.Flow
@@ -74,7 +72,7 @@ class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections
                 .with(cteStep10Name).`as`(bocrto_bbm)
                 .select().from(cteStep3Name).join(cteStep4Name).on()
                 .orderBy(sortSpecification)
-                .limit(searchParameters.startRow, searchParameters.pageSize).fetch()
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
 
             val results = mutableListOf<BowlingSummary>()
             databaseResults.forEach {

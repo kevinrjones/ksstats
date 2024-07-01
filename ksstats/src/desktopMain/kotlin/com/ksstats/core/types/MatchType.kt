@@ -14,8 +14,11 @@ value class MatchType(val value: String) {
     companion object {
         fun default(): MatchType = MatchType("")
     }
+
+    override fun toString(): String = value
 }
 
 fun String.toMatchType(): MatchType  = MatchType(this)
 
 fun MatchTypeEntity.toMatchType() : MatchType = MatchType(this.type)
+

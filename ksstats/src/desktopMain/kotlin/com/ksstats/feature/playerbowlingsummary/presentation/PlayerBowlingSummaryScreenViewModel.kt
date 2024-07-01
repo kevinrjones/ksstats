@@ -85,9 +85,4 @@ class PlayerBowlingSummaryScreenViewModel(
         = if(matchType.isMultiInningsType()) 4 else 5
 
 
-    fun calculatePageNumber(startRow: Int, pageSize: Int): Int {
-        return (startRow/pageSize) + 1
-    }
-
-
 }

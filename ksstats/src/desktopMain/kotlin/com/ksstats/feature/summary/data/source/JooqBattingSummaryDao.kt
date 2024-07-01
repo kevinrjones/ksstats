@@ -16,7 +16,7 @@ class JooqBattingSummaryDao(private val databaseConnections: DatabaseConnections
         val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
 
         if(databaseConnection == null)
-            throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+            throw Exception("Database connection for match type ${searchParameters.matchType.value} not found")
 
         DriverManager.getConnection(
             databaseConnection.connectionString

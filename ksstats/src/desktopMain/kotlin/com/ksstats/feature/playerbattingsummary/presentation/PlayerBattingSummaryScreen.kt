@@ -18,104 +18,25 @@ import androidx.navigation.navArgument
 import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
-import com.ksstats.core.types.MatchType
-import com.ksstats.core.types.toMatchType
+import com.ksstats.core.types.*
 import com.ksstats.feature.playerbattingsummary.data.BattingSummary
 import com.ksstats.feature.playerbattingsummary.domain.usecase.PlayerBattingSummaryUseCases
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
+import com.ksstats.shared.utils.buildDeailsScreenNavUrl
+import com.ksstats.shared.utils.buildSummaryScreenNavArguments
+import com.ksstats.shared.utils.buildSummaryScreenRoute
 import org.koin.compose.koinInject
 
 fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
     composable(
-        route = StatsAppScreens.BattingPlayerSummary.name +
-                "?matchType={matchType}" +
-                "&matchSubType={matchSubType}" +
-                "&teamId={teamId}" +
-                "&opponentsId={opponentsId}" +
-                "&groundId={groundId}" +
-                "&hostCountryId={hostCountryId}" +
-                "&venue={venue}" +
-                "&sortOrder={sortOrder}" +
-                "&sortDirection={sortDirection}" +
-                "&startDate={startDate}" +
-                "&endDate={endDate}" +
-                "&season={season}" +
-                "&result={result}" +
-                "&limit={limit}" +
-                "&startRow={startRow}" +
-                "&pageSize={pageSize}",
-        arguments = listOf(
-            navArgument(name = "matchType") {
-                type = NavType.StringType
-                defaultValue = "t"
-            },
-            navArgument(name = "matchSubType") {
-                type = NavType.StringType
-                defaultValue = "t"
-            },
-            navArgument(name = "teamId") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "opponentsId") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "groundId") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "hostCountryId") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "venue") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "sortOrder") {
-                type = NavType.IntType
-                defaultValue = 3
-            },
-            navArgument(name = "sortDirection") {
-                type = NavType.StringType
-                defaultValue = "DESC"
-            },
-            navArgument(name = "startDate") {
-                type = NavType.LongType
-                defaultValue = -8520336000 // 1700-1-1
-            },
-            navArgument(name = "endDate") {
-                type = NavType.LongType
-                defaultValue = 253402214400 // 9999-12-31
-            },
-            navArgument(name = "season") {
-                type = NavType.StringType
-                defaultValue = "All"
-            },
-            navArgument(name = "result") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "limit") {
-                type = NavType.IntType
-                defaultValue = 100
-            },
-            navArgument(name = "startRow") {
-                type = NavType.IntType
-                defaultValue = 0
-            },
-            navArgument(name = "pageSize") {
-                type = NavType.IntType
-                defaultValue = 50
-            },
-        )
+        route = buildSummaryScreenRoute(StatsAppScreens.BattingPlayerSummary),
+        arguments = buildSummaryScreenNavArguments(100)
     ) { navBackStackEntry ->
 
         var pagingParameters by remember { mutableStateOf(PagingParameters(startRow = 0, pageSize = 50, limit = 100)) }
-        var searchParameters by remember { mutableStateOf(SearchParameters()) }
+        var searchParameters by remember { mutableStateOf(SearchParameters(pagingParameters = pagingParameters)) }
         var summarySearchParameters by remember {
             mutableStateOf(
                 SummarySearchParameters(
@@ -147,6 +68,12 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
             val startDate = navBackStackEntry.arguments?.getLong("startDate") ?: -99999999999L
             val endDate = navBackStackEntry.arguments?.getLong("endDate") ?: 999999999999L
 
+            pagingParameters = pagingParameters.copy(
+                startRow = navBackStackEntry.arguments?.getInt("startRow") ?: pagingParameters.startRow,
+                pageSize = navBackStackEntry.arguments?.getInt("pageSize") ?: pagingParameters.pageSize,
+                limit = navBackStackEntry.arguments?.getInt("limit") ?: pagingParameters.limit
+            )
+
             searchParameters = SearchParameters(
                 matchType = matchType,
                 matchSubType = matchSubType,
@@ -159,19 +86,11 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
                 sortDirection = SortDirection.valueOf(
                     navBackStackEntry.arguments?.getString("sortDirection") ?: "DESC"
                 ),
-                startDate = startDate,
-                endDate = endDate,
-                result = navBackStackEntry.arguments?.getInt("result") ?: 0,
+                startDate = startDate.toEpochSeconds(),
+                endDate = endDate.toEpochSeconds(),
                 season = navBackStackEntry.arguments?.getString("season") ?: "All",
-                pageSize = navBackStackEntry.arguments?.getInt("pageSize") ?: pagingParameters.pageSize,
-                startRow = navBackStackEntry.arguments?.getInt("startRow") ?: pagingParameters.startRow,
-                limit = navBackStackEntry.arguments?.getInt("limit") ?: pagingParameters.limit,
-            )
-
-            pagingParameters = pagingParameters.copy(
-                startRow = navBackStackEntry.arguments?.getInt("startRow") ?: pagingParameters.startRow,
-                pageSize = navBackStackEntry.arguments?.getInt("pageSize") ?: pagingParameters.pageSize,
-                limit = navBackStackEntry.arguments?.getInt("limit") ?: pagingParameters.limit
+                result = navBackStackEntry.arguments?.getInt("result") ?: 0,
+                pagingParameters = pagingParameters,
             )
 
             summarySearchParameters = SummarySearchParameters(
@@ -204,35 +123,30 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
         val searching = viewModel.searching.collectAsState()
 
         val count = searchResults.value.firstOrNull()?.count ?: 0
-        val startRow = (navBackStackEntry.arguments?.getInt("startRow") ?: 0)
-        val displayRecords: List<List<String>> = getDisplayRecords(searchResults.value, startRow)
-
-        val startDate = navBackStackEntry.arguments?.getLong("startDate") ?: -99999999999L
-        val endDate = navBackStackEntry.arguments?.getLong("endDate") ?: 999999999999L
+        val displayRecords: List<List<String>> = getDisplayRecords(searchResults.value, pagingParameters.startRow)
 
         var summaryString: String by remember { mutableStateOf("") }
-        summaryString = summary.value.buildSummary(startDate, endDate)
+        summaryString = summary.value.buildSummary(searchParameters.startDate, searchParameters.endDate)
 
         PlayerBattingSummaryScreen(
             displayRecords = displayRecords,
             searching = searching,
             title = "Player Batting Summary",
             summary = summaryString,
-            pageSize = navBackStackEntry.arguments?.getInt("pageSize") ?: 50,
+            pageNumber = pagingParameters.calculatePageNumber(),
+            pageSize = pagingParameters.pageSize,
             startRow = navBackStackEntry.arguments?.getInt("startRow") ?: 0,
             limit = navBackStackEntry.arguments?.getInt("limit") ?: 100,
             rowCount = count,
             sortOrder = searchParameters.sortOrder,
             sortDirection = searchParameters.sortDirection,
             onPageChanged = {
-                pagingParameters = calculatePagingParameters(it, pagingParameters, count)
+                pagingParameters = pagingParameters.calculateNewPagingParameters(it, count)
                 searchParameters = searchParameters.copy(
-                    pageSize = pagingParameters.pageSize,
-                    limit = pagingParameters.limit,
-                    startRow = pagingParameters.startRow
+                    pagingParameters = pagingParameters
                 )
 
-                val navUrl = buildNavUrl(StatsAppScreens.BattingPlayerSummary.name, searchParameters)
+                val navUrl = buildDeailsScreenNavUrl(StatsAppScreens.BattingPlayerSummary.name, searchParameters)
                 navigate(navUrl)
             },
             onSort = { order ->
@@ -256,7 +170,7 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
                     sortDirection = sortDirection
                 )
 
-                val navUrl = buildNavUrl(StatsAppScreens.BattingPlayerSummary.name, searchParameters)
+                val navUrl = buildDeailsScreenNavUrl(StatsAppScreens.BattingPlayerSummary.name, searchParameters)
                 navigate(navUrl)
 
             }
@@ -303,51 +217,6 @@ private fun getHighestScoreString(highestScore: Double): String {
     }
 }
 
-private fun buildNavUrl(baseUrl: String, searchParameters: SearchParameters): String {
-
-    val sortOrder = searchParameters.sortOrder.ordinal
-
-    return "${baseUrl}?" +
-            "matchType=${searchParameters.matchType}" +
-            "&matchSubType=${searchParameters.matchSubType}" +
-            "&teamId=${searchParameters.teamId}" +
-            "&opponentsId=${searchParameters.opponentsId}" +
-            "&groundId=${searchParameters.groundId}" +
-            "&hostCountryId=${searchParameters.hostCountryId}" +
-            "&venue=${searchParameters.venue}" +
-            "&sortOrder=${sortOrder}" +
-            "&sortDirection=${searchParameters.sortDirection}" +
-            "&startDate=${searchParameters.startDate}" +
-            "&endDate=${searchParameters.endDate}" +
-            "&season=${searchParameters.season}" +
-            "&result=${searchParameters.result}" +
-            "&limit=${searchParameters.limit}" +
-            "&startRow=${searchParameters.startRow}" +
-            "&pageSize=${searchParameters.pageSize}"
-
-}
-
-private fun calculatePagingParameters(
-    pageChangedNavigation: PageChangedNavigation,
-    pagingParameters: PagingParameters,
-    rowCount: Int,
-): PagingParameters {
-
-    val previous = pagingParameters.startRow - pagingParameters.pageSize
-    val next = pagingParameters.startRow + pagingParameters.pageSize
-    val lastRow =
-        (pagingParameters.pageSize.calculateMaxPages(rowCount) * pagingParameters.pageSize) - pagingParameters.pageSize
-
-    val newPagingParameters = when (pageChangedNavigation) {
-        PageChangedNavigation.First -> pagingParameters.copy(startRow = 0)
-        PageChangedNavigation.Previous -> pagingParameters.copy(startRow = previous)
-        PageChangedNavigation.Next -> pagingParameters.copy(startRow = next)
-        PageChangedNavigation.Last -> pagingParameters.copy(startRow = lastRow)
-        is PageChangedNavigation.PageSizeChange -> pagingParameters.copy(pageSize = pageChangedNavigation.pageSize)
-    }
-    return newPagingParameters
-}
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerBattingSummaryScreen(
@@ -355,6 +224,7 @@ fun PlayerBattingSummaryScreen(
     searching: State<Boolean>,
     summary: String,
     title: String,
+    pageNumber: Int,
     pageSize: Int,
     startRow: Int,
     limit: Int,
@@ -384,7 +254,7 @@ fun PlayerBattingSummaryScreen(
             SummaryRow(summary = summary)
             SearchLimitRow(searchLimit = limit)
             NavigationRow(
-                pageNumber = 1,
+                pageNumber = pageNumber,
                 pageSize = pageSize,
                 maxPages = pageSize.calculateMaxPages(rowCount),
                 firstRowNumber = startRow + 1,

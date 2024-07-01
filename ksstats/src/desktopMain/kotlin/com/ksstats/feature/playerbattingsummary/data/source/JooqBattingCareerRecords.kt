@@ -28,8 +28,8 @@ object JooqBattingCareerRecords {
         val dateOrSeasonCondition = if (searchParameters.season != "All") {
             and(MATCHES.SERIESDATE.eq(searchParameters.season))
         } else {
-            and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate))
-                .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate))
+            and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate.value))
+                .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate.value))
         }
 
         val matchResultCondition = if (searchParameters.result != 0) {
@@ -198,7 +198,7 @@ object JooqBattingCareerRecords {
                             )
                     ).and(field("${teamsCteName}.matchType", String::class.java).eq(searchParameters.matchType.value))
                     .leftJoin(TEAMS.`as`("O")).on(field("O.id").eq(searchParameters.opponentsId))
-                    .where(coalesce(field("innings.runs").ge(searchParameters.limit)))
+                    .where(coalesce(field("innings.runs").ge(searchParameters.pagingParameters.limit)))
             )
 
         return cte

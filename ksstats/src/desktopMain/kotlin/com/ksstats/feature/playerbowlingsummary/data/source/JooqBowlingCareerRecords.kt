@@ -28,8 +28,8 @@ object JooqBowlingCareerRecords {
         val dateOrSeasonCondition = if (searchParameters.season != "All") {
             and(MATCHES.SERIESDATE.eq(searchParameters.season))
         } else {
-            and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate))
-                .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate))
+            and(MATCHES.MATCHSTARTDATEASOFFSET.ge(searchParameters.startDate.value))
+                .and(MATCHES.MATCHSTARTDATEASOFFSET.le(searchParameters.endDate.value))
         }
 
         val matchResultCondition = if (searchParameters.result != 0) {
@@ -219,7 +219,7 @@ object JooqBowlingCareerRecords {
                             .eq(field("innings.playerId", Int::class.java))
                     )
                     // todo: pass across the correct limit
-                    .where(coalesce(field("innings.wickets").ge(searchParameters.limit)))
+                    .where(coalesce(field("innings.wickets").ge(searchParameters.pagingParameters.limit)))
             )
 
         return cte
