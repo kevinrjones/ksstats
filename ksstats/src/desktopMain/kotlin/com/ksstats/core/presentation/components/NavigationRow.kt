@@ -78,12 +78,11 @@ fun NavigationRow(
     maxPages: Int,
     firstRowNumber: Int,
     lastRowNumber: Int,
-    onPageChanged: (PageChangedNavigation) -> Unit
+    onPageChanged: (PageChangedNavigation) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-//            .wrapContentSize(align = Alignment.TopStart)
             .padding(bottom = 10.dp)
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
@@ -117,7 +116,9 @@ fun NavigationRow(
         )
         NavigateButtons(
             modifier = Modifier.padding(start = 30.dp),
-            onPageChanged = { onPageChanged(it) }
+            onPageChanged = { onPageChanged(it) },
+            maxPages,
+            pageNumber
         )
         PageSize(
             maxRows = pageSize,
@@ -155,8 +156,10 @@ fun PageSize(modifier: Modifier = Modifier, maxRows: Int, onChange: (PageChanged
             options = options,
             selectedOption = selectedOption,
             label = "",
-            onSelectMenuItem = { selectedOption = it
-            onChange(PageChangedNavigation.PageSizeChange(selectedOption.value.toInt()))}
+            onSelectMenuItem = {
+                selectedOption = it
+                onChange(PageChangedNavigation.PageSizeChange(selectedOption.value.toInt()))
+            }
         )
     }
 }
@@ -170,21 +173,38 @@ sealed class PageChangedNavigation {
 }
 
 @Composable
-fun NavigateButtons(modifier: Modifier = Modifier, onPageChanged: (PageChangedNavigation) -> Unit) {
+fun NavigateButtons(
+    modifier: Modifier = Modifier,
+    onPageChanged: (PageChangedNavigation) -> Unit,
+    maxPages: Int,
+    pageNumber: Int,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        TextButton(onClick = { onPageChanged(PageChangedNavigation.First) }) {
+        TextButton(
+            onClick = { onPageChanged(PageChangedNavigation.First) },
+            enabled = pageNumber != 1,
+        ) {
             Text(text = "<< First")
         }
-        TextButton(onClick = { onPageChanged(PageChangedNavigation.Previous) }) {
+        TextButton(
+            onClick = { onPageChanged(PageChangedNavigation.Previous) },
+            enabled = pageNumber != 1,
+        ) {
             Text(text = "< Previous")
         }
-        TextButton(onClick = { onPageChanged(PageChangedNavigation.Next) }) {
+        TextButton(
+            onClick = { onPageChanged(PageChangedNavigation.Next) },
+            enabled = pageNumber < maxPages,
+        ) {
             Text(text = "Next >")
         }
-        TextButton(onClick = { onPageChanged(PageChangedNavigation.Last) }) {
+        TextButton(
+            onClick = { onPageChanged(PageChangedNavigation.Last) },
+            enabled = pageNumber < maxPages,
+        ) {
             Text(text = "Last >>")
         }
     }
