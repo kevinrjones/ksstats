@@ -44,4 +44,8 @@
     <string name="byOppositionTeam">By Opposition Team</string>
     <string name="byYearOfMatchStart">By Year of Match Start</string>
     <string name="bySeason">By Season</string>
+    <string name="first">First</string>
+    <string name="last">Last</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>

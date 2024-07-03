@@ -17,6 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ksstats.ksstats.generated.resources.*
+import com.ksstats.ksstats.generated.resources.Res
+import com.ksstats.ksstats.generated.resources.first
+import com.ksstats.ksstats.generated.resources.next
+import com.ksstats.ksstats.generated.resources.previous
+import org.jetbrains.compose.resources.Resource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TitleRow(modifier: Modifier = Modifier, title: String) {
@@ -187,25 +194,25 @@ fun NavigateButtons(
             onClick = { onPageChanged(PageChangedNavigation.First) },
             enabled = pageNumber != 1,
         ) {
-            Text(text = "<< First")
+            Text(text = "<< " + stringResource(Res.string.first))
         }
         TextButton(
             onClick = { onPageChanged(PageChangedNavigation.Previous) },
             enabled = pageNumber != 1,
         ) {
-            Text(text = "< Previous")
+            Text(text = "< " + stringResource(Res.string.previous))
         }
         TextButton(
             onClick = { onPageChanged(PageChangedNavigation.Next) },
             enabled = pageNumber < maxPages,
         ) {
-            Text(text = "Next >")
+            Text(text = stringResource(Res.string.next) +" >")
         }
         TextButton(
             onClick = { onPageChanged(PageChangedNavigation.Last) },
             enabled = pageNumber < maxPages,
         ) {
-            Text(text = "Last >>")
+            Text(text = stringResource(Res.string.last) +" >>")
         }
     }
 }
