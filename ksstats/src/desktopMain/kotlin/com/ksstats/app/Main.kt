@@ -90,7 +90,7 @@ private fun ApplicationScope.DatabaseNotFoundDialog(expectedFileName: String) {
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Please follow the instructions at foo.com on how to intall this file",
+                    text = "Please follow the instructions at foo.com on how to install this file",
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 TextButton(

@@ -218,14 +218,14 @@ fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFo
 
         MainSearchType.Batting -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> StatsAppScreens.BattingPlayerSummary.name
-            SearchViewFormat.InningsByInnings -> StatsAppScreens.BattingInningsByInningsSummary.name
-            SearchViewFormat.MatchTotals -> StatsAppScreens.BattingMatchTotalsSummary.name
-            SearchViewFormat.SeriesAverages -> StatsAppScreens.BattingSeriesAveragesSummary.name
-            SearchViewFormat.GroundAverages -> StatsAppScreens.BattingGroundAveragesSummary.name
-            SearchViewFormat.ByHostCountry -> StatsAppScreens.BattingByHostCuntrySummary.name
-            SearchViewFormat.ByOppositionTeam -> StatsAppScreens.BattingByOppositionTeamSummary.name
-            SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BattingByYearSummary.name
-            SearchViewFormat.BySeason -> StatsAppScreens.BattingBySeasonSummary.name
+            SearchViewFormat.InningsByInnings -> StatsAppScreens.BattingInningsByInnings.name
+            SearchViewFormat.MatchTotals -> StatsAppScreens.BattingMatchTotals.name
+            SearchViewFormat.SeriesAverages -> StatsAppScreens.BattingSeriesAverages.name
+            SearchViewFormat.GroundAverages -> StatsAppScreens.BattingGroundAverages.name
+            SearchViewFormat.ByHostCountry -> StatsAppScreens.BattingByHostCuntry.name
+            SearchViewFormat.ByOppositionTeam -> StatsAppScreens.BattingByOppositionTeam.name
+            SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BattingByYear.name
+            SearchViewFormat.BySeason -> StatsAppScreens.BattingBySeason.name
         }
 
         MainSearchType.Bowling -> when (searchViewFormat) {

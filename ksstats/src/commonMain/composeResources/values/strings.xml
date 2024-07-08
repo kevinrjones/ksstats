@@ -48,4 +48,9 @@
     <string name="last">Last</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="searchLimit">Search limit is </string>
+    <string name="page">Page </string>
+    <string name="of"> of </string>
+    <string name="showing">Showing </string>
+    <string name="to"> to </string>
 </resources>

@@ -66,7 +66,7 @@ fun SearchLimitRow(modifier: Modifier = Modifier, searchLimit: Int, postFix: Str
     ) {
         Text(
             text = buildAnnotatedString {
-                append("Search limit is ")
+                append(stringResource(Res.string.searchLimit))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append("$searchLimit ")
                 }
@@ -98,11 +98,11 @@ fun NavigationRow(
         Text(
 
             text = buildAnnotatedString {
-                append("Page ")
+                append(stringResource(Res.string.page))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(pageNumber.toString())
                 }
-                append(" of ")
+                append(stringResource(Res.string.of))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(maxPages.toString())
                 }
@@ -110,11 +110,11 @@ fun NavigationRow(
         )
         Text(
             text = buildAnnotatedString {
-                append("Showing ")
+                append(stringResource(Res.string.showing))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(firstRowNumber.toString())
                 }
-                append(" to ")
+                append(stringResource(Res.string.to))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(lastRowNumber.toString())
                 }
@@ -206,13 +206,13 @@ fun NavigateButtons(
             onClick = { onPageChanged(PageChangedNavigation.Next) },
             enabled = pageNumber < maxPages,
         ) {
-            Text(text = stringResource(Res.string.next) +" >")
+            Text(text = stringResource(Res.string.next) + " >")
         }
         TextButton(
             onClick = { onPageChanged(PageChangedNavigation.Last) },
             enabled = pageNumber < maxPages,
         ) {
-            Text(text = stringResource(Res.string.last) +" >>")
+            Text(text = stringResource(Res.string.last) + " >>")
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.ksstats.di
 
-import com.ksstats.feature.playerbattingsummary.di.playerBattingSummaryModule
-import com.ksstats.feature.playerbowlingsummary.di.playerBowlingSummaryModule
+import com.ksstats.feature.playerbattingprimarystats.di.playerBattingSummaryModule
+import com.ksstats.feature.playerbowlingprimarystats.di.playerBowlingSummaryModule
 import com.ksstats.feature.recordsearch.di.mainSearchModule
 import com.ksstats.feature.showselection.di.selectionModule
 import com.ksstats.feature.summary.di.summaryModule
