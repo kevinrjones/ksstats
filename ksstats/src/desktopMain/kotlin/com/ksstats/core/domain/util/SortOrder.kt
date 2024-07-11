@@ -28,6 +28,10 @@ enum class SortOrder {
     FiveFor,
     TenFor,
     Wickets,
+    MatchStartDateAsOffset,
+    Score,
+    Minutes,
+    Ground,
 }
 
 enum class SortDirection(val direction: String) {

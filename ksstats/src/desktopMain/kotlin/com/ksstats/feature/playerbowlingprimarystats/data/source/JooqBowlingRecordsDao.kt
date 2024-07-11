@@ -1,5 +1,6 @@
 package com.ksstats.feature.playerbowlingprimarystats.data.source
 
+import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.feature.playerbowlingprimarystats.data.BowlingSummary
@@ -18,7 +19,7 @@ import org.jooq.impl.DSL.field
 import java.sql.DriverManager
 
 class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections) : BowlingRecordsDao {
-    override fun getBowlingSummary(searchParameters: SearchParameters): Flow<List<BowlingSummary>> = flow {
+    override fun getBowlingSummary(searchParameters: SearchParameters): Flow<DatabaseResult<BowlingSummary>> = flow {
         val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
 
         if (databaseConnection == null)
@@ -73,9 +74,11 @@ class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections
                 .select().from(cteStep3Name).join(cteStep4Name).on()
                 .orderBy(sortSpecification)
                 .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
+            var count = 0
 
             val results = mutableListOf<BowlingSummary>()
             databaseResults.forEach {
+                count = it.getValue("count", Int::class.java)
                 results.add(
                     BowlingSummary(
                         playerId = it.getValue("playerid", Int::class.java),
@@ -109,12 +112,12 @@ class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections
                     )
                 )
             }
-
-            emit(results)
+            val databaseResult = DatabaseResult(results, count)
+            emit(databaseResult)
         }
     }
 
-    override fun getBowlingInningsByInnings(searchParameters: SearchParameters): Flow<List<BowlingSummary>> {
+    override fun getBowlingInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<BowlingSummary>> {
         TODO("Not yet implemented")
     }
 }

@@ -2,10 +2,11 @@ package com.ksstats.feature.playerbattingprimarystats.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.core.domain.util.createEnglishDateFormat
+import com.ksstats.core.domain.util.createAbbreviatedEnglishDateFormat
 import com.ksstats.core.types.MatchType
-import com.ksstats.feature.playerbattingprimarystats.data.PrimaryBatting
+import com.ksstats.feature.playerbattingprimarystats.data.InningsByInningsBatting
 import com.ksstats.feature.playerbattingprimarystats.domain.usecase.PlayerBattingPrimaryStatsUseCases
 import com.ksstats.feature.summary.domain.model.SummaryResult
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
@@ -17,10 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
-import kotlinx.datetime.format.MonthNames
-import kotlinx.datetime.format.char
 
 class PlayerBattingInningsByInningsScreenViewModel(
     private val playerBattingPrimaryStatsUseCases: PlayerBattingPrimaryStatsUseCases,
@@ -28,10 +26,14 @@ class PlayerBattingInningsByInningsScreenViewModel(
 
     ) : ViewModel() {
 
-    private val format = createEnglishDateFormat()
+    private val format = createAbbreviatedEnglishDateFormat()
 
-    private val _battingSummary: MutableStateFlow<List<PrimaryBatting>> = MutableStateFlow(listOf())
-    val battingSummary: StateFlow<List<PrimaryBatting>> = _battingSummary.asStateFlow()
+    private val _inningsByInnings: MutableStateFlow<DatabaseResult<InningsByInningsBatting>> = MutableStateFlow(
+        DatabaseResult(
+            listOf(), 0
+        )
+    )
+    val inningsByInnings: StateFlow<DatabaseResult<InningsByInningsBatting>> = _inningsByInnings.asStateFlow()
 
     private val _searching = MutableStateFlow<Boolean>(false)
     val searching = _searching.asStateFlow()
@@ -54,7 +56,7 @@ class PlayerBattingInningsByInningsScreenViewModel(
                 _searching.value = true
                 playerBattingPrimaryStatsUseCases.getBattingInningaByInnings(searchParameters)
                     .collect {
-                        _battingSummary.value = it
+                        _inningsByInnings.value = it
                     }
                 _searching.value = false
             }

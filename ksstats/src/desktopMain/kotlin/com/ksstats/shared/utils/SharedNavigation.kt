@@ -50,7 +50,7 @@ fun buildSummaryScreenRoute(screen: StatsAppScreens): String {
             "&pageSize={pageSize}"
 }
 
-fun buildSummaryScreenNavArguments(limit: Int): List<NamedNavArgument> {
+fun buildRecordsScreenNavArguments(limit: Int): List<NamedNavArgument> {
     return listOf(
         navArgument(name = "matchType") {
             type = NavType.StringType
@@ -82,7 +82,7 @@ fun buildSummaryScreenNavArguments(limit: Int): List<NamedNavArgument> {
         },
         navArgument(name = "sortOrder") {
             type = NavType.IntType
-            defaultValue = 3
+            defaultValue = -1
         },
         navArgument(name = "sortDirection") {
             type = NavType.StringType

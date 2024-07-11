@@ -23,5 +23,5 @@ data class PrimaryBatting(
     val year: String,
     val ground: String,
     val countryName: String,
-    val count: Int,
 )
+

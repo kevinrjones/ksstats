@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ fun CellText(
     text: String,
     cellBackgroundColor: Color = Color.Gray,
     style: TextStyle = LocalTextStyle.current,
+    textAlign: TextAlign = TextAlign.Start,
     width: Dp,
     color: Color = Color.Black,
 ) {
@@ -45,11 +47,13 @@ fun CellText(
         overflow = TextOverflow.Ellipsis,
         style = style,
         color = color,
+        textAlign = textAlign,
         modifier = Modifier
-            .border(1.dp, Color.Black)
+//            .border(1.dp, Color.Black)
             .width(width)
             .background(cellBackgroundColor)
             .padding(8.dp)
+
     )
 }
 
@@ -59,6 +63,7 @@ fun HeaderCellText(
     cellBackgroundColor: Color = Color.Gray,
     cellHoverColor: Color = Color.LightGray,
     style: TextStyle = LocalTextStyle.current,
+    textAlign: TextAlign = TextAlign.Start,
     width: Dp,
     color: Color = Color.Black,
     sortDirection: DisplaySortDirection,
@@ -84,7 +89,7 @@ fun HeaderCellText(
 
     TextButton(
         modifier = Modifier
-            .border(1.dp, Color.Black)
+//            .border(1.dp, Color.Black)
             .width(width)
             .background(backgroundColor),
         contentPadding = PaddingValues(3.dp),
@@ -111,6 +116,7 @@ fun HeaderCellText(
         Spacer(Modifier.width(4.dp))
         Text(
             text = text,
+            textAlign = textAlign,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = style,
@@ -129,6 +135,7 @@ fun RowScope.TableCell(
     showTooltip: Boolean = false,
     color: Color = Color.Black,
     cellBackgroundColor: Color = Color.White,
+    textAlign: TextAlign = TextAlign.Start,
     weight: Float = 0f,
     style: TextStyle = LocalTextStyle.current,
     width: Dp,
@@ -150,6 +157,7 @@ fun RowScope.TableCell(
         ) {
             CellText(
                 text = text,
+                textAlign = textAlign,
                 color = color,
                 style = style,
                 cellBackgroundColor = cellBackgroundColor,
@@ -157,7 +165,7 @@ fun RowScope.TableCell(
             )
         }
     } else {
-        CellText(text = text, color = color, style = style, cellBackgroundColor = cellBackgroundColor, width = width)
+        CellText(text = text, color = color, style = style, textAlign = textAlign, cellBackgroundColor = cellBackgroundColor, width = width)
     }
 
 }
@@ -168,6 +176,7 @@ fun RowScope.TableHeaderCell(
     text: String,
     color: Color = Color.Black,
     cellBackgroundColor: Color = Color.White,
+    textAlign: TextAlign = TextAlign.Start,
     weight: Float = 0f,
     style: TextStyle = LocalTextStyle.current,
     width: Dp,
@@ -177,6 +186,7 @@ fun RowScope.TableHeaderCell(
 ) {
     HeaderCellText(
         text = text,
+        textAlign = textAlign,
         color = color,
         style = style,
         cellBackgroundColor = cellBackgroundColor,
@@ -192,6 +202,7 @@ data class ColumnMetaData(
     val name: String,
     val width: Dp,
     val weight: Float = 0f,
+    val align: TextAlign = TextAlign.Start,
     val sortOrder: SortOrder = SortOrder.None,
     val sortDirection: DisplaySortDirection = DisplaySortDirection.None,
 )
@@ -221,10 +232,9 @@ fun Table(
 
                         TableHeaderCell(
                             text = header.name,
-                            color = Color.White,
-                            cellBackgroundColor = Color.Gray,
+//                            color = Color.White,
                             width = header.width,
-                            style = TextStyle(fontSize = 14.sp),
+                            style = TextStyle(fontSize = 12.sp),
                             sortOrder = header.sortOrder,
                             sortDirection = header.sortDirection,
                             onSort = { order ->
@@ -259,15 +269,17 @@ fun Table(
                                 cellContent(columnIndex, rowIndex)?.let { content ->
                                     if (rowIndex % 2 == 0)
                                         this@Row.TableCell(
-                                            text = content,
+                                            textAlign = metaData[columnIndex].align,
                                             showTooltip = content.length > 10,
+                                            text = content,
+                                            cellBackgroundColor = Color.LightGray,
                                             width = metaData[columnIndex].width
                                         )
                                     else
                                         this@Row.TableCell(
-                                            showTooltip = content.length > 10,
+                                            textAlign = metaData[columnIndex].align,
                                             text = content,
-                                            cellBackgroundColor = Color.LightGray,
+                                            showTooltip = content.length > 10,
                                             width = metaData[columnIndex].width
                                         )
                                 }
@@ -294,7 +306,7 @@ fun TableOld(
 
                     TableHeaderCell(
                         text = header.name,
-                        color = Color.White,
+//                        color = Color.White,
                         cellBackgroundColor = Color.Gray,
                         weight = header.weight,
                         style = MaterialTheme.typography.titleSmall,

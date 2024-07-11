@@ -11,6 +11,12 @@ value class MatchType(val value: String) {
         return multiInningsMatchTypes.contains(this.value)
     }
 
+    fun isInternationalType(): Boolean {
+        val internationalMatchTypes = listOf("t", "wt", "o", "wo", "itt", "witt")
+
+        return internationalMatchTypes.contains(this.value)
+    }
+
     companion object {
         fun default(): MatchType = MatchType("")
     }

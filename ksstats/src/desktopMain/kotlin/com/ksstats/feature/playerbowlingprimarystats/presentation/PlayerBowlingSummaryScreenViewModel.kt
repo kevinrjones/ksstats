@@ -2,6 +2,7 @@ package com.ksstats.feature.playerbowlingprimarystats.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.types.MatchType
 import com.ksstats.feature.playerbowlingprimarystats.data.BowlingSummary
@@ -39,8 +40,10 @@ class PlayerBowlingSummaryScreenViewModel(
         )
     }
 
-    private val _bowlingSummary: MutableStateFlow<List<BowlingSummary>> = MutableStateFlow(listOf())
-    val bowlingSummary: StateFlow<List<BowlingSummary>> = _bowlingSummary.asStateFlow()
+    private val _bowlingSummary: MutableStateFlow<DatabaseResult<BowlingSummary>> = MutableStateFlow(
+        DatabaseResult(listOf(), 0)
+    )
+    val bowlingSummary: StateFlow<DatabaseResult<BowlingSummary>> = _bowlingSummary.asStateFlow()
 
     private val _searching = MutableStateFlow<Boolean>(false)
     val searching = _searching.asStateFlow()

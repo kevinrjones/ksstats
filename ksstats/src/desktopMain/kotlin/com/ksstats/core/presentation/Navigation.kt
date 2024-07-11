@@ -41,7 +41,6 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
 
         })
         mainSearchScreen(MainSearchType.Batting,
-            defaultSortOrder = SortOrder.Runs,
             limitLabel = Res.string.minimumRunsLabel,
             navigate = {
                 navController.navigate(it) {
@@ -52,7 +51,6 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 }
             })
         mainSearchScreen(MainSearchType.Bowling,
-            defaultSortOrder = SortOrder.Wickets,
             limitLabel = Res.string.minimumWicketsLabel,
             navigate = {
                 navController.navigate(it) {

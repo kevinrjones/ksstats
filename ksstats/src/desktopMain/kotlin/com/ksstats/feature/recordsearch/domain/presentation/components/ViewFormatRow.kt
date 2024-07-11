@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ksstats.core.presentation.components.HorizontalTextRadioButton
+import com.ksstats.core.types.MatchType
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchEvent
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.SearchViewFormat
 import com.ksstats.ksstats.generated.resources.Res
@@ -18,7 +19,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ViewFormatRow(
     searchViewFormat: SearchViewFormat,
-    onBattingEvent: (MainSearchEvent) -> Unit = {},
+    selectedMatchType: MatchType,
+    onChangeFormatEvent: (MainSearchEvent) -> Unit = {},
 ) {
     Row(modifier = Modifier.padding(bottom = 10.dp)) {
         Box {
@@ -29,45 +31,51 @@ fun ViewFormatRow(
                 selected = searchViewFormat == SearchViewFormat.PlayerSummary,
                 text = stringResource(SearchViewFormat.PlayerSummary.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.PlayerSummary))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.PlayerSummary))
                 })
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.InningsByInnings,
                 text = stringResource(SearchViewFormat.InningsByInnings.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.InningsByInnings))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.InningsByInnings))
                 })
-            HorizontalTextRadioButton(
-                selected = searchViewFormat == SearchViewFormat.MatchTotals,
-                text = stringResource(SearchViewFormat.MatchTotals.format),
-                onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.MatchTotals))
-                })
+            if(selectedMatchType.isMultiInningsType()) {
+                HorizontalTextRadioButton(
+                    selected = searchViewFormat == SearchViewFormat.MatchTotals,
+                    text = stringResource(SearchViewFormat.MatchTotals.format),
+                    onOptionSelected = {
+                        onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.MatchTotals))
+                    })
+            }
         }
         Column(modifier = Modifier.weight(1f)) {
-            HorizontalTextRadioButton(
-                selected = searchViewFormat == SearchViewFormat.SeriesAverages,
-                text = stringResource(SearchViewFormat.SeriesAverages.format),
-                onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.SeriesAverages))
-                })
+            if(selectedMatchType.isInternationalType()) {
+                HorizontalTextRadioButton(
+                    selected = searchViewFormat == SearchViewFormat.SeriesAverages,
+                    text = stringResource(SearchViewFormat.SeriesAverages.format),
+                    onOptionSelected = {
+                        onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.SeriesAverages))
+                    })
+            }
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.GroundAverages,
                 text = stringResource(SearchViewFormat.GroundAverages.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.GroundAverages))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.GroundAverages))
                 })
+            if(selectedMatchType.isInternationalType()) {
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.ByHostCountry,
                 text = stringResource(SearchViewFormat.ByHostCountry.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByHostCountry))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByHostCountry))
                 })
+                }
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.ByOppositionTeam,
                 text = stringResource(SearchViewFormat.ByOppositionTeam.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByOppositionTeam))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByOppositionTeam))
                 })
         }
         Column(modifier = Modifier.weight(1f)) {
@@ -75,13 +83,13 @@ fun ViewFormatRow(
                 selected = searchViewFormat == SearchViewFormat.ByYearOfMatchStart,
                 text = stringResource(SearchViewFormat.ByYearOfMatchStart.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByYearOfMatchStart))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByYearOfMatchStart))
                 })
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.BySeason,
                 text = stringResource(SearchViewFormat.BySeason.format),
                 onOptionSelected = {
-                    onBattingEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.BySeason))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.BySeason))
                 })
         }
 

@@ -18,5 +18,10 @@ fun Long.fromSeconds(): LocalDate {
     val tz = TimeZone.currentSystemDefault()
     return instant.toLocalDateTime(tz).date
 }
+fun Int.fromSeconds(): LocalDate {
+    val instant = Instant.fromEpochSeconds(this.toLong())
+    val tz = TimeZone.currentSystemDefault()
+    return instant.toLocalDateTime(tz).date
+}
 
 fun LocalDate.toSeconds(): Long = this.atTime(0,0,0).toInstant(TimeZone.UTC).toEpochMilliseconds() / 1000

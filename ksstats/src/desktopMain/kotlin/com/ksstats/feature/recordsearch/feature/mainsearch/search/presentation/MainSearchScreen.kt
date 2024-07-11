@@ -12,10 +12,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.core.domain.util.SortOrder
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.AppDropDownParams
 import com.ksstats.core.presentation.components.DropDownMenuState
+import com.ksstats.core.types.MatchType
 import com.ksstats.feature.recordsearch.domain.presentation.components.*
 import com.ksstats.feature.recordsearch.domain.usecase.RecordSearchUseCases
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
@@ -33,7 +35,6 @@ import org.koin.compose.koinInject
 @OptIn(FormatStringsInDatetimeFormats::class)
 fun NavGraphBuilder.mainSearchScreen(
     searchType: MainSearchType,
-    defaultSortOrder: SortOrder,
     limitLabel: StringResource,
     navigate: (String) -> Unit,
 ) {
@@ -133,15 +134,15 @@ fun NavGraphBuilder.mainSearchScreen(
             onSearchEvent = { evt: MainSearchEvent ->
                 viewModel.uiEvent(evt)
             },
-            navigate = { baseUrl ->
-                val navUrl = buildNavUrl(baseUrl, viewModel, defaultSortOrder)
+            navigate = { baseUrl, sortOrder, sortDirection ->
+                val navUrl = buildNavUrl(baseUrl, viewModel, sortOrder, sortDirection)
                 navigate(navUrl)
             }
         )
     }
 }
 
-fun buildNavUrl(baseUrl: String, viewModel: MainSearchViewModel, defaultSortOrder: SortOrder): String {
+fun buildNavUrl(baseUrl: String, viewModel: MainSearchViewModel, sortOrder: SortOrder, sortDirection: SortDirection): String {
 
     return "${baseUrl}?" +
             "matchType=${viewModel.state.value.selectedMatchType.type}" +
@@ -151,8 +152,8 @@ fun buildNavUrl(baseUrl: String, viewModel: MainSearchViewModel, defaultSortOrde
             "&groundId=${viewModel.state.value.selectedGround.id}" +
             "&hostCountryId=${viewModel.state.value.selectedCountry.id}" +
             "&venue=${viewModel.state.value.venue}" +
-            "&sortOrder=${defaultSortOrder.ordinal}" +
-            "&sortDirection=${viewModel.defaultSortDirection.name}" +
+            "&sortOrder=${sortOrder.ordinal}" +
+            "&sortDirection=${sortDirection.name}" +
             "&startDate=${viewModel.state.value.startDate.toSeconds()}" +
             "&endDate=${viewModel.state.value.endDate.toSeconds()}" +
             "&season=${viewModel.state.value.selectedSeriesDate}" +
@@ -184,7 +185,7 @@ fun MainSearchScreen(
     isLoaded: Boolean,
     mainSearchType: MainSearchType,
     onSearchEvent: (MainSearchEvent) -> Unit = {},
-    navigate: (String) -> Unit,
+    navigate: (String, SortOrder, SortDirection) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -192,17 +193,21 @@ fun MainSearchScreen(
             .padding(horizontal = 16.dp)
     ) {
 
+        val selectedMatchType = MatchType(matchTypeParams.selectedOption.key)
+
         MatchTypeRow(matchTypeParams, competitionParams, pageSizesParams, limit, limitLabel, onSearchEvent)
         TeamsRow(teamParams, oppositionParams, onSearchEvent)
         VenueRow(onSearchEvent)
         CountriesGroundsRow(groundsParams, countriesParams, onSearchEvent)
         DateRangeRow(seriesDatesParams, startDateLabel, startDate, endDateLabel, endDate, onSearchEvent)
         ResultRow(onSearchEvent)
-        ViewFormatRow(searchViewFormat, onSearchEvent)
+        ViewFormatRow(searchViewFormat, selectedMatchType, onSearchEvent)
         ButtonRow(isLoaded, onBattingEvent = {
             when (it) {
                 is MainSearchEvent.SearchMain -> {
-                    navigate(getNavigateTo(mainSearchType, searchViewFormat))
+                    val navigateTo = getNavigateTo(mainSearchType, searchViewFormat)
+                    val (sortOrder, sortDirection) = getDefaultSortParameters(mainSearchType, searchViewFormat)
+                    navigate(navigateTo, sortOrder, sortDirection)
                 }
 
                 else -> {
@@ -240,7 +245,23 @@ fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFo
             SearchViewFormat.BySeason -> TODO()
         }
     }
+}
 
+fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: SearchViewFormat): Pair<SortOrder, SortDirection> {
+    return when (mainSearchType) {
+
+        MainSearchType.Batting -> when (searchViewFormat) {
+            SearchViewFormat.PlayerSummary -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Ascending)
+            else -> TODO()
+        }
+
+        MainSearchType.Bowling -> when (searchViewFormat) {
+            SearchViewFormat.PlayerSummary -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Descending)
+            else -> TODO()
+        }
+    }
 }
 
 @Preview
@@ -265,6 +286,6 @@ fun MainBattingSearchScreenPreview() {
         isLoaded = true,
         mainSearchType = MainSearchType.Batting,
         onSearchEvent = {},
-        navigate = {}
+        navigate = {url, sortOrder, sortDirection ->}
     )
 }

@@ -23,14 +23,14 @@ import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
 import com.ksstats.shared.utils.buildDeailsScreenNavUrl
-import com.ksstats.shared.utils.buildSummaryScreenNavArguments
+import com.ksstats.shared.utils.buildRecordsScreenNavArguments
 import com.ksstats.shared.utils.buildSummaryScreenRoute
 import org.koin.compose.koinInject
 
 fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
     composable(
         route = buildSummaryScreenRoute(StatsAppScreens.BowlingPlayerSummary),
-        arguments = buildSummaryScreenNavArguments(10)
+        arguments = buildRecordsScreenNavArguments(10)
     ) { navBackStackEntry ->
 
         var pagingParameters by remember { mutableStateOf(PagingParameters(startRow = 0, pageSize = 50, limit = 100)) }
@@ -122,9 +122,9 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
         val searchResults = viewModel.bowlingSummary.collectAsState()
         val searching = viewModel.searching.collectAsState()
 
-        val count = searchResults.value.firstOrNull()?.count ?: 0
+        val count = searchResults.value.count
 
-        val displayRecords: List<List<String>> = getDisplayRecords(searchResults.value, pagingParameters.startRow, matchType = searchParameters.matchType)
+        val displayRecords: List<List<String>> = getDisplayRecords(searchResults.value.data, pagingParameters.startRow, matchType = searchParameters.matchType)
 
         var summaryString: String by remember { mutableStateOf("") }
         summaryString = summary.value.buildSummary(searchParameters.startDate, searchParameters.endDate)
