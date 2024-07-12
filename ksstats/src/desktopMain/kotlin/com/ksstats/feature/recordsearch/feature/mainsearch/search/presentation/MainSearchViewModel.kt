@@ -150,7 +150,7 @@ class MainSearchViewModel(
             }
 
             is MainSearchEvent.MinimumValueChangedEvent -> {
-                if (mainSearchEvent.value.length == 0) {
+                if (mainSearchEvent.value.isEmpty()) {
                     _state.value = _state.value.copy(minimumRuns = 0)
                     return
                 } else if (mainSearchEvent.value.toIntOrNull() == null) {
@@ -260,8 +260,10 @@ class MainSearchViewModel(
                     _state.value = _state.value.copy(venue = 7)
             }
 
-            is MainSearchEvent.SearchViewFormatEvent ->
+            is MainSearchEvent.SearchViewFormatEvent -> {
                 _state.value = _state.value.copy(searchViewFormat = mainSearchEvent.format)
+                setMinimumValue(mainSearchEvent)
+            }
 
             MainSearchEvent.SearchMain -> {
                 throw Exception("Should be handled in the view screen")
@@ -271,6 +273,10 @@ class MainSearchViewModel(
             is MainSearchEvent.PageSizeChangedEvent -> _state.value =
                 _state.value.copy(selectedPageSize = mainSearchEvent.value.toInt())
         }
+    }
+
+    private fun setMinimumValue(evt: MainSearchEvent.SearchViewFormatEvent) {
+        _state.value = _state.value.copy(minimumRuns = evt.format.minimumRuns)
     }
 
 
