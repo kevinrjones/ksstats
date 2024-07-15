@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.domain.util.SortDirection
-import com.ksstats.core.domain.util.SortOrder
 import com.ksstats.core.types.toMatchType
 import com.ksstats.feature.recordsearch.domain.model.*
 import com.ksstats.feature.recordsearch.domain.usecase.RecordSearchUseCases

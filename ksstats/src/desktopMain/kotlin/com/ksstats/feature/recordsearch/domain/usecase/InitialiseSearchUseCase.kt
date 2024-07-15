@@ -28,12 +28,42 @@ class GetTeamsAndGroundsForCompetitionAndCountryUseCase(private val repository: 
 }
 
 class InitialiseSearchUseCase(private val repository: MainSearchRepository) {
+
+    val prferredMatchTypeOrder = listOf(
+        "t",
+        "o",
+        "itt",
+        "f",
+        "a",
+        "tt",
+        "wt",
+        "wo",
+        "witt",
+        "wf",
+        "wa",
+        "wtt",
+        "minc",
+        "mint",
+        "mintt",
+        "sec",
+        "set",
+        "sett",
+        "ut",
+        "uo",
+        "uitt",
+        "wmisc",
+        )
+
     suspend operator fun invoke(selectedCountry: Country): Flow<SearchData> = flow {
 
         val matchTypes = mutableListOf<MatchTypeEntity>()
 
-        repository.getMatchTypes().collect {
-            matchTypes.addAll(it)
+        repository.getMatchTypes().collect { matchTypeEntities ->
+            prferredMatchTypeOrder.forEach { orderedMatchType ->
+                matchTypeEntities.filter { it.type  == orderedMatchType}.firstOrNull()?.let { matchType ->
+                    matchTypes.add(matchType)
+                }
+            }
         }
 
         val pageSizes = listOf(50, 100, 150, 200)
