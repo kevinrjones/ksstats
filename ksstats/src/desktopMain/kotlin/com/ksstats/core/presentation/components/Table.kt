@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -20,7 +22,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -89,7 +94,6 @@ fun HeaderCellText(
 
     TextButton(
         modifier = Modifier
-//            .border(1.dp, Color.Black)
             .width(width)
             .background(backgroundColor),
         contentPadding = PaddingValues(3.dp),
@@ -98,24 +102,43 @@ fun HeaderCellText(
             onSort(sortOrder)
         }
     ) {
-        when (sortDirection) {
-            DisplaySortDirection.None -> {}
-            DisplaySortDirection.Ascending -> Icon(
-                Icons.Filled.ArrowUpward,
-                "",
-                tint = Color.Black
-            )
-
-            DisplaySortDirection.Descending -> Icon(
-                Icons.Filled.ArrowDownward,
-                "",
-                tint = Color.Black
-            )
+        val myId = "inlineContent"
+        val annotatedText = buildAnnotatedString {
+            append(text)
+            appendInlineContent(myId, "[icon]")
         }
 
-        Spacer(Modifier.width(4.dp))
+        val inlineContent = mapOf(
+            Pair(
+                myId,
+                InlineTextContent(
+                    Placeholder(
+                        width = 20.sp,
+                        height = 20.sp,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextBottom
+                    )
+                ) {
+                    when (sortDirection) {
+                        DisplaySortDirection.None -> {}
+                        DisplaySortDirection.Ascending -> Icon(
+                            Icons.Filled.ArrowUpward,
+                            "",
+                            tint = Color.Black
+                        )
+
+                        DisplaySortDirection.Descending -> Icon(
+                            Icons.Filled.ArrowDownward,
+                            "",
+                            tint = Color.Black
+                        )
+                    }
+                }
+            )
+        )
+
         Text(
-            text = text,
+            text = annotatedText,
+            inlineContent = inlineContent,
             textAlign = textAlign,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -205,6 +228,7 @@ data class ColumnMetaData(
     val align: TextAlign = TextAlign.Start,
     val sortOrder: SortOrder = SortOrder.None,
     val sortDirection: DisplaySortDirection = DisplaySortDirection.None,
+    val visible: Boolean = true
 )
 
 
@@ -228,19 +252,22 @@ fun Table(
         LazyColumn(state = verticalLazyListState) {
             stickyHeader {
                 Row(Modifier.background(Color.Gray)) {
-                    metaData.forEachIndexed { index, header ->
+                    metaData.forEach { header ->
 
-                        TableHeaderCell(
-                            text = header.name,
+                        if(header.visible) {
+                            TableHeaderCell(
+                                text = header.name,
+                                textAlign = header.align,
 //                            color = Color.White,
-                            width = header.width,
-                            style = TextStyle(fontSize = 12.sp),
-                            sortOrder = header.sortOrder,
-                            sortDirection = header.sortDirection,
-                            onSort = { order ->
-                                onSort(order)
-                            }
-                        )
+                                width = header.width,
+                                style = TextStyle(fontSize = 12.sp),
+                                sortOrder = header.sortOrder,
+                                sortDirection = header.sortDirection,
+                                onSort = { order ->
+                                    onSort(order)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -267,21 +294,24 @@ fun Table(
                                 }
                             }) {
                                 cellContent(columnIndex, rowIndex)?.let { content ->
-                                    if (rowIndex % 2 == 0)
-                                        this@Row.TableCell(
-                                            textAlign = metaData[columnIndex].align,
-                                            showTooltip = content.length > 10,
-                                            text = content,
-                                            cellBackgroundColor = Color.LightGray,
-                                            width = metaData[columnIndex].width
-                                        )
-                                    else
-                                        this@Row.TableCell(
-                                            textAlign = metaData[columnIndex].align,
-                                            text = content,
-                                            showTooltip = content.length > 10,
-                                            width = metaData[columnIndex].width
-                                        )
+                                    val metaDatum = metaData[columnIndex]
+                                    if(metaDatum.visible) {
+                                        if (rowIndex % 2 == 0)
+                                            this@Row.TableCell(
+                                                textAlign = metaDatum.align,
+                                                showTooltip = content.length > 10,
+                                                text = content,
+                                                cellBackgroundColor = Color.LightGray,
+                                                width = metaDatum.width
+                                            )
+                                        else
+                                            this@Row.TableCell(
+                                                textAlign = metaDatum.align,
+                                                text = content,
+                                                showTooltip = content.length > 10,
+                                                width = metaDatum.width
+                                            )
+                                    }
                                 }
                             }
                         }
@@ -302,11 +332,10 @@ fun TableOld(
         // Here is the header
         stickyHeader {
             Row(Modifier.background(Color.Gray)) {
-                metaData.forEachIndexed { index, header ->
+                metaData.forEach { header ->
 
                     TableHeaderCell(
                         text = header.name,
-//                        color = Color.White,
                         cellBackgroundColor = Color.Gray,
                         weight = header.weight,
                         style = MaterialTheme.typography.titleSmall,

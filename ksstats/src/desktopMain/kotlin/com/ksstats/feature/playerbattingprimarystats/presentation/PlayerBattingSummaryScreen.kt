@@ -193,13 +193,13 @@ private fun getDisplayRecords(searchResults: List<PrimaryBatting>, startRow: Int
             searchResult.notOuts.toString(),
             searchResult.runs.toString(),
             highestScore,
+            searchResult.average.truncate(2),
             searchResult.hundreds.toString(),
             searchResult.fifties.toString(),
             searchResult.ducks.toString(),
             searchResult.fours.toString(),
             searchResult.sixes.toString(),
             searchResult.balls.toString(),
-            searchResult.average.truncate(2),
             searchResult.strikeRate.round(2),
             searchResult.battingImpact.round(3),
         )
@@ -217,7 +217,6 @@ private fun getHighestScoreString(highestScore: Double): String {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerBattingSummaryScreen(
     displayRecords: List<List<String>>,
@@ -370,6 +369,20 @@ fun PlayerBattingSummaryScreen(
 
                     ),
                     ColumnMetaData(
+                        "Avg", 90.dp,
+                        align = TextAlign.End,
+                        sortOrder = SortOrder.Avg,
+                        sortDirection = if (sortOrder == SortOrder.Avg) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    ColumnMetaData(
                         "100s", 90.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.Hundreds,
@@ -444,20 +457,6 @@ fun PlayerBattingSummaryScreen(
                         align = TextAlign.End,
                         sortOrder = SortOrder.Balls,
                         sortDirection = if (sortOrder == SortOrder.Balls) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-                    ),
-                    ColumnMetaData(
-                        "Avg", 90.dp,
-                        align = TextAlign.End,
-                        sortOrder = SortOrder.Avg,
-                        sortDirection = if (sortOrder == SortOrder.Avg) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {

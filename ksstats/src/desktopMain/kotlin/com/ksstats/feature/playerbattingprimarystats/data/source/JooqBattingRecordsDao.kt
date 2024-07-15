@@ -164,4 +164,82 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
                 emit(databaseResult)
             }
         }
+
+    override fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBatting>> =
+        flow {
+            val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+            if (databaseConnection == null)
+                throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+            DriverManager.getConnection(
+                databaseConnection.connectionString
+            ).use { conn ->
+
+                val context = DSL.using(conn, databaseConnection.dialect)
+
+                val cteStep1Name = "tmp_bat"
+                val cteStep2Name = "tmp_bat_details"
+                val cteStepCountName = "total_counts"
+
+                val tmp_bat =
+                    JooqBattingMatchTotalsRecords.createTemporaryBattingCte(searchParameters)
+                val tmp_bat_details =
+                    JooqBattingMatchTotalsRecords.createTemporaryBattingDetailsCte(cteStep1Name, searchParameters)
+
+                val count_cte = totalCountsCte(cteStep1Name)
+
+                val sortSpecification = when (searchParameters.sortDirection) {
+                    SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                    SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+                }
+
+
+                val databaseResults = context
+                    .with(cteStep1Name).`as`(tmp_bat)
+                    .with(cteStep2Name).`as`(tmp_bat_details)
+                    .with(cteStepCountName).`as`(count_cte)
+                    .select().from(cteStep2Name)
+                    .orderBy(sortSpecification, field("SortNamePart"))
+                    .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize)
+                    .fetch()
+
+                val countResult = context
+                    .with(cteStep1Name).`as`(tmp_bat)
+                    .with(cteStep2Name).`as`(tmp_bat_details)
+                    .with(cteStepCountName).`as`(count_cte)
+                    .select().from(cteStepCountName)
+                    .fetch()
+
+                val count = countResult.get(0).getValue("count", Int::class.java)
+
+                val results = mutableListOf<InningsByInningsBatting>()
+                databaseResults.forEach {
+                    results.add(
+                        InningsByInningsBatting(
+                            playerId = it.getValue("playerid", Int::class.java),
+                            name = it.getValue("FullName", String::class.java),
+                            score = it.getValue("score", Int::class.java),
+                            notOut = 0,
+                            position = 0,
+                            matchDate = it.getValue("matchStartDateAsOffset", Long::class.java),
+                            ground = it.getValue("ground", String::class.java),
+                            opponents = it.getValue("opponents", String::class.java),
+                            innings = 0,
+                            strikeRate = it.getValue("sr", Double::class.java),
+                            sixes = it.getValue("sixes", Int::class.java),
+                            fours = it.getValue("fours", Int::class.java),
+                            balls = it.getValue("balls", Int::class.java),
+                            minutes = it.getValue("minutes", Int::class.java),
+                            team = it.getValue("team", String::class.java)
+                        )
+                    )
+                }
+
+                val databaseResult = DatabaseResult(results, count)
+
+
+                emit(databaseResult)
+            }
+        }
 }

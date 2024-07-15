@@ -18,3 +18,9 @@ class GetBattingInningsByInnings(val repository: BattingRecordsRepository) {
         return repository.getBattingInningsByInnings(searchParameters)
     }
 }
+
+class GetMatchTotals(val repository: BattingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBatting>> {
+        return repository.getMatchTotals(searchParameters)
+    }
+}

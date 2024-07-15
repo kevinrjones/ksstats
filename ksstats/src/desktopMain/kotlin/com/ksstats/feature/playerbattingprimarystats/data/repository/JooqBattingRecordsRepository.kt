@@ -17,4 +17,8 @@ class JooqBattingRecordsRepository(private val battingRecordsDao: BattingRecords
         return battingRecordsDao.getBattingInningsByInnings(searchParameters)
     }
 
+    override fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBatting>> {
+        return battingRecordsDao.getMatchTotals(searchParameters)
+    }
+
 }

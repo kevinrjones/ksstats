@@ -76,6 +76,7 @@ object JooqBattingInningsByInningsRecords {
             .and(opponentsIdCondition)
             .and(teamIdCondition)
             .and(matchResultCondition)
+            .and(homeOrAwayCondition)
             .where(coalesce(BATTINGDETAILS.SCORE.ge(searchParameters.pagingParameters.limit)))
             .and(
                 BATTINGDETAILS.MATCHID

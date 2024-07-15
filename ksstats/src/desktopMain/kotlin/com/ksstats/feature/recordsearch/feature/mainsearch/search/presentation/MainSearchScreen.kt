@@ -252,13 +252,14 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
 
         MainSearchType.Batting -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> Pair(SortOrder.Runs, SortDirection.Descending)
-            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Ascending)
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.Score, SortDirection.Descending)
+            SearchViewFormat.MatchTotals -> Pair(SortOrder.Score, SortDirection.Descending)
             else -> TODO()
         }
 
         MainSearchType.Bowling -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> Pair(SortOrder.Wickets, SortDirection.Descending)
-            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Descending)
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.Wickets, SortDirection.Descending)
             else -> TODO()
         }
     }

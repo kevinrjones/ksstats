@@ -53,4 +53,6 @@
     <string name="of"> of </string>
     <string name="showing">Showing </string>
     <string name="to"> to </string>
+    <string name="matchScreenTitle">Match Totals</string>
+    <string name="inningsByInningsScreenTitle">Innings By Innings Summary</string>
 </resources>

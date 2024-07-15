@@ -10,7 +10,7 @@ import org.jetbrains.compose.resources.StringResource
 enum class SearchViewFormat(val format: StringResource, val minimumRuns: Int = 100) {
     PlayerSummary(Res.string.playerSummary),
     InningsByInnings(Res.string.inningsByInningsList, 0),
-    MatchTotals(Res.string.matchTotals),
+    MatchTotals(Res.string.matchTotals, 0),
     SeriesAverages(Res.string.seriesAverages),
     GroundAverages(Res.string.groundAverages),
     ByHostCountry(Res.string.byHostCountry),
