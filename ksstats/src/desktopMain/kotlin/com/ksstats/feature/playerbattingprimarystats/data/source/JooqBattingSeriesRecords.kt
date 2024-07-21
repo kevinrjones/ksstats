@@ -135,7 +135,7 @@ object JooqBattingSeriesRecords {
                 field("innings.fours", Int::class.java),
                 field("innings.sixes", Int::class.java),
                 field("innings.balls", Int::class.java),
-                field("innings.seriesdate", String::class.java),
+                field("innings.seriesdate", String::class.java).`as`("year"),
                 iif(
                     field("innings.innings", Int::class.java).minus(field("innings.notouts", Int::class.java)).eq(0),
                     0, average

@@ -152,7 +152,7 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
                         strikeRate = it.getValue("sr", Double::class.java),
                         battingImpact = it.getValue("bi", Double::class.java),
                         opponents = it.get("opponents", String::class.java),
-                        year = "",
+                        year = it.get("year", String::class.java),
                         ground = "",
                         countryName = "",
                     )

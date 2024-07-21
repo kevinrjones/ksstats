@@ -532,7 +532,7 @@ fun PlayerBowlingSummaryScreen(
                     rowCount = displayRecords.size,
                     cellContent = { key, row ->
                         if (displayRecords.isNotEmpty())
-                            displayRecords[row][key]
+                            getContent(displayRecords, key, row, metaData)
                         else
                             null
                     },

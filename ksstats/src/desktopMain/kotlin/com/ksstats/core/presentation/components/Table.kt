@@ -257,6 +257,7 @@ data class ColumnMetaData(
     val sortOrder: SortOrder = SortOrder.None,
     val sortDirection: DisplaySortDirection = DisplaySortDirection.None,
     val visible: Boolean = true,
+    val replaceZero: Boolean = true,
 )
 
 
@@ -313,14 +314,14 @@ fun Table(
                                                     this@Row.TableCell(
                                                         textAlign = metaDatum.align,
                                                         showTooltip = content.length > 10,
-                                                        text = getContent(content),
+                                                        text = content,
                                                         cellBackgroundColor = Color.LightGray,
                                                         width = metaDatum.width
                                                     )
                                                 else
                                                     this@Row.TableCell(
                                                         textAlign = metaDatum.align,
-                                                        text = getContent(content),
+                                                        text = content,
                                                         showTooltip = content.length > 10,
                                                         width = metaDatum.width
                                                     )
@@ -341,8 +342,20 @@ fun Table(
     }
 }
 
-fun getContent(content: String): String {
-    if (content.trim() == "0") return "-"
+fun getContent(
+    displayRecords: List<Map<String, String>>,
+    key: String,
+    row: Int,
+    allMetaData: Map<String, ColumnMetaData?>,
+): String {
+    val records = displayRecords[row]
+    val metaData = allMetaData[key] ?: throw Exception()
+    val content = records[key] ?: throw Exception()
+
+    if (metaData.replaceZero) {
+        if (content.trim() == "0" || content.trim() == "0.00")
+            return "-"
+    }
     return content
 }
 

@@ -127,7 +127,7 @@ fun NavGraphBuilder.playerBattingSummaryScreen(
         val searchResults = viewModel.battingSummary.collectAsState()
         val searching = viewModel.searching.collectAsState()
 
-        val count = searchResults.value.count ?: 0
+        val count = searchResults.value.count
         val displayRecords = getDisplayRecords(searchResults.value.data, pagingParameters.startRow)
 
         var summaryString: String by remember { mutableStateOf("") }
@@ -176,7 +176,7 @@ fun NavGraphBuilder.playerBattingSummaryScreen(
                     sortDirection = sortDirection
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(StatsAppScreens.BattingPlayerSummary.name, searchParameters)
+                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
 
             }
@@ -400,8 +400,9 @@ fun PlayerBattingSummaryScreen(
 
                     ),
                     "notouts" to ColumnMetaData(
-                        "N/Os",
-                        90.dp,
+                        name = "N/Os",
+                        width = 90.dp,
+                        replaceZero = false,
                         align = TextAlign.End,
                         sortOrder = SortOrder.NotOuts,
                         sortDirection = if (sortOrder == SortOrder.NotOuts) {
@@ -576,8 +577,7 @@ fun PlayerBattingSummaryScreen(
                     rowCount = displayRecords.size,
                     cellContent = { key, row ->
                         if (displayRecords.isNotEmpty()) {
-                            val records  = displayRecords[row]
-                            records[key]
+                            getContent(displayRecords, key, row, metaData)
                         }
                         else
                             null
