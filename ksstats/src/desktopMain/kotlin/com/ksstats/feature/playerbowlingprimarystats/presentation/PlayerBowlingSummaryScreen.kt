@@ -130,7 +130,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
 
         val count = searchResults.value.count
 
-        val displayRecords: List<List<String>> = getDisplayRecords(
+        val displayRecords: List<Map<String, String>> = getDisplayRecords(
             searchResults.value.data,
             pagingParameters.startRow,
             matchType = searchParameters.matchType
@@ -196,38 +196,34 @@ private fun getDisplayRecords(
     searchResults: List<BowlingSummary>,
     startRow: Int,
     matchType: MatchType,
-): List<List<String>> {
+): List<Map<String, String>> {
     return searchResults.mapIndexed { index, searchResult ->
 
-        var data = listOf(
-            (index + startRow + 1).toString(),
-            searchResult.name,
-            searchResult.team,
-            searchResult.matches.toString(),
-            searchResult.innings.toString(),
-            searchResult.balls.toString(),
-            searchResult.maidens.toString(),
-            searchResult.runs.toString(),
-            searchResult.wickets.toString(),
-            searchResult.average.truncate(2),
-            getIndividualBb(searchResult.bestBowlingInnings),
+        val data = mutableMapOf(
+            "index" to (index + startRow + 1).toString(),
+            "name" to searchResult.name,
+            "team" to searchResult.team,
+            "matches" to searchResult.matches.toString(),
+            "innings" to searchResult.innings.toString(),
+            "balls" to searchResult.balls.toString(),
+            "maidens" to searchResult.maidens.toString(),
+            "runs" to searchResult.runs.toString(),
+            "wickets" to searchResult.wickets.toString(),
+            "avg" to searchResult.average.truncate(2),
+            "bbi" to getIndividualBb(searchResult.bestBowlingInnings),
+            "econ" to searchResult.economy.truncate(2),
+            "sr" to searchResult.strikeRate.truncate(2),
+            "fivefor" to searchResult.fivefor.toString(),
+            "fours" to searchResult.fours.toString(),
+            "sixes" to searchResult.sixes.toString(),
+            "bi" to searchResult.bowlingImpact.round(3),
         )
         if (matchType.isMultiInningsType()) {
-            data = data + getIndividualBb(searchResult.bestBowlingMatch)
+            data["bbm"] = getIndividualBb(searchResult.bestBowlingMatch)
         }
-        data = data + listOf(
-            searchResult.economy.truncate(2),
-            searchResult.strikeRate.truncate(2),
-            searchResult.fivefor.toString()
-        )
         if (matchType.isMultiInningsType()) {
-            data = data + searchResult.tenfor.toString()
+            data["tenfor"] = searchResult.tenfor.toString()
         }
-        data = data + listOf(
-            searchResult.fours.toString(),
-            searchResult.sixes.toString(),
-            searchResult.bowlingImpact.round(3),
-        )
         data
     }
 }
@@ -243,7 +239,7 @@ private fun getIndividualBb(syntheticBB: Double): String {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerBowlingSummaryScreen(
-    displayRecords: List<List<String>>,
+    displayRecords: List<Map<String, String>>,
     matchType: MatchType,
     searching: State<Boolean>,
     summary: String,
@@ -289,9 +285,9 @@ fun PlayerBowlingSummaryScreen(
             )
 
             Row {
-                var metaData = listOf(
-                    ColumnMetaData("", 60.dp),
-                    ColumnMetaData(
+                var metaData = mapOf(
+                    "index" to ColumnMetaData("", 60.dp),
+                    "name" to ColumnMetaData(
                         "Name",
                         170.dp,
                         sortOrder = SortOrder.SortNamePart,
@@ -305,7 +301,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "team" to ColumnMetaData(
                         "Teams", 200.dp, sortOrder = SortOrder.Teams,
                         sortDirection = if (sortOrder == SortOrder.Teams) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -317,7 +313,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "matches" to ColumnMetaData(
                         "M",
                         70.dp,
                         sortOrder = SortOrder.Matches,
@@ -332,7 +328,7 @@ fun PlayerBowlingSummaryScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "innings" to ColumnMetaData(
                         "I",
                         70.dp,
                         sortOrder = SortOrder.Innings,
@@ -347,7 +343,7 @@ fun PlayerBowlingSummaryScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "balls" to ColumnMetaData(
                         "Balls",
                         70.dp,
                         sortOrder = SortOrder.Balls,
@@ -362,7 +358,7 @@ fun PlayerBowlingSummaryScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "maidens" to ColumnMetaData(
                         "Maidens",
                         90.dp,
                         sortOrder = SortOrder.Maidens,
@@ -377,7 +373,7 @@ fun PlayerBowlingSummaryScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "runs" to ColumnMetaData(
                         "Runs", 100.dp, sortOrder = SortOrder.Runs,
                         sortDirection = if (sortOrder == SortOrder.Runs) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -389,7 +385,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "wickets" to ColumnMetaData(
                         "Wickets", 100.dp, sortOrder = SortOrder.Wickets,
                         sortDirection = if (sortOrder == SortOrder.Wickets) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -401,7 +397,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "avg" to ColumnMetaData(
                         "Avg", 90.dp, sortOrder = SortOrder.Avg,
                         sortDirection = if (sortOrder == SortOrder.Avg) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -413,7 +409,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "bbi" to ColumnMetaData(
                         "BBI", 90.dp, sortOrder = SortOrder.BBI,
                         sortDirection = if (sortOrder == SortOrder.BBI) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -427,21 +423,22 @@ fun PlayerBowlingSummaryScreen(
                     )
                 )
                 if (isMultiInnings)
-                    metaData = metaData +
-                            ColumnMetaData(
-                                "BBM", 90.dp, sortOrder = SortOrder.BBM,
-                                sortDirection = if (sortOrder == SortOrder.BBM) {
-                                    if (sortDirection == SortDirection.Ascending) {
-                                        DisplaySortDirection.Ascending
-                                    } else {
-                                        DisplaySortDirection.Descending
-                                    }
+                    metaData = metaData + mapOf(
+                        "bbm" to ColumnMetaData(
+                            "BBM", 90.dp, sortOrder = SortOrder.BBM,
+                            sortDirection = if (sortOrder == SortOrder.BBM) {
+                                if (sortDirection == SortDirection.Ascending) {
+                                    DisplaySortDirection.Ascending
                                 } else {
-                                    DisplaySortDirection.None
+                                    DisplaySortDirection.Descending
                                 }
-                            )
-                metaData = metaData + listOf(
-                    ColumnMetaData(
+                            } else {
+                                DisplaySortDirection.None
+                            }
+                        )
+                    )
+                metaData = metaData + mapOf(
+                    "econ" to ColumnMetaData(
                         "Econ", 90.dp, sortOrder = SortOrder.Econ,
                         sortDirection = if (sortOrder == SortOrder.Econ) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -453,7 +450,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "sr" to ColumnMetaData(
                         "SR", 90.dp, sortOrder = SortOrder.SR,
                         sortDirection = if (sortOrder == SortOrder.SR) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -465,7 +462,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "fivefor" to ColumnMetaData(
                         fiveWITitle, 90.dp, sortOrder = SortOrder.FiveFor,
                         sortDirection = if (sortOrder == SortOrder.FiveFor) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -479,21 +476,22 @@ fun PlayerBowlingSummaryScreen(
                     ),
                 )
                 if (isMultiInnings)
-                    metaData = metaData +
-                            ColumnMetaData(
-                                "10w/m", 90.dp, sortOrder = SortOrder.TenFor,
-                                sortDirection = if (sortOrder == SortOrder.TenFor) {
-                                    if (sortDirection == SortDirection.Ascending) {
-                                        DisplaySortDirection.Ascending
-                                    } else {
-                                        DisplaySortDirection.Descending
-                                    }
+                    metaData = metaData + mapOf(
+                        "tenfor" to ColumnMetaData(
+                            "10w/m", 90.dp, sortOrder = SortOrder.TenFor,
+                            sortDirection = if (sortOrder == SortOrder.TenFor) {
+                                if (sortDirection == SortDirection.Ascending) {
+                                    DisplaySortDirection.Ascending
                                 } else {
-                                    DisplaySortDirection.None
+                                    DisplaySortDirection.Descending
                                 }
-                            )
-                metaData = metaData + listOf(
-                    ColumnMetaData(
+                            } else {
+                                DisplaySortDirection.None
+                            }
+                        )
+                    )
+                metaData = metaData + mapOf(
+                    "fours" to ColumnMetaData(
                         "4s", 90.dp, sortOrder = SortOrder.Fours,
                         sortDirection = if (sortOrder == SortOrder.Fours) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -505,7 +503,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "sixes" to ColumnMetaData(
                         "6s", 90.dp, sortOrder = SortOrder.Sixes,
                         sortDirection = if (sortOrder == SortOrder.Sixes) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -517,7 +515,7 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "bi" to ColumnMetaData(
                         "BI", 90.dp, sortOrder = SortOrder.BI,
                         sortDirection = if (sortOrder == SortOrder.BI) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -531,11 +529,10 @@ fun PlayerBowlingSummaryScreen(
                     )
                 )
                 Table(
-                    columnCount = metaData.size,
                     rowCount = displayRecords.size,
-                    cellContent = { column, row ->
+                    cellContent = { key, row ->
                         if (displayRecords.isNotEmpty())
-                            displayRecords[row][column]
+                            displayRecords[row][key]
                         else
                             null
                     },

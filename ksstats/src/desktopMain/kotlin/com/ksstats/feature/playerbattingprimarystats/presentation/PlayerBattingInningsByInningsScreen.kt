@@ -155,7 +155,7 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
         val searching = viewModel.searching.collectAsState()
 
         val count = searchResults.value.count ?: 0
-        val displayRecords: List<List<String>> = getDisplayRecords(searchResults.value.data, pagingParameters.startRow)
+        val displayRecords: List<Map<String, String>> = getDisplayRecords(searchResults.value.data, pagingParameters.startRow)
 
         var summaryString: String by remember { mutableStateOf("") }
         summaryString = summary.value.buildSummary(searchParameters.startDate, searchParameters.endDate)
@@ -215,25 +215,25 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
 }
 
 
-private fun getDisplayRecords(searchResults: List<InningsByInningsBatting>, startRow: Int): List<List<String>> {
+private fun getDisplayRecords(searchResults: List<InningsByInningsBatting>, startRow: Int): List<Map<String, String>> {
     return searchResults.mapIndexed { index, searchResult ->
 
         val format = createMatchDateEnglishDateFormat()
         val date = searchResult.matchDate.fromSeconds().format(format)
-        listOf(
-            (index + startRow + 1).toString(),
-            searchResult.name,
-            searchResult.team,
-            getScore(searchResult.score, searchResult.notOut),
-            searchResult.minutes.toString(),
-            searchResult.balls.toString(),
-            searchResult.fours.toString(),
-            searchResult.sixes.toString(),
-            searchResult.strikeRate.round(2),
-            searchResult.innings.toString(),
-            searchResult.opponents,
-            searchResult.ground,
-            date,
+        mapOf(
+            "index" to (index + startRow + 1).toString(),
+            "name" to searchResult.name,
+            "team" to searchResult.team,
+            "score" to getScore(searchResult.score, searchResult.notOut),
+            "minutes" to searchResult.minutes.toString(),
+            "balls" to searchResult.balls.toString(),
+            "fours" to searchResult.fours.toString(),
+            "sixes" to searchResult.sixes.toString(),
+            "sr" to searchResult.strikeRate.round(2),
+            "innings" to searchResult.innings.toString(),
+            "opponents" to searchResult.opponents,
+            "ground" to searchResult.ground,
+            "date" to date,
         )
     }
 }
@@ -248,7 +248,7 @@ fun getScore(score: Int, notOut: Int): String =
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerBattingInningsByInningsScreen(
-    displayRecords: List<List<String>>,
+    displayRecords: List<Map<String, String>>,
     searching: State<Boolean>,
     isInningsByInnings: Boolean,
     summary: String,
@@ -292,9 +292,9 @@ fun PlayerBattingInningsByInningsScreen(
             )
 
             Row {
-                val metaData = listOf(
-                    ColumnMetaData("", 60.dp),
-                    ColumnMetaData(
+                val metaData = mapOf(
+                    "index" to ColumnMetaData("", 60.dp),
+                    "name" to ColumnMetaData(
                         stringResource(Res.string.name),
                         170.dp,
                         sortOrder = SortOrder.SortNamePart,
@@ -308,7 +308,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "team" to   ColumnMetaData(
                         stringResource(Res.string.team),
                         200.dp,
                         sortOrder = SortOrder.Teams,
@@ -322,7 +322,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "score" to  ColumnMetaData(
                         stringResource(Res.string.score),
                         90.dp,
                         sortOrder = SortOrder.Score,
@@ -338,7 +338,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "minutes" to   ColumnMetaData(
                         stringResource(Res.string.minutes),
                         90.dp,
                         align = TextAlign.End,
@@ -354,7 +354,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "balls" to  ColumnMetaData(
                         stringResource(Res.string.balls),
                         90.dp,
                         align = TextAlign.End,
@@ -370,7 +370,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
 
                     ),
-                    ColumnMetaData(
+                    "fours" to  ColumnMetaData(
                         stringResource(Res.string.fours),
                         50.dp,
                         align = TextAlign.End,
@@ -385,7 +385,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "sixes" to  ColumnMetaData(
                         stringResource(Res.string.sixes),
                         50.dp,
                         align = TextAlign.End,
@@ -400,7 +400,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "sr" to  ColumnMetaData(
                         stringResource(Res.string.strikeRate),
                         90.dp,
                         align = TextAlign.End,
@@ -415,7 +415,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "innings" to  ColumnMetaData(
                         stringResource(Res.string.innings),
                         40.dp,
                         align = TextAlign.End,
@@ -431,7 +431,7 @@ fun PlayerBattingInningsByInningsScreen(
                         },
                         visible = isInningsByInnings
                     ),
-                    ColumnMetaData(
+                    "opponents" to ColumnMetaData(
                         stringResource(Res.string.opponent),
                         200.dp,
                         sortOrder = SortOrder.Opponents,
@@ -445,7 +445,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "ground" to ColumnMetaData(
                         stringResource(Res.string.groundLabel),
                         250.dp,
                         sortOrder = SortOrder.Ground,
@@ -459,7 +459,7 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    ColumnMetaData(
+                    "date" to ColumnMetaData(
                         stringResource(Res.string.matchDate),
                         150.dp, sortOrder =
                         SortOrder.MatchStartDateAsOffset,
@@ -475,11 +475,11 @@ fun PlayerBattingInningsByInningsScreen(
                     )
                 )
                 Table(
-                    columnCount = metaData.size,
                     rowCount = displayRecords.size,
-                    cellContent = { column, row ->
-                        if (displayRecords.isNotEmpty())
-                            displayRecords[row][column]
+                    cellContent = { key, row ->
+                        if (displayRecords.isNotEmpty()) {
+                            displayRecords[row][key]
+                        }
                         else
                             null
                     },

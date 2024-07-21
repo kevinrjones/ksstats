@@ -266,21 +266,19 @@ fun Table(
     rowModifier: Modifier = Modifier,
     verticalLazyListState: LazyListState = rememberLazyListState(),
     horizontalScrollState: ScrollState = rememberScrollState(),
-    columnCount: Int,
     rowCount: Int,
-    metaData: List<ColumnMetaData>,
+    metaData: Map<String, ColumnMetaData?>,
     beforeRow: (@Composable (rowIndex: Int) -> Unit)? = null,
     afterRow: (@Composable (rowIndex: Int) -> Unit)? = null,
-    cellContent: @Composable (columnIndex: Int, rowIndex: Int) -> String?,
+    cellContent: @Composable (metaDataKey: String, rowIndex: Int) -> String?,
     onSort: (SortOrder) -> Unit,
 ) {
-    val columnWidths = remember { mutableStateMapOf<Int, Int>() }
 
     Box(modifier = modifier.then(Modifier.horizontalScroll(horizontalScrollState))) {
         LazyColumn(state = verticalLazyListState) {
             stickyHeader {
                 Row(Modifier.background(Color.Gray)) {
-                    metaData.forEach { header ->
+                    metaData.values.filterNotNull().forEach { header ->
 
                         if (header.visible) {
                             TableHeaderCell(
@@ -304,45 +302,38 @@ fun Table(
                     beforeRow?.invoke(rowIndex)
 
                     Row(modifier = rowModifier) {
+                        metaData.forEach { (key, value) ->
+                            if (value != null) {
+                                Box {
+                                    cellContent(key, rowIndex)?.let { content ->
+                                        val metaDatum = metaData[key]
+                                        if (metaDatum != null) {
+                                            if (metaDatum.visible) {
+                                                if (rowIndex % 2 == 0)
+                                                    this@Row.TableCell(
+                                                        textAlign = metaDatum.align,
+                                                        showTooltip = content.length > 10,
+                                                        text = getContent(content),
+                                                        cellBackgroundColor = Color.LightGray,
+                                                        width = metaDatum.width
+                                                    )
+                                                else
+                                                    this@Row.TableCell(
+                                                        textAlign = metaDatum.align,
+                                                        text = getContent(content),
+                                                        showTooltip = content.length > 10,
+                                                        width = metaDatum.width
+                                                    )
+                                            }
+                                        }
 
-                        (0 until columnCount).forEach { columnIndex ->
-                            Box(modifier = Modifier.layout { measurable, constraints ->
-                                val placeable = measurable.measure(constraints)
-
-                                val existingWidth = columnWidths[columnIndex] ?: 0
-                                val maxWidth = maxOf(existingWidth, placeable.width)
-
-                                if (maxWidth > existingWidth) {
-                                    columnWidths[columnIndex] = maxWidth
-                                }
-
-                                layout(width = maxWidth, height = placeable.height) {
-                                    placeable.placeRelative(0, 0)
-                                }
-                            }) {
-                                cellContent(columnIndex, rowIndex)?.let { content ->
-                                    val metaDatum = metaData[columnIndex]
-                                    if (metaDatum.visible) {
-                                        if (rowIndex % 2 == 0)
-                                            this@Row.TableCell(
-                                                textAlign = metaDatum.align,
-                                                showTooltip = content.length > 10,
-                                                text = getContent(content),
-                                                cellBackgroundColor = Color.LightGray,
-                                                width = metaDatum.width
-                                            )
-                                        else
-                                            this@Row.TableCell(
-                                                textAlign = metaDatum.align,
-                                                text = getContent(content),
-                                                showTooltip = content.length > 10,
-                                                width = metaDatum.width
-                                            )
                                     }
                                 }
                             }
                         }
+
                     }
+
                     afterRow?.invoke(rowIndex)
                 }
             }

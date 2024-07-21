@@ -104,6 +104,64 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
         ).use { conn ->
 
             val context = DSL.using(conn, databaseConnection.dialect)
+
+            val cteStep1Name = "tmp_bat"
+            val cteStep2Name = "results"
+            val cteStepCountName = "total_counts"
+            val bcrto_tmp_bat =
+                JooqBattingSeriesRecords.createTemporaryBattingCte(searchParameters)
+            val bcrto_results = JooqBattingSeriesRecords.createResultsCte(searchParameters, cteStep1Name)
+            val count_cte = JooqBattingSeriesRecords.totalCountsCte(cteStep2Name)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+            val databaseResults = context
+                .with(cteStep1Name).`as`(bcrto_tmp_bat)
+                .with(cteStep2Name).`as`(bcrto_results)
+                .with(cteStepCountName).`as`(count_cte)
+                .select().from("$cteStep2Name, $cteStepCountName")
+                .orderBy(sortSpecification)
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
+
+            var count = 0
+
+            val results = mutableListOf<PrimaryBatting>()
+            databaseResults.forEach {
+                count = it.getValue("count", Int::class.java)
+                results.add(
+                    PrimaryBatting(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("team", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        notOuts = it.getValue("notouts", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        highestScore = it.getValue("highestscore", Double::class.java),
+                        hundreds = it.getValue("hundreds", Int::class.java),
+                        fifties = it.getValue("fifties", Int::class.java),
+                        ducks = it.getValue("ducks", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        battingImpact = it.getValue("bi", Double::class.java),
+                        opponents = it.get("opponents", String::class.java),
+                        year = "",
+                        ground = "",
+                        countryName = "",
+                    )
+                )
+            }
+
+            val databaseResult = DatabaseResult(results, count)
+
+            emit(databaseResult)
         }
     }
 
