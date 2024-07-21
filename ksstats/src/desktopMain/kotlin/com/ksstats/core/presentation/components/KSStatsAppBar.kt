@@ -6,6 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ksstats.core.presentation.StatsAppScreens
+import com.ksstats.ksstats.generated.resources.Res
+import com.ksstats.ksstats.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -27,7 +29,7 @@ fun KSStatsAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = stringResource(Res.string.back)
                     )
                 }
             }

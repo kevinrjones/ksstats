@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import com.ksstats.ksstats.generated.resources.Res
+import com.ksstats.ksstats.generated.resources.cancel
+import com.ksstats.ksstats.generated.resources.ok
 import com.ksstats.shared.fromMilliseconds
 import com.ksstats.shared.now
 import kotlinx.datetime.LocalDate
@@ -19,6 +22,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 import java.time.LocalTime
 import java.time.ZoneOffset
 
@@ -28,8 +32,8 @@ fun PopupDatePicker(
     label: String,
     date: LocalDate = LocalDate.now(),
     modifier: Modifier = Modifier.height(56.dp),
-    buttonConfirmationText: String = "OK",
-    buttonCancelText: String = "Cancel",
+    buttonConfirmationText: String = stringResource(Res.string.ok),
+    buttonCancelText: String = stringResource(Res.string.cancel),
     onConfirm: (LocalDate?) -> Unit,
 ) {
 

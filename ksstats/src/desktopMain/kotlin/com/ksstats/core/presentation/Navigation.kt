@@ -60,7 +60,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                     restoreState = true
                 }
             })
-        playerBattingSummaryScreen(navigate = { navController.navigate(it) })
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingPlayerSummary,
+            title = Res.string.playerBattingSummaryTitle
+        )
         playerBattingInningsByInningsScreen(
             navigate = { navController.navigate(it) },
             screen = StatsAppScreens.BattingInningsByInnings,
@@ -71,7 +75,16 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             screen = StatsAppScreens.BattingMatchTotals,
             title = Res.string.matchScreenTitle
         )
-        playerBowlingSummaryScreen(navigate = { navController.navigate(it) })
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingSeriesAverages,
+            title = Res.string.playerSeriesAveragesTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingPlayerSummary,
+            title = Res.string.playerBowlingSummaryTitle
+        )
     }
 
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.domain.util.createAbbreviatedEnglishDateFormat
+import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.types.MatchType
 import com.ksstats.feature.playerbattingprimarystats.data.PrimaryBatting
 import com.ksstats.feature.playerbattingprimarystats.domain.usecase.PlayerBattingPrimaryStatsUseCases
@@ -23,6 +24,7 @@ import kotlinx.datetime.format
 class PlayerBattingSummaryScreenViewModel(
     private val playerBattingPrimaryStatsUseCases: PlayerBattingPrimaryStatsUseCases,
     private val summaryUseCase: SummaryUseCases,
+    private val screen: StatsAppScreens,
 
     ) : ViewModel() {
 
@@ -54,11 +56,30 @@ class PlayerBattingSummaryScreenViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _searching.value = true
-                playerBattingPrimaryStatsUseCases.getBattingSummary(searchParameters)
-                    .collect {
-                        _battingSummary.value = it
+                when (screen) {
+                    StatsAppScreens.BattingPlayerSummary -> {
+
+                        playerBattingPrimaryStatsUseCases.getBattingSummary(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
                     }
-                _searching.value = false
+                    StatsAppScreens.BattingSeriesAverages -> {
+
+                        playerBattingPrimaryStatsUseCases.getSeriesAverages(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
+                    }
+
+                    else -> {
+                        _searching.value = false
+                        // todo: add logging
+                        println("Invalid screen")
+                    }
+                }
             }
         }
     }

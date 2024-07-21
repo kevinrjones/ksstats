@@ -55,7 +55,7 @@ fun main() = application {
 
         Window(
             onCloseRequest = ::exitApplication,
-            title = "Order Form ",
+            title = "",
             state = state,
         ) {
             // todo: add a version table to the database and a check against the application version (loaded from where?)

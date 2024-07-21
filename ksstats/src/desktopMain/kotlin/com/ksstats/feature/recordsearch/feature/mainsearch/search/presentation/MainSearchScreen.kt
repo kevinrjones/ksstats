@@ -254,7 +254,12 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
             SearchViewFormat.PlayerSummary -> Pair(SortOrder.Runs, SortDirection.Descending)
             SearchViewFormat.InningsByInnings -> Pair(SortOrder.Score, SortDirection.Descending)
             SearchViewFormat.MatchTotals -> Pair(SortOrder.Score, SortDirection.Descending)
-            else -> TODO()
+            SearchViewFormat.SeriesAverages -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.GroundAverages -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.ByHostCountry -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.BySeason -> Pair(SortOrder.Runs, SortDirection.Descending)
         }
 
         MainSearchType.Bowling -> when (searchViewFormat) {

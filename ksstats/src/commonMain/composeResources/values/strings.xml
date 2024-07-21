@@ -55,4 +55,21 @@
     <string name="to"> to </string>
     <string name="matchScreenTitle">Match Totals</string>
     <string name="inningsByInningsScreenTitle">Innings By Innings Summary</string>
+    <string name="playerBattingSummaryTitle">Player Batting Summary</string>
+    <string name="playerBowlingSummaryTitle">Player Bowling Summary</string>
+    <string name="playerSeriesAveragesTitle">"Series Averages"</string>
+    <string name="name">Name</string>
+    <string name="team">Team</string>
+    <string name="score">Score</string>
+    <string name="minutes">Mins</string>
+    <string name="balls">Balls</string>
+    <string name="fours">4s</string>
+    <string name="sixes">6s</string>
+    <string name="strikeRate">SR</string>
+    <string name="innings">Innings</string>
+    <string name="opponent">Opponent</string>
+    <string name="matchDate">Match Date</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
 </resources>

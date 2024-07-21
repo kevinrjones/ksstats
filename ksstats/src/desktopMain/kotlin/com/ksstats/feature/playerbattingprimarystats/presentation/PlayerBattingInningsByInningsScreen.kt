@@ -23,6 +23,11 @@ import com.ksstats.feature.playerbattingprimarystats.domain.usecase.PlayerBattin
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
+import com.ksstats.ksstats.generated.resources.*
+import com.ksstats.ksstats.generated.resources.Res
+import com.ksstats.ksstats.generated.resources.name
+import com.ksstats.ksstats.generated.resources.score
+import com.ksstats.ksstats.generated.resources.team
 import com.ksstats.shared.fromSeconds
 import com.ksstats.shared.utils.buildDeailsScreenNavUrl
 import com.ksstats.shared.utils.buildRecordsScreenNavArguments
@@ -290,7 +295,7 @@ fun PlayerBattingInningsByInningsScreen(
                 val metaData = listOf(
                     ColumnMetaData("", 60.dp),
                     ColumnMetaData(
-                        "Name",
+                        stringResource(Res.string.name),
                         170.dp,
                         sortOrder = SortOrder.SortNamePart,
                         sortDirection = if (sortOrder == SortOrder.SortNamePart) {
@@ -304,7 +309,9 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "Team", 200.dp, sortOrder = SortOrder.Teams,
+                        stringResource(Res.string.team),
+                        200.dp,
+                        sortOrder = SortOrder.Teams,
                         sortDirection = if (sortOrder == SortOrder.Teams) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
@@ -316,7 +323,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "Score",
+                        stringResource(Res.string.score),
                         90.dp,
                         sortOrder = SortOrder.Score,
                         align = TextAlign.End,
@@ -332,7 +339,7 @@ fun PlayerBattingInningsByInningsScreen(
 
                     ),
                     ColumnMetaData(
-                        "Mins",
+                        stringResource(Res.string.minutes),
                         90.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.Minutes,
@@ -348,7 +355,7 @@ fun PlayerBattingInningsByInningsScreen(
 
                     ),
                     ColumnMetaData(
-                        "Balls",
+                        stringResource(Res.string.balls),
                         90.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.Balls,
@@ -364,7 +371,7 @@ fun PlayerBattingInningsByInningsScreen(
 
                     ),
                     ColumnMetaData(
-                        "4s",
+                        stringResource(Res.string.fours),
                         50.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.Fours,
@@ -379,7 +386,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "6s",
+                        stringResource(Res.string.sixes),
                         50.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.Sixes,
@@ -394,7 +401,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "SR",
+                        stringResource(Res.string.strikeRate),
                         90.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.SR,
@@ -409,7 +416,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "Innings",
+                        stringResource(Res.string.innings),
                         40.dp,
                         align = TextAlign.End,
                         sortOrder = SortOrder.Innings,
@@ -425,7 +432,7 @@ fun PlayerBattingInningsByInningsScreen(
                         visible = isInningsByInnings
                     ),
                     ColumnMetaData(
-                        "Opponent",
+                        stringResource(Res.string.opponent),
                         200.dp,
                         sortOrder = SortOrder.Opponents,
                         sortDirection = if (sortOrder == SortOrder.Opponents) {
@@ -439,7 +446,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "Ground",
+                        stringResource(Res.string.groundLabel),
                         250.dp,
                         sortOrder = SortOrder.Ground,
                         sortDirection = if (sortOrder == SortOrder.Ground) {
@@ -453,7 +460,7 @@ fun PlayerBattingInningsByInningsScreen(
                         }
                     ),
                     ColumnMetaData(
-                        "Match Date",
+                        stringResource(Res.string.matchDate),
                         150.dp, sortOrder =
                         SortOrder.MatchStartDateAsOffset,
                         sortDirection = if (sortOrder == SortOrder.MatchStartDateAsOffset) {

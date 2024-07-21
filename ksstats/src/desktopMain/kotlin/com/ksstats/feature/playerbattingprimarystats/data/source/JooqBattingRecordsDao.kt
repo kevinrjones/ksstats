@@ -92,6 +92,21 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
         }
     }
 
+    override fun getSeriesAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+
+        if (databaseConnection == null)
+            throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = DSL.using(conn, databaseConnection.dialect)
+        }
+    }
+
     override fun getBattingInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBatting>> =
         flow {
             val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
@@ -242,4 +257,81 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
                 emit(databaseResult)
             }
         }
+
+    override fun getGroundAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+
+        if (databaseConnection == null)
+            throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = DSL.using(conn, databaseConnection.dialect)
+        }
+    }
+
+    override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+
+        if (databaseConnection == null)
+            throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = DSL.using(conn, databaseConnection.dialect)
+        }
+    }
+
+    override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+
+        if (databaseConnection == null)
+            throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = DSL.using(conn, databaseConnection.dialect)
+        }
+    }
+
+    override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> =
+        flow {
+            val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+
+            if (databaseConnection == null)
+                throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+            DriverManager.getConnection(
+                databaseConnection.connectionString
+            ).use { conn ->
+
+                val context = DSL.using(conn, databaseConnection.dialect)
+            }
+        }
+
+    override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+
+        if (databaseConnection == null)
+            throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = DSL.using(conn, databaseConnection.dialect)
+        }
+
+    }
 }

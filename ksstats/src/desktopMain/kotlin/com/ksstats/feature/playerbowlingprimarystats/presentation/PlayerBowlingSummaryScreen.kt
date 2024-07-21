@@ -25,11 +25,17 @@ import com.ksstats.feature.summary.util.buildSummary
 import com.ksstats.shared.utils.buildDeailsScreenNavUrl
 import com.ksstats.shared.utils.buildRecordsScreenNavArguments
 import com.ksstats.shared.utils.buildSummaryScreenRoute
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
+fun NavGraphBuilder.playerBowlingSummaryScreen(
+    navigate: (String) -> Unit,
+    screen: StatsAppScreens,
+    title: StringResource,
+) {
     composable(
-        route = buildSummaryScreenRoute(StatsAppScreens.BowlingPlayerSummary),
+        route = buildSummaryScreenRoute(screen),
         arguments = buildRecordsScreenNavArguments(10)
     ) { navBackStackEntry ->
 
@@ -124,7 +130,11 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
 
         val count = searchResults.value.count
 
-        val displayRecords: List<List<String>> = getDisplayRecords(searchResults.value.data, pagingParameters.startRow, matchType = searchParameters.matchType)
+        val displayRecords: List<List<String>> = getDisplayRecords(
+            searchResults.value.data,
+            pagingParameters.startRow,
+            matchType = searchParameters.matchType
+        )
 
         var summaryString: String by remember { mutableStateOf("") }
         summaryString = summary.value.buildSummary(searchParameters.startDate, searchParameters.endDate)
@@ -134,7 +144,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
             displayRecords = displayRecords,
             searching = searching,
             matchType = searchParameters.matchType,
-            title = "Player Bowling Summary",
+            title = stringResource(title),
             summary = summaryString,
             pageNumber = pagingParameters.calculatePageNumber(),
             pageSize = pagingParameters.pageSize,
@@ -149,7 +159,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
                     pagingParameters = pagingParameters
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(StatsAppScreens.BowlingPlayerSummary.name, searchParameters)
+                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
             },
             onSort = { order ->
@@ -173,7 +183,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(navigate: (String) -> Unit) {
                     sortDirection = sortDirection
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(StatsAppScreens.BowlingPlayerSummary.name, searchParameters)
+                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
 
             }

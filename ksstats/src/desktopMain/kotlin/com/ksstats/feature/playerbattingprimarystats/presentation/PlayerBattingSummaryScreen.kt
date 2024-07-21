@@ -26,10 +26,16 @@ import com.ksstats.feature.summary.util.buildSummary
 import com.ksstats.shared.utils.buildDeailsScreenNavUrl
 import com.ksstats.shared.utils.buildRecordsScreenNavArguments
 import com.ksstats.shared.utils.buildSummaryScreenRoute
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
-    val screen =  StatsAppScreens.BattingPlayerSummary
+fun NavGraphBuilder.playerBattingSummaryScreen(
+    navigate: (String) -> Unit,
+    screen:StatsAppScreens,
+    title: StringResource,
+) {
+
     composable(
         route = buildSummaryScreenRoute(screen),
         arguments = buildRecordsScreenNavArguments(100)
@@ -54,7 +60,7 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
         val battingUseCases: PlayerBattingPrimaryStatsUseCases = koinInject()
         val summaryUseCases: SummaryUseCases = koinInject()
         val viewModel: PlayerBattingSummaryScreenViewModel = viewModel {
-            PlayerBattingSummaryScreenViewModel(battingUseCases, summaryUseCases)
+            PlayerBattingSummaryScreenViewModel(battingUseCases, summaryUseCases, screen)
         }
         val summary = viewModel.summary.collectAsState()
 
@@ -131,7 +137,7 @@ fun NavGraphBuilder.playerBattingSummaryScreen(navigate: (String) -> Unit) {
         PlayerBattingSummaryScreen(
             displayRecords = displayRecords,
             searching = searching,
-            title = "Player Batting Summary",
+            title = stringResource(title),
             summary = summaryString,
             pageNumber = pagingParameters.calculatePageNumber(),
             pageSize = pagingParameters.pageSize,

@@ -22,10 +22,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -80,11 +77,12 @@ fun HeaderCellText(
     val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(Unit) {
-        interactionSource.interactions.collect {interaction: Interaction ->
+        interactionSource.interactions.collect { interaction: Interaction ->
             when (interaction) {
                 is HoverInteraction.Enter -> {
                     backgroundColor = cellHoverColor
                 }
+
                 is HoverInteraction.Exit -> {
                     backgroundColor = cellBackgroundColor
                 }
@@ -97,44 +95,16 @@ fun HeaderCellText(
             .width(width)
             .background(backgroundColor),
         contentPadding = PaddingValues(3.dp),
-        interactionSource = interactionSource ,
+        interactionSource = interactionSource,
         onClick = {
             onSort(sortOrder)
         }
     ) {
         val myId = "inlineContent"
-        val annotatedText = buildAnnotatedString {
-            append(text)
-            appendInlineContent(myId, "[icon]")
-        }
 
-        val inlineContent = mapOf(
-            Pair(
-                myId,
-                InlineTextContent(
-                    Placeholder(
-                        width = 20.sp,
-                        height = 20.sp,
-                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextBottom
-                    )
-                ) {
-                    when (sortDirection) {
-                        DisplaySortDirection.None -> {}
-                        DisplaySortDirection.Ascending -> Icon(
-                            Icons.Filled.ArrowUpward,
-                            "",
-                            tint = Color.Black
-                        )
+        val inlineContent = createInlineContent(myId, sortDirection)
 
-                        DisplaySortDirection.Descending -> Icon(
-                            Icons.Filled.ArrowDownward,
-                            "",
-                            tint = Color.Black
-                        )
-                    }
-                }
-            )
-        )
+        val annotatedText = createAnnotatedTExt(sortDirection, text, myId)
 
         Text(
             text = annotatedText,
@@ -149,6 +119,59 @@ fun HeaderCellText(
                 .padding(start = 6.dp, top = 8.dp, end = 6.dp, bottom = 8.dp)
         )
     }
+}
+
+private fun createAnnotatedTExt(
+    sortDirection: DisplaySortDirection,
+    text: String,
+    myId: String,
+): AnnotatedString {
+    val annotatedText = when (sortDirection) {
+        DisplaySortDirection.None -> buildAnnotatedString {
+            append(text)
+        }
+
+        else -> buildAnnotatedString {
+            append(text)
+            appendInlineContent(myId, "[icon]")
+        }
+
+    }
+    return annotatedText
+}
+
+private fun createInlineContent(
+    myId: String,
+    sortDirection: DisplaySortDirection,
+): Map<String, InlineTextContent> {
+    val inlineContent = mapOf(
+        Pair(
+            myId,
+            InlineTextContent(
+                Placeholder(
+                    width = 20.sp,
+                    height = 20.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextBottom
+                )
+            ) {
+                when (sortDirection) {
+                    DisplaySortDirection.None -> {}
+                    DisplaySortDirection.Ascending -> Icon(
+                        Icons.Filled.ArrowUpward,
+                        "",
+                        tint = Color.Black
+                    )
+
+                    DisplaySortDirection.Descending -> Icon(
+                        Icons.Filled.ArrowDownward,
+                        "",
+                        tint = Color.Black
+                    )
+                }
+            }
+        )
+    )
+    return inlineContent
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -188,12 +211,17 @@ fun RowScope.TableCell(
             )
         }
     } else {
-        CellText(text = text, color = color, style = style, textAlign = textAlign, cellBackgroundColor = cellBackgroundColor, width = width)
+        CellText(
+            text = text,
+            color = color,
+            style = style,
+            textAlign = textAlign,
+            cellBackgroundColor = cellBackgroundColor,
+            width = width
+        )
     }
-
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RowScope.TableHeaderCell(
     text: String,
@@ -228,7 +256,7 @@ data class ColumnMetaData(
     val align: TextAlign = TextAlign.Start,
     val sortOrder: SortOrder = SortOrder.None,
     val sortDirection: DisplaySortDirection = DisplaySortDirection.None,
-    val visible: Boolean = true
+    val visible: Boolean = true,
 )
 
 
@@ -254,11 +282,10 @@ fun Table(
                 Row(Modifier.background(Color.Gray)) {
                     metaData.forEach { header ->
 
-                        if(header.visible) {
+                        if (header.visible) {
                             TableHeaderCell(
                                 text = header.name,
                                 textAlign = header.align,
-//                            color = Color.White,
                                 width = header.width,
                                 style = TextStyle(fontSize = 12.sp),
                                 sortOrder = header.sortOrder,
@@ -295,19 +322,19 @@ fun Table(
                             }) {
                                 cellContent(columnIndex, rowIndex)?.let { content ->
                                     val metaDatum = metaData[columnIndex]
-                                    if(metaDatum.visible) {
+                                    if (metaDatum.visible) {
                                         if (rowIndex % 2 == 0)
                                             this@Row.TableCell(
                                                 textAlign = metaDatum.align,
                                                 showTooltip = content.length > 10,
-                                                text = content,
+                                                text = getContent(content),
                                                 cellBackgroundColor = Color.LightGray,
                                                 width = metaDatum.width
                                             )
                                         else
                                             this@Row.TableCell(
                                                 textAlign = metaDatum.align,
-                                                text = content,
+                                                text = getContent(content),
                                                 showTooltip = content.length > 10,
                                                 width = metaDatum.width
                                             )
@@ -321,6 +348,11 @@ fun Table(
             }
         }
     }
+}
+
+fun getContent(content: String): String {
+    if (content.trim() == "0") return "-"
+    return content
 }
 
 @Composable
