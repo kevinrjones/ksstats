@@ -227,7 +227,7 @@ fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFo
             SearchViewFormat.MatchTotals -> StatsAppScreens.BattingMatchTotals.name
             SearchViewFormat.SeriesAverages -> StatsAppScreens.BattingSeriesAverages.name
             SearchViewFormat.GroundAverages -> StatsAppScreens.BattingGroundAverages.name
-            SearchViewFormat.ByHostCountry -> StatsAppScreens.BattingByHostCuntry.name
+            SearchViewFormat.ByHostCountry -> StatsAppScreens.BattingByHostCountry.name
             SearchViewFormat.ByOppositionTeam -> StatsAppScreens.BattingByOppositionTeam.name
             SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BattingByYear.name
             SearchViewFormat.BySeason -> StatsAppScreens.BattingBySeason.name

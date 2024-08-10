@@ -20,7 +20,7 @@ enum class StatsAppScreens(val title: StringResource) {
     BattingMatchTotals(title = Res.string.playerSummary),
     BattingSeriesAverages(title = Res.string.playerSummary),
     BattingGroundAverages(title = Res.string.playerSummary),
-    BattingByHostCuntry(title = Res.string.playerSummary),
+    BattingByHostCountry(title = Res.string.playerSummary),
     BattingByOppositionTeam(title = Res.string.playerSummary),
     BattingByYear(title = Res.string.playerSummary),
     BattingBySeason(title = Res.string.playerSummary),

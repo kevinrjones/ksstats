@@ -328,6 +328,80 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
         ).use { conn ->
 
             val context = DSL.using(conn, databaseConnection.dialect)
+
+            val cteStepBatName = "tmp_bat"
+            val cteStepTeamsName = "bcrto_tmp_teams"
+            val cteStepDetailsName = "tmp_bat_details"
+            val cteStepCountName = "total_counts"
+
+            val tmp_bat =
+                JooqBattingGroundsRecords.createTemporaryBattingCte(searchParameters)
+            val tmp_teams = JooqBattingGroundsRecords.createTemporaryTeamsCte(searchParameters)
+            val tmp_bat_details =
+                JooqBattingGroundsRecords.createResultsCte(cteStepBatName, cteStepTeamsName, searchParameters)
+
+            val count_cte = totalCountsCte(cteStepBatName)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+
+            val databaseResults = context
+                .with(cteStepBatName).`as`(tmp_bat)
+                .with(cteStepTeamsName).`as`(tmp_teams)
+                .with(cteStepDetailsName).`as`(tmp_bat_details)
+                .with(cteStepCountName).`as`(count_cte)
+                .select().from(cteStepDetailsName)
+                .orderBy(sortSpecification, field("SortNamePart"))
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize)
+                .fetch()
+
+            val countResult = context
+                .with(cteStepBatName).`as`(tmp_bat)
+                .with(cteStepTeamsName).`as`(tmp_teams)
+                .with(cteStepDetailsName).`as`(tmp_bat_details)
+                .with(cteStepCountName).`as`(count_cte)
+                .select().from(cteStepCountName)
+                .fetch()
+
+            val count = countResult.get(0).getValue("count", Int::class.java)
+
+            val results = mutableListOf<PrimaryBatting>()
+            databaseResults.forEach {
+
+                results.add(
+                    PrimaryBatting(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("team", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        notOuts = it.getValue("notouts", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        highestScore = it.getValue("highestscore", Double::class.java),
+                        hundreds = it.getValue("hundreds", Int::class.java),
+                        fifties = it.getValue("fifties", Int::class.java),
+                        ducks = it.getValue("ducks", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        battingImpact = it.getValue("bi", Double::class.java),
+                        opponents = "",
+                        year = "",
+                        ground = it.get("KnownAs", String::class.java),
+                        countryName = it.get("CountryName", String::class.java),
+                    )
+                )
+            }
+
+            val databaseResult = DatabaseResult(results, count)
+
+            emit(databaseResult)
         }
     }
 
@@ -343,6 +417,80 @@ class JooqBattingRecordsDao(private val databaseConnections: DatabaseConnections
         ).use { conn ->
 
             val context = DSL.using(conn, databaseConnection.dialect)
+
+            val cteStepBatName = "tmp_bat"
+            val cteStepTeamsName = "bcrto_tmp_teams"
+            val cteStepDetailsName = "tmp_bat_details"
+            val cteStepCountName = "total_counts"
+
+            val tmp_bat =
+                JooqBattingByHostRecords.createTemporaryBattingCte(searchParameters)
+            val tmp_teams = JooqBattingByHostRecords.createTemporaryTeamsCte(searchParameters)
+            val tmp_bat_details =
+                JooqBattingByHostRecords.createResultsCte(cteStepBatName, cteStepTeamsName, searchParameters)
+
+            val count_cte = totalCountsCte(cteStepBatName)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+
+            val databaseResults = context
+                .with(cteStepBatName).`as`(tmp_bat)
+                .with(cteStepTeamsName).`as`(tmp_teams)
+                .with(cteStepDetailsName).`as`(tmp_bat_details)
+                .with(cteStepCountName).`as`(count_cte)
+                .select().from(cteStepDetailsName)
+                .orderBy(sortSpecification, field("Runs").desc(), field("SortNamePart"))
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize)
+                .fetch()
+
+            val countResult = context
+                .with(cteStepBatName).`as`(tmp_bat)
+                .with(cteStepTeamsName).`as`(tmp_teams)
+                .with(cteStepDetailsName).`as`(tmp_bat_details)
+                .with(cteStepCountName).`as`(count_cte)
+                .select().from(cteStepCountName)
+                .fetch()
+
+            val count = countResult.get(0).getValue("count", Int::class.java)
+
+            val results = mutableListOf<PrimaryBatting>()
+            databaseResults.forEach {
+
+                results.add(
+                    PrimaryBatting(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("team", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        notOuts = it.getValue("notouts", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        highestScore = it.getValue("highestscore", Double::class.java),
+                        hundreds = it.getValue("hundreds", Int::class.java),
+                        fifties = it.getValue("fifties", Int::class.java),
+                        ducks = it.getValue("ducks", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        battingImpact = it.getValue("bi", Double::class.java),
+                        opponents = it.getValue("opponents", String::class.java) ?: "",
+                        year = "",
+                        ground = "",
+                        countryName = it.get("CountryName", String::class.java),
+                    )
+                )
+            }
+
+            val databaseResult = DatabaseResult(results, count)
+
+            emit(databaseResult)
         }
     }
 

@@ -57,7 +57,12 @@
     <string name="inningsByInningsScreenTitle">Innings By Innings Summary</string>
     <string name="playerBattingSummaryTitle">Player Batting Summary</string>
     <string name="playerBowlingSummaryTitle">Player Bowling Summary</string>
-    <string name="playerSeriesAveragesTitle">"Series Averages"</string>
+    <string name="playerSeriesAveragesTitle">Series Averages</string>
+    <string name="playerGroundAveragesTitle">Ground Averages</string>
+    <string name="playerByHostCountryTitle">By Host Country Averages</string>
+    <string name="playerByOppositionTeamTitle">By Opposition Averages</string>
+    <string name="playerByYearOfMatchStartTitle">By Year Of Match Start Averages</string>
+    <string name="playerBySeasonTitle">By Season Averages</string>
     <string name="name">Name</string>
     <string name="team">Team</string>
     <string name="score">Score</string>

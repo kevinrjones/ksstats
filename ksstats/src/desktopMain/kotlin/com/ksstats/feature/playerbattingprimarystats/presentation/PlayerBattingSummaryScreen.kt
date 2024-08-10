@@ -210,10 +210,16 @@ private fun getDisplayRecords(searchResults: List<PrimaryBatting>, startRow: Int
             "sr" to searchResult.strikeRate.round(2),
             "bi" to searchResult.battingImpact.round(3),
             "year" to searchResult.year,
-            "ground" to searchResult.ground,
-            "countryName" to searchResult.countryName,
+            "ground" to getGroundName(searchResult.ground, searchResult.countryName),
+            "countryname" to searchResult.countryName,
         )
     }
+}
+
+fun getGroundName(ground: String, countryName: String): String {
+    if(ground.isEmpty()) return ""
+    if(countryName.isEmpty()) return ground
+    return "$ground ($countryName)"
 }
 
 
@@ -338,6 +344,40 @@ fun PlayerBattingSummaryScreen(
                             ColumnMetaData(
                                 "Opponents", 200.dp, sortOrder = SortOrder.Opponents,
                                 sortDirection = if (sortOrder == SortOrder.Opponents) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
+                    "ground" to when (recordScreen) {
+                        StatsAppScreens.BattingGroundAverages ->
+                            ColumnMetaData(
+                                "Ground", 400.dp, sortOrder = SortOrder.Ground,
+                                sortDirection = if (sortOrder == SortOrder.Ground) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
+                    "countryname" to when (recordScreen) {
+                        StatsAppScreens.BattingByHostCountry ->
+                            ColumnMetaData(
+                                "Host Country", 200.dp, sortOrder = SortOrder.CountryName,
+                                sortDirection = if (sortOrder == SortOrder.CountryName) {
                                     if (sortDirection == SortDirection.Ascending) {
                                         DisplaySortDirection.Ascending
                                     } else {

@@ -80,6 +80,31 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             screen = StatsAppScreens.BattingSeriesAverages,
             title = Res.string.playerSeriesAveragesTitle
         )
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingGroundAverages,
+            title = Res.string.playerGroundAveragesTitle
+        )
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingByHostCountry,
+            title = Res.string.playerByHostCountryTitle
+        )
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingByOppositionTeam,
+            title = Res.string.playerByOppositionTeamTitle
+        )
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingByYear,
+            title = Res.string.playerByYearOfMatchStartTitle
+        )
+        playerBattingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BattingBySeason,
+            title = Res.string.playerBySeasonTitle
+        )
         playerBowlingSummaryScreen(
             navigate = { navController.navigate(it) },
             screen = StatsAppScreens.BowlingPlayerSummary,

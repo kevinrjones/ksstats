@@ -74,6 +74,43 @@ class PlayerBattingSummaryScreenViewModel(
                         _searching.value = false
                     }
 
+                    StatsAppScreens.BattingInningsByInnings -> TODO()
+                    StatsAppScreens.BattingGroundAverages -> {
+                        playerBattingPrimaryStatsUseCases.getGroundAverages(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BattingByHostCountry -> {
+                        playerBattingPrimaryStatsUseCases.getByHostCountry(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BattingByOppositionTeam -> {
+                        playerBattingPrimaryStatsUseCases.getByOppositionTeam(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BattingByYear -> {
+                        playerBattingPrimaryStatsUseCases.getByYearOfMatchStart(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BattingBySeason -> {
+                        playerBattingPrimaryStatsUseCases.getBySeason(searchParameters)
+                            .collect {
+                                _battingSummary.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BowlingPlayerSummary -> TODO()
                     else -> {
                         _searching.value = false
                         // todo: add logging
