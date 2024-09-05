@@ -84,7 +84,13 @@ class PlayerBowlingSummaryScreenViewModel(
                         _searching.value = false
                     }
 
-                    StatsAppScreens.BowlingGroundAverages -> TODO()
+                    StatsAppScreens.BowlingGroundAverages -> {
+                        playerBowlingPrimaryStatsUseCases.getGroundAverages(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
+                    }
                     StatsAppScreens.BowlingByHostCountry -> TODO()
                     StatsAppScreens.BowlingByOppositionTeam -> TODO()
                     StatsAppScreens.BowlingByYear -> TODO()

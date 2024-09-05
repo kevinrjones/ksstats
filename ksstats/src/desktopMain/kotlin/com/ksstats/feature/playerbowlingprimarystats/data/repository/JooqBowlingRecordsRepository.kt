@@ -27,22 +27,22 @@ class JooqBowlingRecordsRepository(private val bowlingRecordsDao: BowlingRecords
     }
 
     override fun getGroundAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+        return bowlingRecordsDao.getGroundAverages(searchParameters)
     }
 
     override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+        return bowlingRecordsDao.getByHostCountry(searchParameters)
     }
 
     override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+        return bowlingRecordsDao.getByOppositionTeam(searchParameters)
     }
 
     override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+        return bowlingRecordsDao.getByYearOfMatchStart(searchParameters)
     }
 
     override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+        return bowlingRecordsDao.getBySeason(searchParameters)
     }
 }

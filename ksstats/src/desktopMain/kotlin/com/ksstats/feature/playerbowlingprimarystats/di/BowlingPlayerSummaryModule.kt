@@ -5,6 +5,7 @@ import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetBowlingSu
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetBowlingInningsByInnings
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetBowlingMatchTotals
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetSeriesAverages
+import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetGroundAverages
 import com.ksstats.feature.playerbowlingprimarystats.data.repository.JooqBowlingRecordsRepository
 import com.ksstats.feature.playerbowlingprimarystats.data.source.BowlingRecordsDao
 import com.ksstats.feature.playerbowlingprimarystats.data.source.JooqBowlingRecordsDao
@@ -19,6 +20,7 @@ fun playerBowlingSummaryModule() = module {
     singleOf(::GetBowlingInningsByInnings)
     singleOf(::GetBowlingMatchTotals)
     singleOf(::GetSeriesAverages)
+    singleOf(::GetGroundAverages)
     singleOf(::JooqBowlingRecordsRepository) bind BowlingRecordsRepository::class
     factory { JooqBowlingRecordsDao(get()) } bind BowlingRecordsDao::class
 }

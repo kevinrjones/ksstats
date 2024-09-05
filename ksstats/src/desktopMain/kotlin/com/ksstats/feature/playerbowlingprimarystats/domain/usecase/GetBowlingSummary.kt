@@ -30,3 +30,9 @@ class GetSeriesAverages(val repository: BowlingRecordsRepository) {
         return repository.getSeriesAverages(searchParameters)
     }
 }
+
+class GetGroundAverages(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return repository.getGroundAverages(searchParameters)
+    }
+}

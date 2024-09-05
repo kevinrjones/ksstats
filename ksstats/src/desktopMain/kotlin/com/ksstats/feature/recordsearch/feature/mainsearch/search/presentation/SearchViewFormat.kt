@@ -12,7 +12,7 @@ enum class SearchViewFormat(val format: StringResource, val minimumRuns: Int = 1
     InningsByInnings(Res.string.inningsByInningsList, 0),
     MatchTotals(Res.string.matchTotals, 0),
     SeriesAverages(Res.string.seriesAverages, 10),
-    GroundAverages(Res.string.groundAverages),
+    GroundAverages(Res.string.groundAverages, 10),
     ByHostCountry(Res.string.byHostCountry),
     ByOppositionTeam(Res.string.byOppositionTeam),
     ByYearOfMatchStart(Res.string.byYearOfMatchStart),
