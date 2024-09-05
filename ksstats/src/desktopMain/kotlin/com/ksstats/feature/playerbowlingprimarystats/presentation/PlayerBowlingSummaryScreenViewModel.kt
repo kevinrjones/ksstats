@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
+import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.types.MatchType
 import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
@@ -25,6 +26,7 @@ import kotlinx.datetime.format.char
 class PlayerBowlingSummaryScreenViewModel(
     private val playerBowlingPrimaryStatsUseCases: PlayerBowlingPrimaryStatsUseCases,
     private val summaryUseCase: SummaryUseCases,
+    private val screen: StatsAppScreens,
 
     ) : ViewModel() {
 
@@ -64,11 +66,31 @@ class PlayerBowlingSummaryScreenViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _searching.value = true
-                playerBowlingPrimaryStatsUseCases.getBowlingSummary(searchParameters)
-                    .collect {
-                        _primaryBowling.value = it
+                when (screen) {
+                    StatsAppScreens.BowlingPlayerSummary -> {
+
+                        playerBowlingPrimaryStatsUseCases.getBowlingSummary(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
                     }
-                _searching.value = false
+
+                    StatsAppScreens.BowlingSeriesAverages -> {
+                        playerBowlingPrimaryStatsUseCases.getSeriesAverages(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
+                    }
+
+                    StatsAppScreens.BowlingGroundAverages -> TODO()
+                    StatsAppScreens.BowlingByHostCountry -> TODO()
+                    StatsAppScreens.BowlingByOppositionTeam -> TODO()
+                    StatsAppScreens.BowlingByYear -> TODO()
+                    StatsAppScreens.BowlingBySeason -> TODO()
+                    else -> TODO()
+                }
             }
         }
     }
@@ -84,8 +106,7 @@ class PlayerBowlingSummaryScreenViewModel(
         }
     }
 
-    fun getFivesLimitForMatchType(matchType: MatchType): Int
-        = if(matchType.isMultiInningsType()) 4 else 5
+    fun getFivesLimitForMatchType(matchType: MatchType): Int = if (matchType.isMultiInningsType()) 4 else 5
 
 
 }

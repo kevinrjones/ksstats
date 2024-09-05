@@ -65,7 +65,7 @@ class PlayerBowlingInningsByInningsScreenViewModel(
                         _searching.value = false
                     }
                     StatsAppScreens.BowlingMatchTotals -> {
-                        playerBowlingPrimaryStatsUseCases.getBowlingInningsByInnings(searchParameters)
+                        playerBowlingPrimaryStatsUseCases.getBowlingMatchTotals(searchParameters)
                             .collect {
                                 _inningsByInnings.value = it
                             }

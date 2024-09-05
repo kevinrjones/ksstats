@@ -58,7 +58,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
         val bowlingUseCases: PlayerBowlingPrimaryStatsUseCases = koinInject()
         val summaryUseCases: SummaryUseCases = koinInject()
         val viewModel: PlayerBowlingSummaryScreenViewModel = viewModel {
-            PlayerBowlingSummaryScreenViewModel(bowlingUseCases, summaryUseCases)
+            PlayerBowlingSummaryScreenViewModel(bowlingUseCases, summaryUseCases, screen)
         }
         val summary = viewModel.summary.collectAsState()
 

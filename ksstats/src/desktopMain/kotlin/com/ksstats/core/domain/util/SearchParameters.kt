@@ -20,4 +20,5 @@ data class SearchParameters(
     val result: Int = 0,
     val pagingParameters: PagingParameters,
     val fivesLimit: Int = 5,
+    val wicketsLimit: Int = 5,
 )

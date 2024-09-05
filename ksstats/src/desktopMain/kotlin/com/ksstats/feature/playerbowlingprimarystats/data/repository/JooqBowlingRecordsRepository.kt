@@ -2,7 +2,6 @@ package com.ksstats.feature.playerbowlingprimarystats.data.repository
 
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.feature.playerbattingprimarystats.data.InningsByInningsBatting
 import com.ksstats.feature.playerbattingprimarystats.data.PrimaryBatting
 import com.ksstats.feature.playerbowlingprimarystats.data.InningsByInningsBowling
 import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
@@ -19,27 +18,31 @@ class JooqBowlingRecordsRepository(private val bowlingRecordsDao: BowlingRecords
         return bowlingRecordsDao.getBowlingInningsByInnings(searchParameters)
     }
 
-    override fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBatting>> {
+    override fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBowling>> {
+        return bowlingRecordsDao.getMatchTotals(searchParameters)
+    }
+
+    override fun getSeriesAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return bowlingRecordsDao.getSeriesAverages(searchParameters)
+    }
+
+    override fun getGroundAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
         TODO("Not yet implemented")
     }
 
-    override fun getGroundAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+    override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
         TODO("Not yet implemented")
     }
 
-    override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+    override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
         TODO("Not yet implemented")
     }
 
-    override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+    override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
         TODO("Not yet implemented")
     }
 
-    override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+    override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
         TODO("Not yet implemented")
     }
 }

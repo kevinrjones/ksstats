@@ -18,3 +18,15 @@ class GetBowlingInningsByInnings(val repository: BowlingRecordsRepository) {
         return repository.getBowlingInningsByInnings(searchParameters)
     }
 }
+
+class GetBowlingMatchTotals(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBowling>> {
+        return repository.getMatchTotals(searchParameters)
+    }
+}
+
+class GetSeriesAverages(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return repository.getSeriesAverages(searchParameters)
+    }
+}

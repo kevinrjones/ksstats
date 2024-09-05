@@ -3,15 +3,14 @@ package com.ksstats.feature.playerbowlingprimarystats.data.source
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.db.tables.Matches.Companion.MATCHES
 import com.ksstats.db.tables.references.*
-import org.jooq.Record1
-import org.jooq.Record17
-import org.jooq.SelectJoinStep
+import org.jooq.*
 import org.jooq.impl.DSL.*
+import java.io.Serializable
 import java.time.LocalDate
 
-object JooqBowlingMatchTotalsRecordsRecords {
+object JooqBowlingMatchTotalsRecords {
 
-    fun createTemporaryBowlingCte(searchParameters: SearchParameters): SelectJoinStep<Record17<Int?, String?, Any, Int, Int, Int, Int, Int, Int, Int, Int, String?, LocalDate?, Long?, String?, Int?, String?>> {
+    fun createTemporaryBowlingCte(searchParameters: SearchParameters): SelectJoinStep<Record19<Int?, String?, String?, Any, Int, String?, LocalDate?, Long?, String?, Int?, String?, Int, Int, Serializable, Serializable, Serializable, Serializable, Serializable, Serializable>> {
         val teamIdCondition = if (searchParameters.teamId != 0) {
             and(BOWLINGDETAILS.TEAMID.eq(searchParameters.teamId))
         } else null
@@ -41,19 +40,8 @@ object JooqBowlingMatchTotalsRecordsRecords {
         val cte = select(
             PLAYERS.ID,
             PLAYERS.FULLNAME,
+            PLAYERS.SORTNAMEPART,
             field("T.Name", String::class).`as`("Team"),
-            coalesce(field("bd.Balls", Int::class.java), 0).`as`("Balls"),
-            coalesce(field("bd.Maidens", Int::class.java), 0).`as`("Maidens"),
-            coalesce(field("bd.Dots", Int::class.java), 0).`as`("Dots"),
-            coalesce(field("bd.Runs", Int::class.java), 0).`as`("Runs"),
-            coalesce(field("bd.Wickets", Int::class.java), 0).`as`("Wickets"),
-            field("bd.InningsOrder", Int::class.java).`as`("InningsNumber"),
-            iif(
-                field("bd.balls", Int::class.java).eq(0),
-                0,
-                field("bd.runs", Int::class.java).div(cast(field("bd.balls", Int::class.java), Double::class.java))
-                    .mul(6),
-            ).`as`("econ"),
             field("O.Name", Int::class.java).`as`("Opponents"),
             GROUNDS.KNOWNAS.`as`("Ground"),
             MATCHES.MATCHSTARTDATE,
@@ -61,12 +49,44 @@ object JooqBowlingMatchTotalsRecordsRecords {
             MATCHES.SERIESDATE,
             MATCHES.BALLSPEROVER,
             MATCHES.CAID,
+            field("bd.InningsOrder", Int::class.java).`as`("InningsNumber"),
+            rowNumber().over().partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                .orderBy(field("bd.MatchId"), field("bd.playerid")).`as`("rn"),
+            coalesce(
+                sum(
+                    field("bd.Balls", Int::class.java)
+                ).over().partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                    .orderBy(field("bd.MatchId"), field("bd.playerid")), 0
+            ).`as`("Balls"),
+            coalesce(
+                sum(field("bd.Maidens", Int::class.java)).over().partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                    .orderBy(field("bd.MatchId"), field("bd.playerid")), 0
+            ).`as`("Maidens"),
+            coalesce(
+                sum(
+                    field("bd.Dots", Int::class.java)
+                ).over().partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                    .orderBy(field("bd.MatchId"), field("bd.playerid")), 0
+            ).`as`("Dots"),
+            coalesce(
+                sum(field("bd.Runs", Int::class.java)).over().partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                    .orderBy(field("bd.MatchId"), field("bd.playerid")), 0
+            ).`as`("Runs"),
+            coalesce(
+                sum(field("bd.Wickets", Int::class.java)).over().partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                    .orderBy(field("bd.MatchId"), field("bd.playerid")), 0
+            ).`as`("Wickets"),
+            coalesce(
+                sum(field("bd.SyntheticBestBowling", Int::class.java)).over()
+                    .partitionBy(field("bd.MatchId"), field("bd.playerid"))
+                    .orderBy(field("bd.MatchId"), field("bd.playerid")), 0
+            ).`as`("match_synbb"),
         ).from(
             BOWLINGDETAILS.`as`("bd")
-                .join(TEAMS.`as`("T")).on(field("T.Id", Int::class.java).eq(field("bd.teamId", Int::class.java)))
-                .and(field("bd.MatchType", String::class.java).eq(searchParameters.matchType.value))
-                .join(TEAMS.`as`("O")).on(field("O.Id", Int::class.java).eq(field("bd.teamId", Int::class.java)))
                 .join(PLAYERS).on(PLAYERS.ID.eq(field("bd.playerId", Int::class.java)))
+                .join(TEAMS.`as`("T")).on(field("T.Id", Int::class.java).eq(field("bd.teamId", Int::class.java)))
+                .join(TEAMS.`as`("O")).on(field("O.Id", Int::class.java).eq(field("bd.opponentsId", Int::class.java)))
+                .and(field("bd.MatchType", String::class.java).eq(searchParameters.matchType.value))
                 .join(MATCHES).on(
                     MATCHES.ID.eq(field("bd.matchId", Int::class.java))
                         .and(MATCHES.MATCHTYPE.eq(field("bd.matchType", String::class.java)))

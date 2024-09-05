@@ -236,13 +236,13 @@ fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFo
         MainSearchType.Bowling -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> StatsAppScreens.BowlingPlayerSummary.name
             SearchViewFormat.InningsByInnings -> StatsAppScreens.BowlingInningsByInnings.name
-            SearchViewFormat.MatchTotals -> TODO()
-            SearchViewFormat.SeriesAverages -> TODO()
-            SearchViewFormat.GroundAverages -> TODO()
-            SearchViewFormat.ByHostCountry -> TODO()
-            SearchViewFormat.ByOppositionTeam -> TODO()
-            SearchViewFormat.ByYearOfMatchStart -> TODO()
-            SearchViewFormat.BySeason -> TODO()
+            SearchViewFormat.MatchTotals -> StatsAppScreens.BowlingMatchTotals.name
+            SearchViewFormat.SeriesAverages -> StatsAppScreens.BowlingSeriesAverages.name
+            SearchViewFormat.GroundAverages -> StatsAppScreens.BowlingGroundAverages.name
+            SearchViewFormat.ByHostCountry -> StatsAppScreens.BowlingByHostCountry.name
+            SearchViewFormat.ByOppositionTeam -> StatsAppScreens.BowlingByOppositionTeam.name
+            SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BowlingByYear.name
+            SearchViewFormat.BySeason -> StatsAppScreens.BowlingBySeason.name
         }
     }
 }
@@ -265,7 +265,13 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
         MainSearchType.Bowling -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> Pair(SortOrder.Wickets, SortDirection.Descending)
             SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Ascending)
-            else -> TODO()
+            SearchViewFormat.MatchTotals -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.SeriesAverages -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.GroundAverages -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.ByHostCountry -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.BySeason -> Pair(SortOrder.Wickets, SortDirection.Descending)
         }
     }
 }

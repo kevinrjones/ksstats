@@ -116,6 +116,41 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             screen = StatsAppScreens.BowlingInningsByInnings,
             title = Res.string.inningsByInningsScreenTitle
         )
+        playerBowlingInningsByInningsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingMatchTotals,
+            title = Res.string.matchScreenTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingSeriesAverages,
+            title = Res.string.playerSeriesAveragesTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingGroundAverages,
+            title = Res.string.playerGroundAveragesTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingByHostCountry,
+            title = Res.string.playerByHostCountryTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingByOppositionTeam,
+            title = Res.string.playerByOppositionTeamTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingByYear,
+            title = Res.string.playerByYearOfMatchStartTitle
+        )
+        playerBowlingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingBySeason,
+            title = Res.string.playerBySeasonTitle
+        )
     }
 
 }

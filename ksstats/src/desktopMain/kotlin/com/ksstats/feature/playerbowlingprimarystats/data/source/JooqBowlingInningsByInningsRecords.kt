@@ -5,13 +5,14 @@ import com.ksstats.db.tables.Matches.Companion.MATCHES
 import com.ksstats.db.tables.references.*
 import org.jooq.Record1
 import org.jooq.Record17
+import org.jooq.Record18
 import org.jooq.SelectJoinStep
 import org.jooq.impl.DSL.*
 import java.time.LocalDate
 
 object JooqBowlingInningsByInningsRecords {
 
-    fun createTemporaryBowlingCte(searchParameters: SearchParameters): SelectJoinStep<Record17<Int?, String?, Any, Int, Int, Int, Int, Int, Int, Int, Int, String?, LocalDate?, Long?, String?, Int?, String?>> {
+    fun createTemporaryBowlingCte(searchParameters: SearchParameters): SelectJoinStep<Record18<Int?, String?, String?, Any, Int, Int, Int, Int, Int, Int, Int, Int, String?, LocalDate?, Long?, String?, Int?, String?>> {
         val teamIdCondition = if (searchParameters.teamId != 0) {
             and(BOWLINGDETAILS.TEAMID.eq(searchParameters.teamId))
         } else null
@@ -41,6 +42,7 @@ object JooqBowlingInningsByInningsRecords {
         val cte = select(
             PLAYERS.ID,
             PLAYERS.FULLNAME,
+            PLAYERS.SORTNAMEPART,
             field("T.Name", String::class).`as`("Team"),
             coalesce(field("bd.Balls", Int::class.java), 0).`as`("Balls"),
             coalesce(field("bd.Maidens", Int::class.java), 0).`as`("Maidens"),
@@ -65,7 +67,7 @@ object JooqBowlingInningsByInningsRecords {
             BOWLINGDETAILS.`as`("bd")
                 .join(TEAMS.`as`("T")).on(field("T.Id", Int::class.java).eq(field("bd.teamId", Int::class.java)))
                 .and(field("bd.MatchType", String::class.java).eq(searchParameters.matchType.value))
-                .join(TEAMS.`as`("O")).on(field("O.Id", Int::class.java).eq(field("bd.teamId", Int::class.java)))
+                .join(TEAMS.`as`("O")).on(field("O.Id", Int::class.java).eq(field("bd.opponentsId", Int::class.java)))
                 .join(PLAYERS).on(PLAYERS.ID.eq(field("bd.playerId", Int::class.java)))
                 .join(MATCHES).on(
                     MATCHES.ID.eq(field("bd.matchId", Int::class.java))
