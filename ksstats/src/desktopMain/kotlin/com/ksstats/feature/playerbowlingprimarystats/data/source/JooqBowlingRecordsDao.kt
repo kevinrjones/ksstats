@@ -3,7 +3,10 @@ package com.ksstats.feature.playerbowlingprimarystats.data.source
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.domain.util.SortDirection
-import com.ksstats.feature.playerbowlingprimarystats.data.BowlingSummary
+import com.ksstats.feature.playerbattingprimarystats.data.InningsByInningsBatting
+import com.ksstats.feature.playerbattingprimarystats.data.PrimaryBatting
+import com.ksstats.feature.playerbowlingprimarystats.data.InningsByInningsBowling
+import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
 import com.ksstats.feature.playerbowlingprimarystats.data.source.JooqBowlingCareerRecords.createBbm
 import com.ksstats.feature.playerbowlingprimarystats.data.source.JooqBowlingCareerRecords.createBbmAll
 import com.ksstats.feature.playerbowlingprimarystats.data.source.JooqBowlingCareerRecords.createFives
@@ -19,7 +22,7 @@ import org.jooq.impl.DSL.field
 import java.sql.DriverManager
 
 class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections) : BowlingRecordsDao {
-    override fun getBowlingSummary(searchParameters: SearchParameters): Flow<DatabaseResult<BowlingSummary>> = flow {
+    override fun getBowlingSummary(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> = flow {
         val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
 
         if (databaseConnection == null)
@@ -76,11 +79,11 @@ class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections
                 .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
             var count = 0
 
-            val results = mutableListOf<BowlingSummary>()
+            val results = mutableListOf<PrimaryBowling>()
             databaseResults.forEach {
                 count = it.getValue("count", Int::class.java)
                 results.add(
-                    BowlingSummary(
+                    PrimaryBowling(
                         playerId = it.getValue("playerid", Int::class.java),
                         name = it.getValue("name", String::class.java),
                         team = it.getValue("teams", String::class.java),
@@ -117,7 +120,114 @@ class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections
         }
     }
 
-    override fun getBowlingInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<BowlingSummary>> {
+    override fun getBowlingInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBowling>> =
+        flow {
+
+            val cteStep1Name = "bocrto_tmp_bowl"
+
+            val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+
+            if (databaseConnection == null)
+                throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+            DriverManager.getConnection(
+                databaseConnection.connectionString
+            ).use { conn ->
+
+                val context = DSL.using(conn, databaseConnection.dialect)
+
+                val cteStep1Name = "tmp_bowl"
+                val cteStepCountName = "total_counts"
+
+                val tmp_bowl = JooqBowlingInningsByInningsRecords.createTemporaryBowlingCte(searchParameters)
+                val count_cte = JooqBowlingInningsByInningsRecords.totalCountsCte(cteStep1Name)
+
+                // playerwickets desc, playerruns, MatchStartDateAsOffset
+                val sortSpecification = when (searchParameters.sortDirection) {
+                    SortDirection.Ascending -> listOf(
+                        field(searchParameters.sortOrder.name).asc(),
+                        field("wickets").desc(),
+                        field("runs"),
+                        field("MatchStartDateAsOffset"),
+                    )
+
+                    SortDirection.Descending -> listOf(
+                        field(searchParameters.sortOrder.name).desc(),
+                        field("wickets").desc(),
+                        field("runs").desc(),
+                        field("MatchStartDateAsOffset").desc(),
+                    )
+                }
+                val databaseResults = context
+                    .with(cteStep1Name).`as`(tmp_bowl)
+                    .with(cteStepCountName).`as`(count_cte)
+                    .select().from(cteStep1Name)
+                    .orderBy(sortSpecification)
+                    .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize)
+                    .fetch()
+
+                val countResult = context
+                    .with(cteStep1Name).`as`(tmp_bowl)
+                    .with(cteStepCountName).`as`(count_cte)
+                    .select().from(cteStepCountName)
+                    .fetch()
+
+                val count = countResult.get(0).getValue("count", Int::class.java)
+
+                val results = mutableListOf<InningsByInningsBowling>()
+                databaseResults.forEach {
+                    results.add(
+                        InningsByInningsBowling(
+                            playerId = it.getValue("Id", Int::class.java),
+                            name = it.getValue("FullName", String::class.java),
+                            team = it.getValue("Team", String::class.java),
+                            matchDate = it.getValue("MatchStartDateAsOffset", Long::class.java),
+                            ground = it.getValue("Ground", String::class.java),
+                            opponents = it.getValue("Opponents", String::class.java),
+                            ballsPerOver = it.getValue("BallsPerOver", Int::class.java),
+                            balls = it.getValue("Balls", Int::class.java),
+                            maidens = it.getValue("Maidens", Int::class.java),
+                            dots = it.getValue("Dots", Int::class.java),
+                            runs = it.getValue("Runs", Int::class.java),
+                            wickets = it.getValue("Wickets", Int::class.java),
+                            inningsNumber = it.getValue("InningsNumber", Int::class.java),
+                            seriesDate = it.getValue("SeriesDate", String::class.java),
+                            economy = it.getValue("econ", Double::class.java),
+                            average = 0.0
+                        )
+                    )
+                }
+                val databaseResult = DatabaseResult(results, count)
+                emit(databaseResult)
+            }
+
+        }
+
+    override fun getSeriesAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<InningsByInningsBowling>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getGroundAverages(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBatting>> {
         TODO("Not yet implemented")
     }
 }

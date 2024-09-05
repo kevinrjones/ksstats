@@ -88,4 +88,10 @@ object JooqBattingInningsByInningsRecords {
 
         return cte
     }
+
+    fun totalCountsCte(
+        resultsCteName: String,
+    ): SelectJoinStep<Record1<Int>> = select(count().`as`("count"))
+        .from(resultsCteName)
+
 }

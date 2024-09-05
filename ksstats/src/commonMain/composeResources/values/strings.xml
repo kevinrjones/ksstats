@@ -77,4 +77,9 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
+    <string name="overs">Overs</string>
+    <string name="ballsPerOver">BpO</string>
+    <string name="runs">Runs</string>
+    <string name="wkts">Wkts</string>
+    <string name="econ">Econ</string>
 </resources>

@@ -33,6 +33,8 @@ enum class SortOrder {
     Minutes,
     Ground,
     CountryName,
+    Overs,
+    BallsPerOver,
 }
 
 enum class SortDirection(val direction: String) {

@@ -35,8 +35,6 @@ fun main() = application {
 
     val databaseDirectory = "${home}$separator${ksstats}$separator"
 
-    val connectionString = "jdbc:sqlite:${databaseDirectory}${fileName}.sqlite"
-
     val connectionStrings = matchTypesToDatabaseName.map { it ->
         it.key to DatabaseConnection(
             connectionString = "jdbc:sqlite:${databaseDirectory}${it.value}.sqlite",

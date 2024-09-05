@@ -25,4 +25,6 @@ enum class StatsAppScreens(val title: StringResource) {
     BattingByYear(title = Res.string.playerSummary),
     BattingBySeason(title = Res.string.playerSummary),
     BowlingPlayerSummary(title = Res.string.playerSummary),
+    BowlingInningsByInnings(title = Res.string.playerSummary),
+    BowlingMatchTotals(title = Res.string.playerSummary),
 }

@@ -6,7 +6,7 @@ import androidx.navigation.navArgument
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.core.presentation.StatsAppScreens
 
-fun buildDeailsScreenNavUrl(baseUrl: String, searchParameters: SearchParameters): String {
+fun buildDetailsScreenNavUrl(baseUrl: String, searchParameters: SearchParameters): String {
 
     val sortOrder = searchParameters.sortOrder.ordinal
 

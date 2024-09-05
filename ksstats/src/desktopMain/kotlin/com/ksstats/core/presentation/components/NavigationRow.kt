@@ -116,7 +116,11 @@ fun NavigationRow(
                 }
                 append(stringResource(Res.string.to))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append((firstRowNumber + pageSize - 1).toString())
+                    val possibleLastRow = firstRowNumber + pageSize - 1
+                    if (lastRowNumber < possibleLastRow)
+                        append((lastRowNumber).toString())
+                    else
+                        append((possibleLastRow).toString())
                 }
                 append(stringResource(Res.string.of))
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {

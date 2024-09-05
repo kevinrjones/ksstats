@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeDesktop)
+//    id("org.jetbrains.compose") version "1.7.0-alpha03"
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jooq)
     alias(libs.plugins.kotlinSerialization)
@@ -26,6 +27,7 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
+        val desktopMain by getting
 
         all {
             languageSettings {
@@ -36,10 +38,7 @@ kotlin {
         }
 
         val genDir = layout.buildDirectory.dir("./generated/jooq/kotlin")
-//        val generatedDir = layout.projectDirectory.dir("generated/kotlin")
-//
-//
-        val desktopMain by getting
+
         commonMain.configure {
             sourceSets {
                 kotlin.srcDir(genDir)
@@ -119,7 +118,7 @@ compose.desktop {
 
 
 jooq {
-    val output: Provider<Directory> = layout.buildDirectory.dir(".")
+    val output = layout.buildDirectory.dir(".")
     val dir = "${layout.projectDirectory}/../"
     val sqliteUrl = "jdbc:sqlite:${dir}/database/cricket.sqlite"
     configuration {

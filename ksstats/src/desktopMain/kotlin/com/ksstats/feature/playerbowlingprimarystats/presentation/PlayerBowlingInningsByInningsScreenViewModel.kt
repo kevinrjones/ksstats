@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
+import com.ksstats.core.domain.util.createAbbreviatedEnglishDateFormat
+import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.types.MatchType
-import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
+import com.ksstats.feature.playerbowlingprimarystats.data.InningsByInningsBowling
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
 import com.ksstats.feature.summary.domain.model.SummaryResult
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
@@ -17,33 +19,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
-import kotlinx.datetime.format.MonthNames
-import kotlinx.datetime.format.char
 
-class PlayerBowlingSummaryScreenViewModel(
+class PlayerBowlingInningsByInningsScreenViewModel(
     private val playerBowlingPrimaryStatsUseCases: PlayerBowlingPrimaryStatsUseCases,
     private val summaryUseCase: SummaryUseCases,
+    private val screen: StatsAppScreens,
 
     ) : ViewModel() {
 
-    private val format = LocalDate.Format {
-        date(
-            LocalDate.Format {
-                monthName(MonthNames.ENGLISH_ABBREVIATED)
-                char(' ')
-                dayOfMonth()
-                chars(" ")
-                year()
-            }
-        )
-    }
+    private val format = createAbbreviatedEnglishDateFormat()
 
-    private val _primaryBowling: MutableStateFlow<DatabaseResult<PrimaryBowling>> = MutableStateFlow(
-        DatabaseResult(listOf(), 0)
+    private val _inningsByInnings: MutableStateFlow<DatabaseResult<InningsByInningsBowling>> = MutableStateFlow(
+        DatabaseResult(
+            listOf(), 0
+        )
     )
-    val primaryBowling: StateFlow<DatabaseResult<PrimaryBowling>> = _primaryBowling.asStateFlow()
+    val inningsByInnings: StateFlow<DatabaseResult<InningsByInningsBowling>> = _inningsByInnings.asStateFlow()
 
     private val _searching = MutableStateFlow<Boolean>(false)
     val searching = _searching.asStateFlow()
@@ -64,11 +56,27 @@ class PlayerBowlingSummaryScreenViewModel(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _searching.value = true
-                playerBowlingPrimaryStatsUseCases.getBowlingSummary(searchParameters)
-                    .collect {
-                        _primaryBowling.value = it
+                when(screen) {
+                    StatsAppScreens.BowlingInningsByInnings -> {
+                        playerBowlingPrimaryStatsUseCases.getBowlingInningsByInnings(searchParameters)
+                            .collect {
+                                _inningsByInnings.value = it
+                            }
+                        _searching.value = false
                     }
-                _searching.value = false
+                    StatsAppScreens.BowlingMatchTotals -> {
+                        playerBowlingPrimaryStatsUseCases.getBowlingInningsByInnings(searchParameters)
+                            .collect {
+                                _inningsByInnings.value = it
+                            }
+                        _searching.value = false
+                    }
+                    else -> {
+                        _searching.value = false
+                        // todo: add logging
+                        println("Invalid screen")
+                    }
+                }
             }
         }
     }
@@ -83,9 +91,5 @@ class PlayerBowlingSummaryScreenViewModel(
             }
         }
     }
-
-    fun getFivesLimitForMatchType(matchType: MatchType): Int
-        = if(matchType.isMultiInningsType()) 4 else 5
-
 
 }

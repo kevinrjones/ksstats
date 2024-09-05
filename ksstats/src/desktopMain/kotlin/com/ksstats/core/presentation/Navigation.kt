@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.ksstats.feature.playerbattingprimarystats.presentation.playerBattingInningsByInningsScreen
 import com.ksstats.feature.playerbattingprimarystats.presentation.playerBattingSummaryScreen
+import com.ksstats.feature.playerbowlingprimarystats.presentation.playerBowlingInningsByInningsScreen
 import com.ksstats.feature.playerbowlingprimarystats.presentation.playerBowlingSummaryScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.mainSearchScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
@@ -109,6 +110,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             navigate = { navController.navigate(it) },
             screen = StatsAppScreens.BowlingPlayerSummary,
             title = Res.string.playerBowlingSummaryTitle
+        )
+        playerBowlingInningsByInningsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.BowlingInningsByInnings,
+            title = Res.string.inningsByInningsScreenTitle
         )
     }
 

@@ -1,6 +1,6 @@
 package com.ksstats.feature.playerbowlingprimarystats.data
 
-data class BowlingSummary(
+data class PrimaryBowling(
     val playerId: Int,
     val name: String,
     val sortNamePart: String,

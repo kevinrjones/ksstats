@@ -1,6 +1,6 @@
 package com.ksstats.feature.playerbowlingprimarystats.di
 
-import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingSummaryUseCases
+import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetBowlingSummary
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.GetBowlingInningsByInnings
 import com.ksstats.feature.playerbowlingprimarystats.data.repository.JooqBowlingRecordsRepository
@@ -12,7 +12,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun playerBowlingSummaryModule() = module {
-    singleOf(::PlayerBowlingSummaryUseCases)
+    singleOf(::PlayerBowlingPrimaryStatsUseCases)
     singleOf(::GetBowlingSummary)
     singleOf(::GetBowlingInningsByInnings)
     singleOf(::JooqBowlingRecordsRepository) bind BowlingRecordsRepository::class

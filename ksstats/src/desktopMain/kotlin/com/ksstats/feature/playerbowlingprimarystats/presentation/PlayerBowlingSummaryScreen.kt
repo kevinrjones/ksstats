@@ -17,12 +17,12 @@ import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
 import com.ksstats.core.types.*
-import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingSummaryUseCases
-import com.ksstats.feature.playerbowlingprimarystats.data.BowlingSummary
+import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
+import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
-import com.ksstats.shared.utils.buildDeailsScreenNavUrl
+import com.ksstats.shared.utils.buildDetailsScreenNavUrl
 import com.ksstats.shared.utils.buildRecordsScreenNavArguments
 import com.ksstats.shared.utils.buildSummaryScreenRoute
 import org.jetbrains.compose.resources.StringResource
@@ -55,7 +55,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
         }
 
 
-        val bowlingUseCases: PlayerBowlingSummaryUseCases = koinInject()
+        val bowlingUseCases: PlayerBowlingPrimaryStatsUseCases = koinInject()
         val summaryUseCases: SummaryUseCases = koinInject()
         val viewModel: PlayerBowlingSummaryScreenViewModel = viewModel {
             PlayerBowlingSummaryScreenViewModel(bowlingUseCases, summaryUseCases)
@@ -125,7 +125,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
 
         }
 
-        val searchResults = viewModel.bowlingSummary.collectAsState()
+        val searchResults = viewModel.primaryBowling.collectAsState()
         val searching = viewModel.searching.collectAsState()
 
         val count = searchResults.value.count
@@ -159,7 +159,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
                     pagingParameters = pagingParameters
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
+                val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
             },
             onSort = { order ->
@@ -183,7 +183,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
                     sortDirection = sortDirection
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
+                val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
 
             }
@@ -193,7 +193,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
 
 
 private fun getDisplayRecords(
-    searchResults: List<BowlingSummary>,
+    searchResults: List<PrimaryBowling>,
     startRow: Int,
     matchType: MatchType,
 ): List<Map<String, String>> {

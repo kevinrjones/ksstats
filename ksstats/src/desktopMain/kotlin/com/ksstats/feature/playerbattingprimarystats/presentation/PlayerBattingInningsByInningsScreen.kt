@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,12 +23,8 @@ import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
 import com.ksstats.ksstats.generated.resources.*
-import com.ksstats.ksstats.generated.resources.Res
-import com.ksstats.ksstats.generated.resources.name
-import com.ksstats.ksstats.generated.resources.score
-import com.ksstats.ksstats.generated.resources.team
 import com.ksstats.shared.fromSeconds
-import com.ksstats.shared.utils.buildDeailsScreenNavUrl
+import com.ksstats.shared.utils.buildDetailsScreenNavUrl
 import com.ksstats.shared.utils.buildRecordsScreenNavArguments
 import com.ksstats.shared.utils.buildSummaryScreenRoute
 import kotlinx.datetime.format
@@ -154,7 +149,7 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
         val searchResults = viewModel.inningsByInnings.collectAsState()
         val searching = viewModel.searching.collectAsState()
 
-        val count = searchResults.value.count ?: 0
+        val count = searchResults.value.count
         val displayRecords: List<Map<String, String>> = getDisplayRecords(searchResults.value.data, pagingParameters.startRow)
 
         var summaryString: String by remember { mutableStateOf("") }
@@ -181,7 +176,7 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
                     pagingParameters = pagingParameters
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
+                val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
             },
             onSort = { order ->
@@ -206,7 +201,7 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
                     sortDirection = sortDirection
                 )
 
-                val navUrl = buildDeailsScreenNavUrl(screen.name, searchParameters)
+                val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
 
             }
@@ -245,7 +240,6 @@ fun getScore(score: Int, notOut: Int): String =
         score.toString()
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerBattingInningsByInningsScreen(
     displayRecords: List<Map<String, String>>,

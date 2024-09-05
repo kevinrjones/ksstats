@@ -235,7 +235,7 @@ fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFo
 
         MainSearchType.Bowling -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> StatsAppScreens.BowlingPlayerSummary.name
-            SearchViewFormat.InningsByInnings -> TODO()
+            SearchViewFormat.InningsByInnings -> StatsAppScreens.BowlingInningsByInnings.name
             SearchViewFormat.MatchTotals -> TODO()
             SearchViewFormat.SeriesAverages -> TODO()
             SearchViewFormat.GroundAverages -> TODO()
@@ -264,7 +264,7 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
 
         MainSearchType.Bowling -> when (searchViewFormat) {
             SearchViewFormat.PlayerSummary -> Pair(SortOrder.Wickets, SortDirection.Descending)
-            SearchViewFormat.InningsByInnings -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Ascending)
             else -> TODO()
         }
     }
