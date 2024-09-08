@@ -74,7 +74,6 @@ class PlayerBattingSummaryScreenViewModel(
                         _searching.value = false
                     }
 
-                    StatsAppScreens.BattingInningsByInnings -> TODO()
                     StatsAppScreens.BattingGroundAverages -> {
                         playerBattingPrimaryStatsUseCases.getGroundAverages(searchParameters)
                             .collect {
@@ -110,7 +109,7 @@ class PlayerBattingSummaryScreenViewModel(
                             }
                         _searching.value = false
                     }
-                    StatsAppScreens.BowlingPlayerSummary -> TODO()
+
                     else -> {
                         _searching.value = false
                         // todo: add logging

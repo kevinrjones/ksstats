@@ -305,8 +305,8 @@ fun PlayerBattingInningsByInningsScreen(
                     "team" to   ColumnMetaData(
                         stringResource(Res.string.team),
                         200.dp,
-                        sortOrder = SortOrder.Teams,
-                        sortDirection = if (sortOrder == SortOrder.Teams) {
+                        sortOrder = SortOrder.Team,
+                        sortDirection = if (sortOrder == SortOrder.Team) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {

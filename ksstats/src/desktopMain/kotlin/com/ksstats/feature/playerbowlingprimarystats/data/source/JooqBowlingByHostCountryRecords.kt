@@ -7,7 +7,7 @@ import org.jooq.*
 import org.jooq.impl.DSL.*
 import java.math.BigDecimal
 
-object JooqBowlingGroundRecords {
+object JooqBowlingByHostCountryRecords {
 
     fun createTemporaryBowlingCte(
         searchParameters: SearchParameters,
@@ -63,7 +63,7 @@ object JooqBowlingGroundRecords {
                 field("bd.sixes", Int::class.java),
                 field("bd.tenfor", Int::class.java),
                 field("bd.SyntheticBestBowling", Double::class.java),
-                field("bd.GroundId", Int::class.java).`as`("LocationId"),
+                field("m.HomeCountryId", Int::class.java),
             ).from(
                 select()
                     .from(BOWLINGDETAILS)
@@ -166,12 +166,7 @@ object JooqBowlingGroundRecords {
                 field("bocrto_tens.tenfor", Int::class.java),
                 field("innings.bbi", Double::class.java),
                 field("bocrto_bbm.bbm", Double::class.java),
-                concat(
-                    field("grounds.KnownAs", String::class.java),
-                    `val`(" ("),
-                    field("grounds.CountryName", String::class.java),
-                    `val`(")")
-                ).`as`("ground"),
+                field("countries.countryName"),
                 coalesce(field("${teamsCteName}.teams", String::class.java)).`as`("teams"),
                 coalesce(field("O.name", String::class.java)).`as`("opponents"),
                 field("bocrto_bbm.bbm", Double::class.java),
@@ -194,9 +189,9 @@ object JooqBowlingGroundRecords {
                         `when`(field("inningsnumber").eq(1), 1)
                     ).`as`("matches"),
                     sum(field("didbowl", Int::class.java)).`as`("innings"),
+                    field("HomeCountryId"),
                     field("playerId"),
                     field("matchType"),
-                    field("LocationId"),
                     field("teamId"),
                     field("opponentsId"),
                     sum(field("balls", Int::class.java)).`as`("balls"),
@@ -210,11 +205,11 @@ object JooqBowlingGroundRecords {
                     sum(field("dots", Int::class.java)).`as`("dots"),
                     max(field("syntheticBestBowling", Int::class.java)).`as`("bbi"),
                 ).from(bowlCteName)
-                    .groupBy(field("matchtype"), field("playerid"), field("LocationId"))
+                    .groupBy(field("matchtype"), field("playerid"), field("HomeCountryId"))
                     .having(sum(field("didbowl", Int::class.java)).cast(Int::class.java).gt(0))
                     .asTable("innings")
                     .join(PLAYERS).on(PLAYERS.ID.eq(field("innings.playerid", Int::class.java)))
-                    .join(GROUNDS).on(GROUNDS.ID.eq(field("innings.LocationId", Int::class.java)))
+                    .join(COUNTRIES).on(COUNTRIES.COUNTRYID.eq(field("innings.HomeCountryId", Int::class.java)))
                     .leftJoin(teamsCteName)
                     .on(
                         field("${teamsCteName}.playerId", Int::class.java)
@@ -229,8 +224,8 @@ object JooqBowlingGroundRecords {
                             .eq(field("innings.playerId", Int::class.java))
                     )
                     .and(
-                        field("${fivesCteName}.locationId", Int::class.java)
-                            .eq(field("innings.locationId", Int::class.java))
+                        field("${fivesCteName}.HomeCountryId", Int::class.java)
+                            .eq(field("innings.HomeCountryId", Int::class.java))
                     )
                     .leftOuterJoin(tensCteName)
                     .on(
@@ -238,8 +233,8 @@ object JooqBowlingGroundRecords {
                             .eq(field("innings.playerId", Int::class.java))
                     )
                     .and(
-                        field("${tensCteName}.locationId", Int::class.java)
-                            .eq(field("innings.locationId", Int::class.java))
+                        field("${tensCteName}.HomeCountryId", Int::class.java)
+                            .eq(field("innings.HomeCountryId", Int::class.java))
                     )
                     .leftOuterJoin(bbmCteName)
                     .on(
@@ -247,8 +242,8 @@ object JooqBowlingGroundRecords {
                             .eq(field("innings.playerId", Int::class.java))
                     )
                     .and(
-                        field("${bbmCteName}.locationId", Int::class.java)
-                            .eq(field("innings.locationId", Int::class.java))
+                        field("${bbmCteName}.HomeCountryId", Int::class.java)
+                            .eq(field("innings.HomeCountryId", Int::class.java))
                     )
 
 
@@ -270,14 +265,14 @@ object JooqBowlingGroundRecords {
     ): SelectHavingStep<Record3<Int, Int, BigDecimal>> {
         val cte = select(
             field("playerid", Int::class.java),
-            field("LocationId", Int::class.java),
+            field("HomeCountryId", Int::class.java),
             sum(
                 `when`(
                     field("wickets", Int::class.java).ge(fivesLimit), 1
                 )
             ).`as`("fivefor"),
         ).from(tmpBowl).where(field("didbowl", Int::class.java).eq(1))
-            .groupBy(field("playerid"), field("LocationId"))
+            .groupBy(field("playerid"), field("HomeCountryId"))
 
         return cte
     }
@@ -288,12 +283,12 @@ object JooqBowlingGroundRecords {
 
         val cte = select(
             field("playerid", Int::class.java),
-            field("LocationId", Int::class.java),
+            field("HomeCountryId", Int::class.java),
             count().`as`("tenfor"),
         ).from(tmpBowl)
             .where(field("inningsnumber", Int::class.java).eq(1))
             .and(field("tenfor", Int::class.java).eq(1))
-            .groupBy(field("playerid"), field("LocationId"))
+            .groupBy(field("playerid"), field("HomeCountryId"))
 
 
         return cte
@@ -313,7 +308,7 @@ object JooqBowlingGroundRecords {
 
         val cte = select(
             field("playerid", Int::class.java),
-            field("LocationId", Int::class.java),
+            field("HomeCountryId", Int::class.java),
             field("matchId", Int::class.java),
             iif(
                 sum(field("runs", Int::class.java)).cast(Int::class.java).eq(0),
@@ -325,7 +320,7 @@ object JooqBowlingGroundRecords {
             .from(tmpBowl)
             .where(field("balls", Int::class.java).gt(0))
             .and(field("didbowl", Int::class.java).eq(1))
-            .groupBy(field("playerId"), field("matchId"), field("LocationId"))
+            .groupBy(field("playerId"), field("matchId"), field("HomeCountryId"))
 
 
         return cte
@@ -337,10 +332,10 @@ object JooqBowlingGroundRecords {
 
         val cte = select(
             field("playerid", Int::class.java),
-            field("LocationId", Int::class.java),
+            field("HomeCountryId", Int::class.java),
             max(field("bbm", Double::class.java)).`as`("bbm")
         ).from(tmpBbm)
-            .groupBy(field("playerid"), field("LocationId"))
+            .groupBy(field("playerid"), field("HomeCountryId"))
 
         return cte
     }

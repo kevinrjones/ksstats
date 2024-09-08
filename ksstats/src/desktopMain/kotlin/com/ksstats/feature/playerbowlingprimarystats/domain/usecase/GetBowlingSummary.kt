@@ -36,3 +36,27 @@ class GetGroundAverages(val repository: BowlingRecordsRepository) {
         return repository.getGroundAverages(searchParameters)
     }
 }
+
+class GetByHostCountry(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return repository.getByHostCountry(searchParameters)
+    }
+}
+
+class GetBySeason(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return repository.getBySeason(searchParameters)
+    }
+}
+
+class GetByOppositionTeam(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return repository.getByOppositionTeam(searchParameters)
+    }
+}
+
+class GetByYearOfMatchStart(val repository: BowlingRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
+        return repository.getByYearOfMatchStart(searchParameters)
+    }
+}

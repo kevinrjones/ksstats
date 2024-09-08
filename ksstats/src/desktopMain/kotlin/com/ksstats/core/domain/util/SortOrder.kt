@@ -3,7 +3,7 @@ package com.ksstats.core.domain.util
 
 enum class SortOrder {
     SortNamePart,
-    Teams,
+    Team,
     Opponents,
     Runs,
     Balls,

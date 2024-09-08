@@ -349,8 +349,8 @@ fun getContent(
     allMetaData: Map<String, ColumnMetaData?>,
 ): String {
     val records = displayRecords[row]
-    val metaData = allMetaData[key] ?: throw Exception()
-    val content = records[key] ?: throw Exception()
+    val metaData = allMetaData[key] ?: throw Exception("Invalid key: $key")
+    val content = records[key] ?: throw Exception("Invalid key: $key")
 
     if (metaData.replaceZero) {
         if (content.trim() == "0" || content.trim() == "0.00")

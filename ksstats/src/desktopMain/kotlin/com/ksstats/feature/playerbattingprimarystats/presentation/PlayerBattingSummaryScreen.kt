@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -299,8 +299,8 @@ fun PlayerBattingSummaryScreen(
                     "team" to when (recordScreen) {
                         StatsAppScreens.BowlingPlayerSummary ->
                             ColumnMetaData(
-                                "Teams", 200.dp, sortOrder = SortOrder.Teams,
-                                sortDirection = if (sortOrder == SortOrder.Teams) {
+                                "Teams", 200.dp, sortOrder = SortOrder.Team,
+                                sortDirection = if (sortOrder == SortOrder.Team) {
                                     if (sortDirection == SortDirection.Ascending) {
                                         DisplaySortDirection.Ascending
                                     } else {
@@ -313,8 +313,8 @@ fun PlayerBattingSummaryScreen(
 
                         StatsAppScreens.BattingMatchTotals ->
                             ColumnMetaData(
-                                "Teams", 200.dp, sortOrder = SortOrder.Teams,
-                                sortDirection = if (sortOrder == SortOrder.Teams) {
+                                "Teams", 200.dp, sortOrder = SortOrder.Team,
+                                sortDirection = if (sortOrder == SortOrder.Team) {
                                     if (sortDirection == SortDirection.Ascending) {
                                         DisplaySortDirection.Ascending
                                     } else {
@@ -327,8 +327,8 @@ fun PlayerBattingSummaryScreen(
 
                         else ->
                             ColumnMetaData(
-                                "Team", 200.dp, sortOrder = SortOrder.Teams,
-                                sortDirection = if (sortOrder == SortOrder.Teams) {
+                                "Team", 200.dp, sortOrder = SortOrder.Team,
+                                sortDirection = if (sortOrder == SortOrder.Team) {
                                     if (sortDirection == SortDirection.Ascending) {
                                         DisplaySortDirection.Ascending
                                     } else {
@@ -341,6 +341,19 @@ fun PlayerBattingSummaryScreen(
                     },
                     "opponents" to when (recordScreen) {
                         StatsAppScreens.BattingSeriesAverages ->
+                            ColumnMetaData(
+                                "Opponents", 200.dp, sortOrder = SortOrder.Opponents,
+                                sortDirection = if (sortOrder == SortOrder.Opponents) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+                        StatsAppScreens.BattingByOppositionTeam ->
                             ColumnMetaData(
                                 "Opponents", 200.dp, sortOrder = SortOrder.Opponents,
                                 sortDirection = if (sortOrder == SortOrder.Opponents) {
@@ -404,6 +417,35 @@ fun PlayerBattingSummaryScreen(
                                     DisplaySortDirection.None
                                 }
                             )
+
+                        StatsAppScreens.BattingByYear ->
+                            ColumnMetaData(
+                                "Year", 200.dp, sortOrder = SortOrder.Year,
+                                sortDirection = if (sortOrder == SortOrder.Year) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        StatsAppScreens.BattingBySeason ->
+                            ColumnMetaData(
+                                "Year", 200.dp, sortOrder = SortOrder.Year,
+                                sortDirection = if (sortOrder == SortOrder.Year) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
 
                         else -> null
                     },

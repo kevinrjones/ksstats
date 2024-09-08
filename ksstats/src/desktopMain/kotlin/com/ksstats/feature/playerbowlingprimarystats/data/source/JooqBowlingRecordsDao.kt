@@ -480,19 +480,391 @@ class JooqBowlingRecordsDao(private val databaseConnections: DatabaseConnections
         }
     }
 
-    override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+    override fun getByHostCountry(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>>   = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+            ?: throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = using(conn, databaseConnection.dialect)
+
+            val cteStep1Name = "bocrto_tmp_bowl"
+            val cteStep2Name = "bocrto_tmp_teams"
+            val cteStep3Name = "bocrto_results"
+            val cteStep4Name = "bocrto_total_counts"
+            val cteStep5Name = "bocrto_fives"
+            val cteStep6Name = "bocrto_tens"
+            val cteStep9Name = "bocrto_bbm_all"
+            val cteStep10Name = "bocrto_bbm"
+            val bocrto_tmp_bowl =
+                JooqBowlingByHostCountryRecords.createTemporaryBowlingCte(searchParameters)
+            val bocrto_tmp_teams = JooqBowlingByHostCountryRecords.createTemporaryTeamsCte(searchParameters)
+
+            val bocrto_results = JooqBowlingByHostCountryRecords.createResultsCte(
+                searchParameters,
+                cteStep1Name,
+                cteStep2Name,
+                cteStep5Name,
+                cteStep6Name,
+                cteStep10Name
+            )
+            val bocrto_count = JooqBowlingByHostCountryRecords.totalCountsCte(cteStep3Name)
+
+            val bocrto_fives = JooqBowlingByHostCountryRecords.createFives(cteStep1Name, searchParameters.fivesLimit)
+            val bocrto_tens = JooqBowlingByHostCountryRecords.createTens(cteStep1Name)
+            val bocrto_bbm_all = JooqBowlingByHostCountryRecords.createBbmAll(cteStep1Name)
+            val bocrto_bbm = JooqBowlingByHostCountryRecords.createBbm(cteStep9Name)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+            val databaseResults = context
+                .with(cteStep1Name).`as`(bocrto_tmp_bowl)
+                .with(cteStep2Name).`as`(bocrto_tmp_teams)
+                .with(cteStep3Name).`as`(bocrto_results)
+                .with(cteStep4Name).`as`(bocrto_count)
+                .with(cteStep5Name).`as`(bocrto_fives)
+                .with(cteStep6Name).`as`(bocrto_tens)
+                .with(cteStep9Name).`as`(bocrto_bbm_all)
+                .with(cteStep10Name).`as`(bocrto_bbm)
+                .select().from(cteStep3Name).join(cteStep4Name).on()
+                .orderBy(sortSpecification)
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
+            var count = 0
+
+            val results = mutableListOf<PrimaryBowling>()
+            databaseResults.forEach {
+                count = it.getValue("count", Int::class.java)
+                results.add(
+                    PrimaryBowling(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("teams", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        maidens = it.getValue("maidens", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        wickets = it.getValue("wickets", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        economy = it.getValue("econ", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        bowlingImpact = it.getValue("bi", Double::class.java),
+                        noballs = it.getValue("noballs", Int::class.java),
+                        wides = it.getValue("wides", Int::class.java),
+                        dots = it.getValue("dots", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        count = it.getValue("count", Int::class.java),
+                        fivefor = it.getValue("fivefor", Int::class.java),
+                        tenfor = it.getValue("tenfor", Int::class.java),
+                        bestBowlingInnings = it.getValue("bbi", Double::class.java),
+                        bestBowlingMatch = it.getValue("bbm", Double::class.java),
+                        opponents = "",
+                        year = "",
+                        ground = "",
+                        countryName = it.getValue("countryName", String::class.java),
+                    )
+                )
+            }
+            val databaseResult = DatabaseResult(results, count)
+            emit(databaseResult)
+        }
     }
 
-    override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+    override fun getByOppositionTeam(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+            ?: throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = using(conn, databaseConnection.dialect)
+
+            val cteStep1Name = "bocrto_tmp_bowl"
+            val cteStep2Name = "bocrto_tmp_teams"
+            val cteStep3Name = "bocrto_results"
+            val cteStep4Name = "bocrto_total_counts"
+            val cteStep5Name = "bocrto_fives"
+            val cteStep6Name = "bocrto_tens"
+            val cteStep9Name = "bocrto_bbm_all"
+            val cteStep10Name = "bocrto_bbm"
+            val bocrto_tmp_bowl =
+                JooqBowlingByOppositionTeamRecords.createTemporaryBowlingCte(searchParameters)
+            val bocrto_tmp_teams = JooqBowlingByOppositionTeamRecords.createTemporaryTeamsCte(searchParameters)
+
+            val bocrto_results = JooqBowlingByOppositionTeamRecords.createResultsCte(
+                searchParameters,
+                cteStep1Name,
+                cteStep2Name,
+                cteStep5Name,
+                cteStep6Name,
+                cteStep10Name
+            )
+            val bocrto_count = JooqBowlingByOppositionTeamRecords.totalCountsCte(cteStep3Name)
+
+            val bocrto_fives = JooqBowlingByOppositionTeamRecords.createFives(cteStep1Name, searchParameters.fivesLimit)
+            val bocrto_tens = JooqBowlingByOppositionTeamRecords.createTens(cteStep1Name)
+            val bocrto_bbm_all = JooqBowlingByOppositionTeamRecords.createBbmAll(cteStep1Name)
+            val bocrto_bbm = JooqBowlingByOppositionTeamRecords.createBbm(cteStep9Name)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+            val databaseResults = context
+                .with(cteStep1Name).`as`(bocrto_tmp_bowl)
+                .with(cteStep2Name).`as`(bocrto_tmp_teams)
+                .with(cteStep3Name).`as`(bocrto_results)
+                .with(cteStep4Name).`as`(bocrto_count)
+                .with(cteStep5Name).`as`(bocrto_fives)
+                .with(cteStep6Name).`as`(bocrto_tens)
+                .with(cteStep9Name).`as`(bocrto_bbm_all)
+                .with(cteStep10Name).`as`(bocrto_bbm)
+                .select().from(cteStep3Name).join(cteStep4Name).on()
+                .orderBy(sortSpecification)
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
+            var count = 0
+
+            val results = mutableListOf<PrimaryBowling>()
+            databaseResults.forEach {
+                count = it.getValue("count", Int::class.java)
+                results.add(
+                    PrimaryBowling(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("teams", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        maidens = it.getValue("maidens", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        wickets = it.getValue("wickets", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        economy = it.getValue("econ", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        bowlingImpact = it.getValue("bi", Double::class.java),
+                        noballs = it.getValue("noballs", Int::class.java),
+                        wides = it.getValue("wides", Int::class.java),
+                        dots = it.getValue("dots", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        count = it.getValue("count", Int::class.java),
+                        fivefor = it.getValue("fivefor", Int::class.java),
+                        tenfor = it.getValue("tenfor", Int::class.java),
+                        bestBowlingInnings = it.getValue("bbi", Double::class.java),
+                        bestBowlingMatch = it.getValue("bbm", Double::class.java),
+                        opponents = it.getValue("opponents", String::class.java),
+                        year = "",
+                        ground = "",
+                        countryName = "",
+                    )
+                )
+            }
+            val databaseResult = DatabaseResult(results, count)
+            emit(databaseResult)
+        }
     }
 
-    override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+    override fun getByYearOfMatchStart(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>>  = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+            ?: throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = using(conn, databaseConnection.dialect)
+
+            val cteStep1Name = "bocrto_tmp_bowl"
+            val cteStep2Name = "bocrto_tmp_teams"
+            val cteStep3Name = "bocrto_results"
+            val cteStep4Name = "bocrto_total_counts"
+            val cteStep5Name = "bocrto_fives"
+            val cteStep6Name = "bocrto_tens"
+            val cteStep9Name = "bocrto_bbm_all"
+            val cteStep10Name = "bocrto_bbm"
+            val bocrto_tmp_bowl =
+                JooqBowlingByYearOfMatchStartRecords.createTemporaryBowlingCte(searchParameters)
+            val bocrto_tmp_teams = JooqBowlingByYearOfMatchStartRecords.createTemporaryTeamsCte(searchParameters)
+
+            val bocrto_results = JooqBowlingByYearOfMatchStartRecords.createResultsCte(
+                searchParameters,
+                cteStep1Name,
+                cteStep2Name,
+                cteStep5Name,
+                cteStep6Name,
+                cteStep10Name
+            )
+            val bocrto_count = JooqBowlingByYearOfMatchStartRecords.totalCountsCte(cteStep3Name)
+
+            val bocrto_fives = JooqBowlingByYearOfMatchStartRecords.createFives(cteStep1Name, searchParameters.fivesLimit)
+            val bocrto_tens = JooqBowlingByYearOfMatchStartRecords.createTens(cteStep1Name)
+            val bocrto_bbm_all = JooqBowlingByYearOfMatchStartRecords.createBbmAll(cteStep1Name)
+            val bocrto_bbm = JooqBowlingByYearOfMatchStartRecords.createBbm(cteStep9Name)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+            val databaseResults = context
+                .with(cteStep1Name).`as`(bocrto_tmp_bowl)
+                .with(cteStep2Name).`as`(bocrto_tmp_teams)
+                .with(cteStep3Name).`as`(bocrto_results)
+                .with(cteStep4Name).`as`(bocrto_count)
+                .with(cteStep5Name).`as`(bocrto_fives)
+                .with(cteStep6Name).`as`(bocrto_tens)
+                .with(cteStep9Name).`as`(bocrto_bbm_all)
+                .with(cteStep10Name).`as`(bocrto_bbm)
+                .select().from(cteStep3Name).join(cteStep4Name).on()
+                .orderBy(sortSpecification)
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
+            var count = 0
+
+            val results = mutableListOf<PrimaryBowling>()
+            databaseResults.forEach {
+                count = it.getValue("count", Int::class.java)
+                results.add(
+                    PrimaryBowling(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("teams", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        maidens = it.getValue("maidens", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        wickets = it.getValue("wickets", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        economy = it.getValue("econ", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        bowlingImpact = it.getValue("bi", Double::class.java),
+                        noballs = it.getValue("noballs", Int::class.java),
+                        wides = it.getValue("wides", Int::class.java),
+                        dots = it.getValue("dots", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        count = it.getValue("count", Int::class.java),
+                        fivefor = it.getValue("fivefor", Int::class.java),
+                        tenfor = it.getValue("tenfor", Int::class.java),
+                        bestBowlingInnings = it.getValue("bbi", Double::class.java),
+                        bestBowlingMatch = it.getValue("bbm", Double::class.java),
+                        opponents = "",
+                        year = it.getValue("year", String::class.java),
+                        ground = "",
+                        countryName = "",
+                    )
+                )
+            }
+            val databaseResult = DatabaseResult(results, count)
+            emit(databaseResult)
+        }
     }
 
-    override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> {
-        TODO("Not yet implemented")
+    override fun getBySeason(searchParameters: SearchParameters): Flow<DatabaseResult<PrimaryBowling>> = flow {
+        val databaseConnection = databaseConnections.connections[searchParameters.matchType.value]
+            ?: throw Exception("Database connection for match type ${searchParameters.matchType} not found")
+
+        DriverManager.getConnection(
+            databaseConnection.connectionString
+        ).use { conn ->
+
+            val context = using(conn, databaseConnection.dialect)
+
+            val cteStep1Name = "bocrto_tmp_bowl"
+            val cteStep2Name = "bocrto_tmp_teams"
+            val cteStep3Name = "bocrto_results"
+            val cteStep4Name = "bocrto_total_counts"
+            val cteStep5Name = "bocrto_fives"
+            val cteStep6Name = "bocrto_tens"
+            val cteStep9Name = "bocrto_bbm_all"
+            val cteStep10Name = "bocrto_bbm"
+            val bocrto_tmp_bowl =
+                JooqBowlingBySeasonRecords.createTemporaryBowlingCte(searchParameters)
+            val bocrto_tmp_teams = JooqBowlingBySeasonRecords.createTemporaryTeamsCte(searchParameters)
+
+            val bocrto_results = JooqBowlingBySeasonRecords.createResultsCte(
+                searchParameters,
+                cteStep1Name,
+                cteStep2Name,
+                cteStep5Name,
+                cteStep6Name,
+                cteStep10Name
+            )
+            val bocrto_count = JooqBowlingBySeasonRecords.totalCountsCte(cteStep3Name)
+
+            val bocrto_fives = JooqBowlingBySeasonRecords.createFives(cteStep1Name, searchParameters.fivesLimit)
+            val bocrto_tens = JooqBowlingBySeasonRecords.createTens(cteStep1Name)
+            val bocrto_bbm_all = JooqBowlingBySeasonRecords.createBbmAll(cteStep1Name)
+            val bocrto_bbm = JooqBowlingBySeasonRecords.createBbm(cteStep9Name)
+
+            val sortSpecification = when (searchParameters.sortDirection) {
+                SortDirection.Ascending -> field(searchParameters.sortOrder.name).asc()
+                SortDirection.Descending -> field(searchParameters.sortOrder.name).desc()
+            }
+
+            val databaseResults = context
+                .with(cteStep1Name).`as`(bocrto_tmp_bowl)
+                .with(cteStep2Name).`as`(bocrto_tmp_teams)
+                .with(cteStep3Name).`as`(bocrto_results)
+                .with(cteStep4Name).`as`(bocrto_count)
+                .with(cteStep5Name).`as`(bocrto_fives)
+                .with(cteStep6Name).`as`(bocrto_tens)
+                .with(cteStep9Name).`as`(bocrto_bbm_all)
+                .with(cteStep10Name).`as`(bocrto_bbm)
+                .select().from(cteStep3Name).join(cteStep4Name).on()
+                .orderBy(sortSpecification)
+                .limit(searchParameters.pagingParameters.startRow, searchParameters.pagingParameters.pageSize).fetch()
+            var count = 0
+
+            val results = mutableListOf<PrimaryBowling>()
+            databaseResults.forEach {
+                count = it.getValue("count", Int::class.java)
+                results.add(
+                    PrimaryBowling(
+                        playerId = it.getValue("playerid", Int::class.java),
+                        name = it.getValue("name", String::class.java),
+                        team = it.getValue("teams", String::class.java),
+                        sortNamePart = it.getValue("SortNamePart", String::class.java),
+                        matches = it.getValue("matches", Int::class.java),
+                        innings = it.getValue("innings", Int::class.java),
+                        balls = it.getValue("balls", Int::class.java),
+                        maidens = it.getValue("maidens", Int::class.java),
+                        runs = it.getValue("runs", Int::class.java),
+                        wickets = it.getValue("wickets", Int::class.java),
+                        average = it.getValue("avg", Double::class.java),
+                        economy = it.getValue("econ", Double::class.java),
+                        strikeRate = it.getValue("sr", Double::class.java),
+                        bowlingImpact = it.getValue("bi", Double::class.java),
+                        noballs = it.getValue("noballs", Int::class.java),
+                        wides = it.getValue("wides", Int::class.java),
+                        dots = it.getValue("dots", Int::class.java),
+                        fours = it.getValue("fours", Int::class.java),
+                        sixes = it.getValue("sixes", Int::class.java),
+                        count = it.getValue("count", Int::class.java),
+                        fivefor = it.getValue("fivefor", Int::class.java),
+                        tenfor = it.getValue("tenfor", Int::class.java),
+                        bestBowlingInnings = it.getValue("bbi", Double::class.java),
+                        bestBowlingMatch = it.getValue("bbm", Double::class.java),
+                        opponents = "",
+                        year = it.getValue("year", String::class.java),
+                        ground = "",
+                        countryName = "",
+                    )
+                )
+            }
+            val databaseResult = DatabaseResult(results, count)
+            emit(databaseResult)
+        }
     }
 }

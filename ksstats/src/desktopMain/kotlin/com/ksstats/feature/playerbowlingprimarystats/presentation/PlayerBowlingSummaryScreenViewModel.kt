@@ -91,10 +91,34 @@ class PlayerBowlingSummaryScreenViewModel(
                             }
                         _searching.value = false
                     }
-                    StatsAppScreens.BowlingByHostCountry -> TODO()
-                    StatsAppScreens.BowlingByOppositionTeam -> TODO()
-                    StatsAppScreens.BowlingByYear -> TODO()
-                    StatsAppScreens.BowlingBySeason -> TODO()
+                    StatsAppScreens.BowlingByHostCountry -> {
+                        playerBowlingPrimaryStatsUseCases.getByHostCountry(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BowlingByOppositionTeam -> {
+                        playerBowlingPrimaryStatsUseCases.getByOppositionTeam(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BowlingByYear -> {
+                        playerBowlingPrimaryStatsUseCases.getByYearOfMatchStart(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
+                    }
+                    StatsAppScreens.BowlingBySeason -> {
+                        playerBowlingPrimaryStatsUseCases.getBySeason(searchParameters)
+                            .collect {
+                                _primaryBowling.value = it
+                            }
+                        _searching.value = false
+                    }
                     else -> TODO()
                 }
             }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -17,8 +16,9 @@ import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
 import com.ksstats.core.types.*
-import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
+import com.ksstats.feature.playerbattingprimarystats.presentation.getGroundName
 import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
+import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
@@ -144,6 +144,7 @@ fun NavGraphBuilder.playerBowlingSummaryScreen(
             displayRecords = displayRecords,
             searching = searching,
             matchType = searchParameters.matchType,
+            recordScreen = screen,
             title = stringResource(title),
             summary = summaryString,
             pageNumber = pagingParameters.calculatePageNumber(),
@@ -203,6 +204,7 @@ private fun getDisplayRecords(
             "index" to (index + startRow + 1).toString(),
             "name" to searchResult.name,
             "team" to searchResult.team,
+            "opponents" to searchResult.opponents,
             "matches" to searchResult.matches.toString(),
             "innings" to searchResult.innings.toString(),
             "balls" to searchResult.balls.toString(),
@@ -217,6 +219,9 @@ private fun getDisplayRecords(
             "fours" to searchResult.fours.toString(),
             "sixes" to searchResult.sixes.toString(),
             "bi" to searchResult.bowlingImpact.round(3),
+            "year" to searchResult.year,
+            "ground" to getGroundName(searchResult.ground, searchResult.countryName),
+            "countryname" to searchResult.countryName,
         )
         if (matchType.isMultiInningsType()) {
             data["bbm"] = getIndividualBb(searchResult.bestBowlingMatch)
@@ -236,12 +241,12 @@ private fun getIndividualBb(syntheticBB: Double): String {
     return "${wickets}-${runs}";
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerBowlingSummaryScreen(
     displayRecords: List<Map<String, String>>,
     matchType: MatchType,
     searching: State<Boolean>,
+    recordScreen: StatsAppScreens,
     summary: String,
     title: String,
     pageNumber: Int,
@@ -301,18 +306,159 @@ fun PlayerBowlingSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    "team" to ColumnMetaData(
-                        "Teams", 200.dp, sortOrder = SortOrder.Teams,
-                        sortDirection = if (sortOrder == SortOrder.Teams) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-                    ),
+                    "team" to when (recordScreen) {
+                        StatsAppScreens.BowlingPlayerSummary ->
+                            ColumnMetaData(
+                                "Teams", 200.dp, sortOrder = SortOrder.Team,
+                                sortDirection = if (sortOrder == SortOrder.Team) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        StatsAppScreens.BowlingMatchTotals ->
+                            ColumnMetaData(
+                                "Teams", 200.dp, sortOrder = SortOrder.Team,
+                                sortDirection = if (sortOrder == SortOrder.Team) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else ->
+                            ColumnMetaData(
+                                "Team", 200.dp, sortOrder = SortOrder.Team,
+                                sortDirection = if (sortOrder == SortOrder.Team) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+                    },
+                    "opponents" to when (recordScreen) {
+                        StatsAppScreens.BowlingSeriesAverages ->
+                            ColumnMetaData(
+                                "Opponents", 200.dp, sortOrder = SortOrder.Opponents,
+                                sortDirection = if (sortOrder == SortOrder.Opponents) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        StatsAppScreens.BowlingByOppositionTeam ->
+                            ColumnMetaData(
+                                "Opponents", 200.dp, sortOrder = SortOrder.Opponents,
+                                sortDirection = if (sortOrder == SortOrder.Opponents) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
+                    "ground" to when (recordScreen) {
+                        StatsAppScreens.BowlingGroundAverages ->
+                            ColumnMetaData(
+                                "Ground", 400.dp, sortOrder = SortOrder.Ground,
+                                sortDirection = if (sortOrder == SortOrder.Ground) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
+                    "countryname" to when (recordScreen) {
+                        StatsAppScreens.BowlingByHostCountry ->
+                            ColumnMetaData(
+                                "Host Country", 200.dp, sortOrder = SortOrder.CountryName,
+                                sortDirection = if (sortOrder == SortOrder.CountryName) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
+                    "year" to when (recordScreen) {
+                        StatsAppScreens.BowlingSeriesAverages ->
+                            ColumnMetaData(
+                                "Year", 200.dp, sortOrder = SortOrder.Year,
+                                sortDirection = if (sortOrder == SortOrder.Year) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        StatsAppScreens.BowlingByYear ->
+                            ColumnMetaData(
+                                "Year", 200.dp, sortOrder = SortOrder.Year,
+                                sortDirection = if (sortOrder == SortOrder.Year) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        StatsAppScreens.BowlingBySeason ->
+                            ColumnMetaData(
+                                "Year", 200.dp, sortOrder = SortOrder.Year,
+                                sortDirection = if (sortOrder == SortOrder.Year) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
                     "matches" to ColumnMetaData(
                         "M",
                         70.dp,
