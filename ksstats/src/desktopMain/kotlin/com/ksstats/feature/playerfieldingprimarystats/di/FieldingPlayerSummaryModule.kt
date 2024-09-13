@@ -23,6 +23,6 @@ fun playerFieldingSummaryModule() = module {
     singleOf(::GetBySeason)
     singleOf(::JooqFieldingRecordsRepository) bind FieldingRecordsRepository::class
     factory { JooqFieldingRecordsDao(get()) } bind FieldingRecordsDao::class
-    factory { MainSearchViewModel(get()) }
+    factory { MainSearchViewModel(get(), get()) }
 }
 

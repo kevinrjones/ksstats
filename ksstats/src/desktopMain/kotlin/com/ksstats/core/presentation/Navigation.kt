@@ -9,12 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.ksstats.core.domain.util.Limits
 import com.ksstats.feature.playerbattingprimarystats.presentation.playerBattingInningsByInningsScreen
 import com.ksstats.feature.playerbattingprimarystats.presentation.playerBattingSummaryScreen
 import com.ksstats.feature.playerbowlingprimarystats.presentation.playerBowlingInningsByInningsScreen
 import com.ksstats.feature.playerbowlingprimarystats.presentation.playerBowlingSummaryScreen
 import com.ksstats.feature.playerfieldingprimarystats.presentation.playerFieldingInningsByInningsScreen
 import com.ksstats.feature.playerfieldingprimarystats.presentation.playerFieldingSummaryScreen
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.SearchViewFormat
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.mainSearchScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
@@ -44,7 +46,21 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
 
         })
         mainSearchScreen(MainSearchType.Batting,
-            limitLabel = Res.string.minimumRunsLabel,
+            limits = Limits(
+                limitLabel = Res.string.minimumRunsLabel, limitValues =
+                mapOf(
+                    SearchViewFormat.PlayerSummary.name to 100,
+                    SearchViewFormat.InningsByInnings.name to 0,
+                    SearchViewFormat.MatchTotals.name to 0,
+                    SearchViewFormat.SeriesAverages.name to 50,
+                    SearchViewFormat.GroundAverages.name to 100,
+                    SearchViewFormat.ByHostCountry.name to 100,
+                    SearchViewFormat.ByOppositionTeam.name to 100,
+                    SearchViewFormat.ByYearOfMatchStart.name to 50,
+                    SearchViewFormat.BySeason.name to 50,
+                )
+            ),
+
             navigate = {
                 navController.navigate(it) {
                     popUpTo(StatsAppScreens.BattingSearch.name) {
@@ -54,7 +70,20 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 }
             })
         mainSearchScreen(MainSearchType.Bowling,
-            limitLabel = Res.string.minimumWicketsLabel,
+            limits = Limits(
+                limitLabel = Res.string.minimumWicketsLabel, limitValues =
+                mapOf(
+                    SearchViewFormat.PlayerSummary.name to 100,
+                    SearchViewFormat.InningsByInnings.name to 0,
+                    SearchViewFormat.MatchTotals.name to 1,
+                    SearchViewFormat.SeriesAverages.name to 10,
+                    SearchViewFormat.GroundAverages.name to 50,
+                    SearchViewFormat.ByHostCountry.name to 50,
+                    SearchViewFormat.ByOppositionTeam.name to 50,
+                    SearchViewFormat.ByYearOfMatchStart.name to 10,
+                    SearchViewFormat.BySeason.name to 10,
+                )
+            ),
             navigate = {
                 navController.navigate(it) {
                     popUpTo(StatsAppScreens.BowlingSearch.name) {
@@ -64,7 +93,20 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 }
             })
         mainSearchScreen(MainSearchType.Fielding,
-            limitLabel = Res.string.minimumDismissalsLabel,
+            limits = Limits(
+                limitLabel = Res.string.minimumDismissalsLabel, limitValues =
+                mapOf(
+                    SearchViewFormat.PlayerSummary.name to 10,
+                    SearchViewFormat.InningsByInnings.name to 1,
+                    SearchViewFormat.MatchTotals.name to 1,
+                    SearchViewFormat.SeriesAverages.name to 1,
+                    SearchViewFormat.GroundAverages.name to 1,
+                    SearchViewFormat.ByHostCountry.name to 1,
+                    SearchViewFormat.ByOppositionTeam.name to 1,
+                    SearchViewFormat.ByYearOfMatchStart.name to 10,
+                    SearchViewFormat.BySeason.name to 10,
+                )
+            ),
             navigate = {
                 navController.navigate(it) {
                     popUpTo(StatsAppScreens.FieldingSearch.name) {

@@ -12,6 +12,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.ksstats.core.domain.util.Limits
 import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.core.domain.util.SortOrder
 import com.ksstats.core.presentation.StatsAppScreens
@@ -35,7 +36,7 @@ import org.koin.compose.koinInject
 @OptIn(FormatStringsInDatetimeFormats::class)
 fun NavGraphBuilder.mainSearchScreen(
     searchType: MainSearchType,
-    limitLabel: StringResource,
+    limits: Limits,
     navigate: (String) -> Unit,
 ) {
     composable(
@@ -51,7 +52,7 @@ fun NavGraphBuilder.mainSearchScreen(
 
         val recordSearchUseCases: RecordSearchUseCases = koinInject()
         val viewModel: MainSearchViewModel = viewModel {
-            MainSearchViewModel(recordSearchUseCases)
+            MainSearchViewModel(recordSearchUseCases, limits.limitValues)
         }
 
         val dateTimeFormat = LocalDate.Format {
@@ -122,8 +123,8 @@ fun NavGraphBuilder.mainSearchScreen(
                 ),
                 stringResource(Res.string.pageSizeLabel)
             ),
-            limit = viewModel.state.value.minimumRuns,
-            limitLabel = stringResource(limitLabel),
+            limit = viewModel.state.value.minimumValue,
+            limitLabel = stringResource(limits.limitLabel),
             startDateLabel = viewModel.state.value.startDate.format(dateTimeFormat), // displayLabel = ldt?.format(dateTimeFormat)!!
             startDate = viewModel.state.value.startDate,
             endDateLabel = viewModel.state.value.endDate.format(dateTimeFormat),
@@ -158,7 +159,7 @@ fun buildNavUrl(baseUrl: String, viewModel: MainSearchViewModel, sortOrder: Sort
             "&endDate=${viewModel.state.value.endDate.toSeconds()}" +
             "&season=${viewModel.state.value.selectedSeriesDate}" +
             "&result=${viewModel.state.value.matchResult}" +
-            "&limit=${viewModel.state.value.minimumRuns}" +
+            "&limit=${viewModel.state.value.minimumValue}" +
             "&startRow=0" +
             "&pageSize=${viewModel.state.value.selectedPageSize}"
 
@@ -202,23 +203,23 @@ fun MainSearchScreen(
         DateRangeRow(seriesDatesParams, startDateLabel, startDate, endDateLabel, endDate, onSearchEvent)
         ResultRow(onSearchEvent)
         ViewFormatRow(searchViewFormat, selectedMatchType, onSearchEvent)
-        ButtonRow(isLoaded, onBattingEvent = {
-            when (it) {
+        ButtonRow(isLoaded, onBattingEvent = { mainSearchEvent ->
+            when (mainSearchEvent) {
                 is MainSearchEvent.SearchMain -> {
-                    val navigateTo = getNavigateTo(mainSearchType, searchViewFormat)
+                    val navigateTo = getNavigateToScreenName(mainSearchType, searchViewFormat)
                     val (sortOrder, sortDirection) = getDefaultSortParameters(mainSearchType, searchViewFormat)
                     navigate(navigateTo, sortOrder, sortDirection)
                 }
 
                 else -> {
-                    onSearchEvent(it)
+                    onSearchEvent(mainSearchEvent)
                 }
             }
         })
     }
 }
 
-fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFormat): String {
+fun getNavigateToScreenName(mainSearchType: MainSearchType, searchViewFormat: SearchViewFormat): String {
     return when (mainSearchType) {
 
         MainSearchType.Batting -> when (searchViewFormat) {

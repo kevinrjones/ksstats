@@ -21,7 +21,7 @@ data class SearchState(
     val selectedSeriesDate: String = "Loading...",
     val pageSizes: List<Int> = emptyList(),
     val selectedPageSize: Int = 50,
-    val minimumRuns: Int = 100,
+    val minimumValue: Int = 100,
     val matchResult: Int = 0,
     val venue: Int = 0,
     val startDate: LocalDate = LocalDate(1772, 6, 24),

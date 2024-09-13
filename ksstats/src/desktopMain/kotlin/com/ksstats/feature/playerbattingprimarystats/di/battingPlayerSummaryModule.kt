@@ -32,6 +32,6 @@ fun playerBattingSummaryModule() = module {
     singleOf(::GetBySeason)
     singleOf(::JooqBattingRecordsRepository) bind BattingRecordsRepository::class
     factory { JooqBattingRecordsDao(get()) } bind BattingRecordsDao::class
-    factory { MainSearchViewModel(get()) }
+    factory { MainSearchViewModel(get(), get()) }
 }
 

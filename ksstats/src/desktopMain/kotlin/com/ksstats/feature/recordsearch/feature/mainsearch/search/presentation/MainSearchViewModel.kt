@@ -20,6 +20,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class MainSearchViewModel(
     val recordSearchUseCases: RecordSearchUseCases,
+    val limits: Map<String, Int>,
 ) : ViewModel() {
 
     var job: Job? = null
@@ -29,7 +30,10 @@ class MainSearchViewModel(
     init {
         job = this.viewModelScope.launch {
             withContext(Dispatchers.Main) {
-                _state.value = _state.value.copy(loaded = false)
+                _state.value = _state.value.copy(
+                    loaded = false,
+                    minimumValue = limits.getOrDefault(SearchViewFormat.PlayerSummary.name, 100)
+                )
             }
 
             withContext(Dispatchers.IO) {
@@ -150,13 +154,13 @@ class MainSearchViewModel(
 
             is MainSearchEvent.MinimumValueChangedEvent -> {
                 if (mainSearchEvent.value.isEmpty()) {
-                    _state.value = _state.value.copy(minimumRuns = 0)
+                    _state.value = _state.value.copy(minimumValue = 0)
                     return
                 } else if (mainSearchEvent.value.toIntOrNull() == null) {
                     return
                 }
                 // todo: Error handling
-                _state.value = _state.value.copy(minimumRuns = mainSearchEvent.value.toInt())
+                _state.value = _state.value.copy(minimumValue = mainSearchEvent.value.toInt())
 
             }
 
@@ -275,7 +279,7 @@ class MainSearchViewModel(
     }
 
     private fun setMinimumValue(evt: MainSearchEvent.SearchViewFormatEvent) {
-        _state.value = _state.value.copy(minimumRuns = evt.format.minimumRuns)
+        _state.value = _state.value.copy(minimumValue = limits.getOrDefault(evt.format.name, 100))
     }
 
 
