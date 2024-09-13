@@ -27,7 +27,7 @@
         <appender-ref ref="FILE-ROLLING"/>
     </root>
     <logger name="com.ksstats" level="debug"/>
-    <logger name="org.jooq.tools.LoggerListener" level="debug"/>
+    <logger name="org.jooq.tools.LoggerListener" level="info"/>
 </configuration>
 
 

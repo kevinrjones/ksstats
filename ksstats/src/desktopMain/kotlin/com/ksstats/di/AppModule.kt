@@ -2,6 +2,7 @@ package com.ksstats.di
 
 import com.ksstats.feature.playerbattingprimarystats.di.playerBattingSummaryModule
 import com.ksstats.feature.playerbowlingprimarystats.di.playerBowlingSummaryModule
+import com.ksstats.feature.playerfieldingprimarystats.di.playerFieldingSummaryModule
 import com.ksstats.feature.recordsearch.di.mainSearchModule
 import com.ksstats.feature.showselection.di.selectionModule
 import com.ksstats.feature.summary.di.summaryModule
@@ -26,4 +27,5 @@ fun appModule(databaseConnections: DatabaseConnections) = module {
     includes(mainSearchModule())
     includes(playerBattingSummaryModule())
     includes(playerBowlingSummaryModule())
+    includes(playerFieldingSummaryModule())
 }

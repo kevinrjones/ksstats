@@ -244,6 +244,18 @@ fun getNavigateTo(mainSearchType: MainSearchType, searchViewFormat: SearchViewFo
             SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BowlingByYear.name
             SearchViewFormat.BySeason -> StatsAppScreens.BowlingBySeason.name
         }
+
+        MainSearchType.Fielding -> when (searchViewFormat) {
+            SearchViewFormat.PlayerSummary -> StatsAppScreens.FieldingPlayerSummary.name
+            SearchViewFormat.InningsByInnings -> StatsAppScreens.FieldingInningsByInnings.name
+            SearchViewFormat.MatchTotals -> StatsAppScreens.FieldingMatchTotals.name
+            SearchViewFormat.SeriesAverages -> StatsAppScreens.FieldingSeriesAverages.name
+            SearchViewFormat.GroundAverages -> StatsAppScreens.FieldingGroundAverages.name
+            SearchViewFormat.ByHostCountry -> StatsAppScreens.FieldingByHostCountry.name
+            SearchViewFormat.ByOppositionTeam -> StatsAppScreens.FieldingByOppositionTeam.name
+            SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.FieldingByYear.name
+            SearchViewFormat.BySeason -> StatsAppScreens.FieldingBySeason.name
+        }
     }
 }
 
@@ -272,6 +284,18 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
             SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Wickets, SortDirection.Descending)
             SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Wickets, SortDirection.Descending)
             SearchViewFormat.BySeason -> Pair(SortOrder.Wickets, SortDirection.Descending)
+        }
+
+        MainSearchType.Fielding -> when (searchViewFormat) {
+            SearchViewFormat.PlayerSummary -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Ascending)
+            SearchViewFormat.MatchTotals -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.SeriesAverages -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.GroundAverages -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.ByHostCountry -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.BySeason -> Pair(SortOrder.Dismissals, SortDirection.Descending)
         }
     }
 }

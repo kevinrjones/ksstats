@@ -31,6 +31,6 @@
             <AppenderRef ref="Console"/>
         </Root>
         <Logger name="com.ksstats" level="debug"/>
-        <Logger name="org.jooq.tools.LoggerListener" level="error"/>
+        <Logger name="org.jooq.tools.LoggerListener" level="debug"/>
     </Loggers>
 </Configuration>

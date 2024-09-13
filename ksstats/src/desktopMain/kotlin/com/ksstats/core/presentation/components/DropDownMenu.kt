@@ -62,7 +62,7 @@ fun AppDropDownMenu(
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
             },
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
         )
 
         ExposedDropdownMenu(

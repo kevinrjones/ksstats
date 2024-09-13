@@ -96,7 +96,7 @@ repositories {
 
 compose.desktop {
     application {
-
+        jvmArgs.add("-Dlog4j.configurationFile=log4j2-dev.xml")
         mainClass = "com.ksstats.app.MainKt"
 
         nativeDistributions {

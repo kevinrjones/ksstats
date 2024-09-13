@@ -13,6 +13,8 @@ import com.ksstats.feature.playerbattingprimarystats.presentation.playerBattingI
 import com.ksstats.feature.playerbattingprimarystats.presentation.playerBattingSummaryScreen
 import com.ksstats.feature.playerbowlingprimarystats.presentation.playerBowlingInningsByInningsScreen
 import com.ksstats.feature.playerbowlingprimarystats.presentation.playerBowlingSummaryScreen
+import com.ksstats.feature.playerfieldingprimarystats.presentation.playerFieldingInningsByInningsScreen
+import com.ksstats.feature.playerfieldingprimarystats.presentation.playerFieldingSummaryScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.mainSearchScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
@@ -56,6 +58,16 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             navigate = {
                 navController.navigate(it) {
                     popUpTo(StatsAppScreens.BowlingSearch.name) {
+                        saveState = true
+                    }
+                    restoreState = true
+                }
+            })
+        mainSearchScreen(MainSearchType.Fielding,
+            limitLabel = Res.string.minimumDismissalsLabel,
+            navigate = {
+                navController.navigate(it) {
+                    popUpTo(StatsAppScreens.FieldingSearch.name) {
                         saveState = true
                     }
                     restoreState = true
@@ -151,6 +163,52 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             screen = StatsAppScreens.BowlingBySeason,
             title = Res.string.playerBySeasonTitle
         )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingPlayerSummary,
+            title = Res.string.playerFieldingSummaryTitle
+        )
+        playerFieldingInningsByInningsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingInningsByInnings,
+            title = Res.string.inningsByInningsScreenTitle
+        )
+        playerFieldingInningsByInningsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingMatchTotals,
+            title = Res.string.matchScreenTitle
+        )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingSeriesAverages,
+            title = Res.string.playerSeriesAveragesTitle
+        )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingGroundAverages,
+            title = Res.string.playerGroundAveragesTitle
+        )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingByHostCountry,
+            title = Res.string.playerByHostCountryTitle
+        )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingByOppositionTeam,
+            title = Res.string.playerByOppositionTeamTitle
+        )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingByYear,
+            title = Res.string.playerByYearOfMatchStartTitle
+        )
+        playerFieldingSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.FieldingBySeason,
+            title = Res.string.playerBySeasonTitle
+        )
+
     }
 
 }

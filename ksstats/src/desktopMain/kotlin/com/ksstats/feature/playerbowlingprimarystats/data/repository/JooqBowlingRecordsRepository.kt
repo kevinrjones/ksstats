@@ -2,7 +2,6 @@ package com.ksstats.feature.playerbowlingprimarystats.data.repository
 
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
-import com.ksstats.feature.playerbattingprimarystats.data.PrimaryBatting
 import com.ksstats.feature.playerbowlingprimarystats.data.InningsByInningsBowling
 import com.ksstats.feature.playerbowlingprimarystats.data.PrimaryBowling
 import com.ksstats.feature.playerbowlingprimarystats.data.source.BowlingRecordsDao

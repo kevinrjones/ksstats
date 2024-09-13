@@ -22,6 +22,7 @@
     <string name="pageSizeLabel">Page Size</string>
     <string name="minimumRunsLabel">Minimum Runs</string>
     <string name="minimumWicketsLabel">Minimum Wickets</string>
+    <string name="minimumDismissalsLabel">Minimum Dismissals</string>
     <string name="startDateLabel">Start Date</string>
     <string name="endDateLabel">End Date</string>
     <string name="homeLabel">Home</string>
@@ -57,6 +58,7 @@
     <string name="inningsByInningsScreenTitle">Innings By Innings Summary</string>
     <string name="playerBattingSummaryTitle">Player Batting Summary</string>
     <string name="playerBowlingSummaryTitle">Player Bowling Summary</string>
+    <string name="playerFieldingSummaryTitle">Player Fielding Summary</string>
     <string name="playerSeriesAveragesTitle">Series Averages</string>
     <string name="playerGroundAveragesTitle">Ground Averages</string>
     <string name="playerByHostCountryTitle">By Host Country Averages</string>
@@ -82,4 +84,9 @@
     <string name="runs">Runs</string>
     <string name="wkts">Wkts</string>
     <string name="econ">Econ</string>
+    <string name="dismissals">Dismissals</string>
+    <string name="wicketKeepingDismissals">WK Dismissals</string>
+    <string name="stumpings">Stumpings</string>
+    <string name="caughtFielder">Caught Fielder</string>
+    <string name="caughtWicketKeeper">Caught Wicket Keeper</string>
 </resources>

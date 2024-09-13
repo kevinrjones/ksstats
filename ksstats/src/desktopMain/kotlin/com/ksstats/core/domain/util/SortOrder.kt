@@ -35,6 +35,16 @@ enum class SortOrder {
     CountryName,
     Overs,
     BallsPerOver,
+    Dismissals,
+    WicketKeepingDismissals,
+    Caught,
+    Stumpings,
+    CaughtFielder,
+    CaughtWicketKeeper,
+    BestDismissals,
+    BestCaughtFielder,
+    BestCaughtKeeper,
+    BestStumpings,
 }
 
 enum class SortDirection(val direction: String) {

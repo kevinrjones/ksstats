@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -104,7 +103,7 @@ fun HeaderCellText(
 
         val inlineContent = createInlineContent(myId, sortDirection)
 
-        val annotatedText = createAnnotatedTExt(sortDirection, text, myId)
+        val annotatedText = createAnnotatedText(sortDirection, text, myId)
 
         Text(
             text = annotatedText,
@@ -121,7 +120,7 @@ fun HeaderCellText(
     }
 }
 
-private fun createAnnotatedTExt(
+private fun createAnnotatedText(
     sortDirection: DisplaySortDirection,
     text: String,
     myId: String,
