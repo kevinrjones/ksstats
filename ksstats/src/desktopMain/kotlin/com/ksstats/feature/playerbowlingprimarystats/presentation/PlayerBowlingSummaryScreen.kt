@@ -597,8 +597,8 @@ fun PlayerBowlingSummaryScreen(
                         }
                     ),
                     "sr" to ColumnMetaData(
-                        "SR", 90.dp, sortOrder = SortOrder.SR,
-                        sortDirection = if (sortOrder == SortOrder.SR) {
+                        "SR", 90.dp, sortOrder = SortOrder.strikeRate,
+                        sortDirection = if (sortOrder == SortOrder.strikeRate) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {

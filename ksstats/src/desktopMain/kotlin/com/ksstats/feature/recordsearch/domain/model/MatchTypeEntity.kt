@@ -1,5 +1,7 @@
 package com.ksstats.feature.recordsearch.domain.model
 
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
+
 data class MatchTypeEntity(val id: Int, val type: String, val description: String)
 data class Competition(val id: Int, val type: String, val subType: String, val competition: String)
 data class Team(val id: Int, val name: String)

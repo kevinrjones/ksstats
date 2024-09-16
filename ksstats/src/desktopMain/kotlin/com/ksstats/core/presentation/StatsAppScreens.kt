@@ -11,10 +11,12 @@ enum class StatsAppScreens(val title: StringResource) {
     Start(title = Res.string.app_name),
     BattingSearch(title = Res.string.batting),
     BowlingSearch(title = Res.string.bowling),
-    PlayersSearch(title = Res.string.players),
-    PartnershipSearch(title = Res.string.partnerships),
     FieldingSearch(title = Res.string.fielding),
+    TeamSearch(title = Res.string.teamsLabel),
+    PartnershipSearch(title = Res.string.partnerships),
+    PlayersSearch(title = Res.string.players),
     OfficialsSearch(title = Res.string.officials),
+
     BattingPlayerSummary(title = Res.string.playerSummary),
     BattingInningsByInnings(title = Res.string.playerSummary),
     BattingMatchTotals(title = Res.string.playerSummary),
@@ -42,4 +44,5 @@ enum class StatsAppScreens(val title: StringResource) {
     FieldingByOppositionTeam(title = Res.string.playerSummary),
     FieldingByYear(title = Res.string.playerSummary),
     FieldingBySeason(title = Res.string.playerSummary),
+    TeamSummary(title = Res.string.teamSummary),
 }

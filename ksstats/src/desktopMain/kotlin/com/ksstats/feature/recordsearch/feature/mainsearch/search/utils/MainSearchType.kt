@@ -6,4 +6,5 @@ sealed class MainSearchType(val screen: StatsAppScreens) {
     data object Batting : MainSearchType(StatsAppScreens.BattingSearch)
     data object Bowling : MainSearchType(StatsAppScreens.BowlingSearch)
     data object Fielding : MainSearchType(StatsAppScreens.FieldingSearch)
+    data object Teams : MainSearchType(StatsAppScreens.TeamSearch)
 }

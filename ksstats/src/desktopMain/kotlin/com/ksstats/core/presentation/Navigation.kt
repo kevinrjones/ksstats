@@ -20,6 +20,7 @@ import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.S
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.mainSearchScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
+import com.ksstats.feature.teamrecordspirmarystats.presentation.teamSummaryScreen
 import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.minimumRunsLabel
@@ -93,6 +94,29 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 }
             })
         mainSearchScreen(MainSearchType.Fielding,
+            limits = Limits(
+                limitLabel = Res.string.minimumDismissalsLabel, limitValues =
+                mapOf(
+                    SearchViewFormat.PlayerSummary.name to 10,
+                    SearchViewFormat.InningsByInnings.name to 1,
+                    SearchViewFormat.MatchTotals.name to 1,
+                    SearchViewFormat.SeriesAverages.name to 1,
+                    SearchViewFormat.GroundAverages.name to 1,
+                    SearchViewFormat.ByHostCountry.name to 1,
+                    SearchViewFormat.ByOppositionTeam.name to 1,
+                    SearchViewFormat.ByYearOfMatchStart.name to 10,
+                    SearchViewFormat.BySeason.name to 10,
+                )
+            ),
+            navigate = {
+                navController.navigate(it) {
+                    popUpTo(StatsAppScreens.FieldingSearch.name) {
+                        saveState = true
+                    }
+                    restoreState = true
+                }
+            })
+        mainSearchScreen(MainSearchType.Teams,
             limits = Limits(
                 limitLabel = Res.string.minimumDismissalsLabel, limitValues =
                 mapOf(
@@ -249,6 +273,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             navigate = { navController.navigate(it) },
             screen = StatsAppScreens.FieldingBySeason,
             title = Res.string.playerBySeasonTitle
+        )
+        teamSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.TeamSummary,
+            title = Res.string.teamSummaryTitle
         )
 
     }

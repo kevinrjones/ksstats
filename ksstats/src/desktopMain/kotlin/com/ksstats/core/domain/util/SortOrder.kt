@@ -14,11 +14,11 @@ enum class SortOrder {
     Sixes,
     NotOuts,
     HighestScore,
-    Avg,
+    Average,
     Fifties,
     Hundreds,
     Ducks,
-    SR,
+    strikeRate,
     BI,
     Maidens,
     None,
@@ -45,6 +45,13 @@ enum class SortOrder {
     BestCaughtFielder,
     BestCaughtKeeper,
     BestStumpings,
+    Won,
+    Drawn,
+    Lost,
+    Tied,
+    RunsPerOver,
+    Played,
+    Avg,
 }
 
 enum class SortDirection(val direction: String) {

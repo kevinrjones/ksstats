@@ -8,6 +8,7 @@ import com.ksstats.core.domain.util.SortDirection
 import com.ksstats.core.types.toMatchType
 import com.ksstats.feature.recordsearch.domain.model.*
 import com.ksstats.feature.recordsearch.domain.usecase.RecordSearchUseCases
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.shared.toSeconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,6 +22,7 @@ import kotlinx.datetime.toLocalDateTime
 class MainSearchViewModel(
     val recordSearchUseCases: RecordSearchUseCases,
     val limits: Map<String, Int>,
+    searchType: MainSearchType
 ) : ViewModel() {
 
     var job: Job? = null
@@ -30,9 +32,11 @@ class MainSearchViewModel(
     init {
         job = this.viewModelScope.launch {
             withContext(Dispatchers.Main) {
+                val searchViewFormat = if(searchType == MainSearchType.Teams) SearchViewFormat.TeamSummary else SearchViewFormat.PlayerSummary
                 _state.value = _state.value.copy(
                     loaded = false,
-                    minimumValue = limits.getOrDefault(SearchViewFormat.PlayerSummary.name, 100)
+                    minimumValue = limits.getOrDefault(SearchViewFormat.PlayerSummary.name, 100),
+                    searchViewFormat = searchViewFormat,
                 )
             }
 
@@ -280,6 +284,11 @@ class MainSearchViewModel(
 
     private fun setMinimumValue(evt: MainSearchEvent.SearchViewFormatEvent) {
         _state.value = _state.value.copy(minimumValue = limits.getOrDefault(evt.format.name, 100))
+    }
+
+    fun onTeamTypeChanged() {
+        _state.value = _state.value.copy(isBattingTeamSearch = !_state.value.isBattingTeamSearch)
+
     }
 
 

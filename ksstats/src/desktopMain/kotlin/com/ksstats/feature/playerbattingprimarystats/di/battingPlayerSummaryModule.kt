@@ -15,6 +15,7 @@ import com.ksstats.feature.playerbattingprimarystats.data.source.BattingRecordsD
 import com.ksstats.feature.playerbattingprimarystats.data.source.JooqBattingRecordsDao
 import com.ksstats.feature.playerbattingprimarystats.domain.repository.BattingRecordsRepository
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchViewModel
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.SearchViewFormat
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -32,6 +33,6 @@ fun playerBattingSummaryModule() = module {
     singleOf(::GetBySeason)
     singleOf(::JooqBattingRecordsRepository) bind BattingRecordsRepository::class
     factory { JooqBattingRecordsDao(get()) } bind BattingRecordsDao::class
-    factory { MainSearchViewModel(get(), get()) }
+    factory { MainSearchViewModel(get(), get(), get()) }
 }
 

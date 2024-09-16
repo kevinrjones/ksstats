@@ -26,5 +26,6 @@ data class SearchState(
     val venue: Int = 0,
     val startDate: LocalDate = LocalDate(1772, 6, 24),
     val endDate: LocalDate = LocalDate.now(),
-    val searchViewFormat: SearchViewFormat = SearchViewFormat.PlayerSummary
+    val searchViewFormat: SearchViewFormat = SearchViewFormat.PlayerSummary,
+    val isBattingTeamSearch: Boolean = true,
 )

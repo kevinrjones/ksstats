@@ -1,9 +1,7 @@
 package com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,7 +27,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -52,7 +49,7 @@ fun NavGraphBuilder.mainSearchScreen(
 
         val recordSearchUseCases: RecordSearchUseCases = koinInject()
         val viewModel: MainSearchViewModel = viewModel {
-            MainSearchViewModel(recordSearchUseCases, limits.limitValues)
+            MainSearchViewModel(recordSearchUseCases, limits.limitValues, searchType)
         }
 
         val dateTimeFormat = LocalDate.Format {
@@ -131,10 +128,12 @@ fun NavGraphBuilder.mainSearchScreen(
             endDate = viewModel.state.value.endDate,
             searchViewFormat = viewModel.state.value.searchViewFormat,
             isLoaded = viewModel.state.value.loaded,
+            isBattingSearch = viewModel.state.value.isBattingTeamSearch,
             mainSearchType = searchType,
             onSearchEvent = { evt: MainSearchEvent ->
                 viewModel.uiEvent(evt)
             },
+            onTeamTypeChanged = {viewModel.onTeamTypeChanged()},
             navigate = { baseUrl, sortOrder, sortDirection ->
                 val navUrl = buildNavUrl(baseUrl, viewModel, sortOrder, sortDirection)
                 navigate(navUrl)
@@ -184,8 +183,10 @@ fun MainSearchScreen(
     endDate: LocalDate,
     searchViewFormat: SearchViewFormat,
     isLoaded: Boolean,
+    isBattingSearch: Boolean,
     mainSearchType: MainSearchType,
     onSearchEvent: (MainSearchEvent) -> Unit = {},
+    onTeamTypeChanged: () -> Unit = {},
     navigate: (String, SortOrder, SortDirection) -> Unit,
 ) {
     Column(
@@ -202,7 +203,16 @@ fun MainSearchScreen(
         CountriesGroundsRow(groundsParams, countriesParams, onSearchEvent)
         DateRangeRow(seriesDatesParams, startDateLabel, startDate, endDateLabel, endDate, onSearchEvent)
         ResultRow(onSearchEvent)
-        ViewFormatRow(searchViewFormat, selectedMatchType, onSearchEvent)
+        if(mainSearchType == MainSearchType.Teams) {
+            TeamsViewFormatRow(searchViewFormat, selectedMatchType, onSearchEvent)
+        } else {
+            ViewFormatRow(searchViewFormat, selectedMatchType, onSearchEvent)
+        }
+        if(mainSearchType == MainSearchType.Teams) {
+            Spacer(Modifier.height(16.dp))
+            BattingOrBowlingTeamRow(isBattingSearch, onTeamTypeChanged = onTeamTypeChanged)
+            Spacer(Modifier.height(16.dp))
+        }
         ButtonRow(isLoaded, onBattingEvent = { mainSearchEvent ->
             when (mainSearchEvent) {
                 is MainSearchEvent.SearchMain -> {
@@ -232,6 +242,13 @@ fun getNavigateToScreenName(mainSearchType: MainSearchType, searchViewFormat: Se
             SearchViewFormat.ByOppositionTeam -> StatsAppScreens.BattingByOppositionTeam.name
             SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BattingByYear.name
             SearchViewFormat.BySeason -> StatsAppScreens.BattingBySeason.name
+            SearchViewFormat.TeamSummary -> throw Exception("Invalid format for this search")
+            SearchViewFormat.MatchResults -> throw Exception("Invalid format for this search")
+            SearchViewFormat.OverallExtras -> throw Exception("Invalid format for this search")
+            SearchViewFormat.ExtrasByInnings -> throw Exception("Invalid format for this search")
+            SearchViewFormat.HighestTargetChased -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> throw Exception("Invalid format for this search")
         }
 
         MainSearchType.Bowling -> when (searchViewFormat) {
@@ -244,6 +261,13 @@ fun getNavigateToScreenName(mainSearchType: MainSearchType, searchViewFormat: Se
             SearchViewFormat.ByOppositionTeam -> StatsAppScreens.BowlingByOppositionTeam.name
             SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.BowlingByYear.name
             SearchViewFormat.BySeason -> StatsAppScreens.BowlingBySeason.name
+            SearchViewFormat.TeamSummary -> throw Exception("Invalid format for this search")
+            SearchViewFormat.MatchResults -> throw Exception("Invalid format for this search")
+            SearchViewFormat.OverallExtras -> throw Exception("Invalid format for this search")
+            SearchViewFormat.ExtrasByInnings -> throw Exception("Invalid format for this search")
+            SearchViewFormat.HighestTargetChased -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> throw Exception("Invalid format for this search")
         }
 
         MainSearchType.Fielding -> when (searchViewFormat) {
@@ -256,6 +280,32 @@ fun getNavigateToScreenName(mainSearchType: MainSearchType, searchViewFormat: Se
             SearchViewFormat.ByOppositionTeam -> StatsAppScreens.FieldingByOppositionTeam.name
             SearchViewFormat.ByYearOfMatchStart -> StatsAppScreens.FieldingByYear.name
             SearchViewFormat.BySeason -> StatsAppScreens.FieldingBySeason.name
+            SearchViewFormat.TeamSummary -> throw Exception("Invalid format for this search")
+            SearchViewFormat.MatchResults -> throw Exception("Invalid format for this search")
+            SearchViewFormat.OverallExtras -> throw Exception("Invalid format for this search")
+            SearchViewFormat.ExtrasByInnings -> throw Exception("Invalid format for this search")
+            SearchViewFormat.HighestTargetChased -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> throw Exception("Invalid format for this search")
+        }
+
+        MainSearchType.Teams -> when (searchViewFormat) {
+            SearchViewFormat.TeamSummary -> StatsAppScreens.TeamSummary.name
+            SearchViewFormat.InningsByInnings -> TODO()
+            SearchViewFormat.MatchTotals -> TODO()
+            SearchViewFormat.SeriesAverages -> TODO()
+            SearchViewFormat.GroundAverages -> TODO()
+            SearchViewFormat.ByHostCountry -> TODO()
+            SearchViewFormat.ByOppositionTeam -> TODO()
+            SearchViewFormat.ByYearOfMatchStart -> TODO()
+            SearchViewFormat.BySeason -> TODO()
+            SearchViewFormat.MatchResults -> TODO()
+            SearchViewFormat.OverallExtras -> TODO()
+            SearchViewFormat.ExtrasByInnings -> TODO()
+            SearchViewFormat.HighestTargetChased -> TODO()
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> TODO()
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> TODO()
+            SearchViewFormat.PlayerSummary -> throw Exception("Invalid format for this search")
         }
     }
 }
@@ -273,6 +323,13 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
             SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Runs, SortDirection.Descending)
             SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Runs, SortDirection.Descending)
             SearchViewFormat.BySeason -> Pair(SortOrder.Runs, SortDirection.Descending)
+            SearchViewFormat.TeamSummary -> throw Exception("Invalid format for this search")
+            SearchViewFormat.MatchResults -> throw Exception("Invalid format for this search")
+            SearchViewFormat.OverallExtras -> throw Exception("Invalid format for this search")
+            SearchViewFormat.ExtrasByInnings -> throw Exception("Invalid format for this search")
+            SearchViewFormat.HighestTargetChased -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> throw Exception("Invalid format for this search")
         }
 
         MainSearchType.Bowling -> when (searchViewFormat) {
@@ -285,6 +342,13 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
             SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Wickets, SortDirection.Descending)
             SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Wickets, SortDirection.Descending)
             SearchViewFormat.BySeason -> Pair(SortOrder.Wickets, SortDirection.Descending)
+            SearchViewFormat.TeamSummary -> throw Exception("Invalid format for this search")
+            SearchViewFormat.MatchResults -> throw Exception("Invalid format for this search")
+            SearchViewFormat.OverallExtras -> throw Exception("Invalid format for this search")
+            SearchViewFormat.ExtrasByInnings -> throw Exception("Invalid format for this search")
+            SearchViewFormat.HighestTargetChased -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> throw Exception("Invalid format for this search")
         }
 
         MainSearchType.Fielding -> when (searchViewFormat) {
@@ -297,6 +361,32 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
             SearchViewFormat.ByOppositionTeam -> Pair(SortOrder.Dismissals, SortDirection.Descending)
             SearchViewFormat.ByYearOfMatchStart -> Pair(SortOrder.Dismissals, SortDirection.Descending)
             SearchViewFormat.BySeason -> Pair(SortOrder.Dismissals, SortDirection.Descending)
+            SearchViewFormat.TeamSummary -> throw Exception("Invalid format for this search")
+            SearchViewFormat.MatchResults -> throw Exception("Invalid format for this search")
+            SearchViewFormat.OverallExtras -> throw Exception("Invalid format for this search")
+            SearchViewFormat.ExtrasByInnings -> throw Exception("Invalid format for this search")
+            SearchViewFormat.HighestTargetChased -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> throw Exception("Invalid format for this search")
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> throw Exception("Invalid format for this search")
+        }
+
+        MainSearchType.Teams -> when(searchViewFormat) {
+            SearchViewFormat.TeamSummary -> Pair(SortOrder.Won, SortDirection.Descending)
+            SearchViewFormat.InningsByInnings -> TODO()
+            SearchViewFormat.MatchTotals -> TODO()
+            SearchViewFormat.SeriesAverages -> TODO()
+            SearchViewFormat.GroundAverages -> TODO()
+            SearchViewFormat.ByHostCountry -> TODO()
+            SearchViewFormat.ByOppositionTeam -> TODO()
+            SearchViewFormat.ByYearOfMatchStart -> TODO()
+            SearchViewFormat.BySeason -> TODO()
+            SearchViewFormat.MatchResults -> TODO()
+            SearchViewFormat.OverallExtras -> TODO()
+            SearchViewFormat.ExtrasByInnings -> TODO()
+            SearchViewFormat.HighestTargetChased -> TODO()
+            SearchViewFormat.SuccessfullyDefendedLowestTarget -> TODO()
+            SearchViewFormat.SuccessfullyDefendedInUnReducedMatch -> TODO()
+            SearchViewFormat.PlayerSummary -> throw Exception("Invalid format for this search")
         }
     }
 }
@@ -321,6 +411,7 @@ fun MainBattingSearchScreenPreview() {
         endDate = LocalDate.now(),
         searchViewFormat = SearchViewFormat.PlayerSummary,
         isLoaded = true,
+        isBattingSearch = true,
         mainSearchType = MainSearchType.Batting,
         onSearchEvent = {},
         navigate = {url, sortOrder, sortDirection ->}

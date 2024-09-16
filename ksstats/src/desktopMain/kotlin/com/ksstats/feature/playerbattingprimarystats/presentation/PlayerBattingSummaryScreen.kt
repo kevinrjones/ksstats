@@ -629,8 +629,8 @@ fun PlayerBattingSummaryScreen(
                     "sr" to ColumnMetaData(
                         "SR", 90.dp,
                         align = TextAlign.End,
-                        sortOrder = SortOrder.SR,
-                        sortDirection = if (sortOrder == SortOrder.SR) {
+                        sortOrder = SortOrder.strikeRate,
+                        sortDirection = if (sortOrder == SortOrder.strikeRate) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {

@@ -2,6 +2,7 @@
     <string name="app_name">Knowledge Spike Stats App</string>
     <string name="batting">Batting</string>
     <string name="bowling">Bowling</string>
+    <string name="teams">Teams</string>
     <string name="fielding">Fielding</string>
     <string name="partnerships">Partnerships</string>
     <string name="players">Players</string>
@@ -22,6 +23,9 @@
     <string name="pageSizeLabel">Page Size</string>
     <string name="minimumRunsLabel">Minimum Runs</string>
     <string name="minimumWicketsLabel">Minimum Wickets</string>
+    <string name="wicketsLabel">Wickets</string>
+    <string name="averageLabel">Average</string>
+    <string name="runsPerOverLabel">RpO</string>
     <string name="minimumDismissalsLabel">Minimum Dismissals</string>
     <string name="startDateLabel">Start Date</string>
     <string name="endDateLabel">End Date</string>
@@ -37,8 +41,10 @@
     <string name="mainDisplayLabel">Display the Data</string>
     <string name="resetLabel">Reset</string>
     <string name="playerSummary">Player Summary</string>
+    <string name="teamSummary">Team Summary</string>
     <string name="inningsByInningsList">Innings by Innings List</string>
     <string name="matchTotals">Match Totals</string>
+    <string name="matchResults">Match Results</string>
     <string name="seriesAverages">Series Averages</string>
     <string name="groundAverages">Ground Averages</string>
     <string name="byHostCountry">By Host Country</string>
@@ -65,6 +71,7 @@
     <string name="playerByOppositionTeamTitle">By Opposition Averages</string>
     <string name="playerByYearOfMatchStartTitle">By Year Of Match Start Averages</string>
     <string name="playerBySeasonTitle">By Season Averages</string>
+    <string name="teamSummaryTitle">Team Summary</string>
     <string name="name">Name</string>
     <string name="team">Team</string>
     <string name="score">Score</string>
@@ -76,6 +83,7 @@
     <string name="innings">Innings</string>
     <string name="opponent">Opponent</string>
     <string name="matchDate">Match Date</string>
+    <string name="played">Played</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
@@ -89,4 +97,9 @@
     <string name="stumpings">Stumpings</string>
     <string name="caughtFielder">Caught Fielder</string>
     <string name="caughtWicketKeeper">Caught Wicket Keeper</string>
+    <string name="overallExtras">Overall Extras</string>
+    <string name="extrasByInnings">Extras by Innings</string>
+    <string name="highestTargetChased">Highest Target Chased</string>
+    <string name="successfullyDefendedLowestTarget">Successfully Defended Lowest Target</string>
+    <string name="successfullyDefendedInUnReducedMatch">Successfully Defended in an Unreduced Match</string>
 </resources>

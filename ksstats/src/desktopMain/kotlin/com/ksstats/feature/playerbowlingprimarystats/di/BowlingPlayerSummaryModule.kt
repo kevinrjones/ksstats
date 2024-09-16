@@ -5,6 +5,7 @@ import com.ksstats.feature.playerbowlingprimarystats.data.source.BowlingRecordsD
 import com.ksstats.feature.playerbowlingprimarystats.data.source.JooqBowlingRecordsDao
 import com.ksstats.feature.playerbowlingprimarystats.domain.repository.BowlingRecordsRepository
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.*
+import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.MainSearchViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -23,5 +24,6 @@ fun playerBowlingSummaryModule() = module {
     singleOf(::GetByYearOfMatchStart)
     singleOf(::JooqBowlingRecordsRepository) bind BowlingRecordsRepository::class
     factory { JooqBowlingRecordsDao(get()) } bind BowlingRecordsDao::class
+    factory { MainSearchViewModel(get(), get(), get()) }
 }
 

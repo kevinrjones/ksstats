@@ -16,6 +16,7 @@ class GetSelection {
     private val statsSelection = listOf(
         StatsSelectionItem(Res.string.batting, StatsAppScreens.BattingSearch),
         StatsSelectionItem(Res.string.bowling, StatsAppScreens.BowlingSearch),
+        StatsSelectionItem(Res.string.teams, StatsAppScreens.TeamSearch),
         StatsSelectionItem(Res.string.fielding, StatsAppScreens.FieldingSearch),
         StatsSelectionItem(Res.string.partnerships, StatsAppScreens.PartnershipSearch),
         StatsSelectionItem(Res.string.players, StatsAppScreens.PlayersSearch),

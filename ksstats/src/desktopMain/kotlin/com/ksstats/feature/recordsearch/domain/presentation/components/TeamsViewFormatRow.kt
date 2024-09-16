@@ -16,8 +16,9 @@ import com.ksstats.ksstats.generated.resources.Res
 import com.ksstats.ksstats.generated.resources.viewFormatLabel
 import org.jetbrains.compose.resources.stringResource
 
+
 @Composable
-fun ViewFormatRow(
+fun TeamsViewFormatRow(
     searchViewFormat: SearchViewFormat,
     selectedMatchType: MatchType,
     onChangeFormatEvent: (MainSearchEvent) -> Unit = {},
@@ -28,10 +29,10 @@ fun ViewFormatRow(
         }
         Column(modifier = Modifier.weight(1f)) {
             HorizontalTextRadioButton(
-                selected = searchViewFormat == SearchViewFormat.PlayerSummary,
-                text = stringResource(SearchViewFormat.PlayerSummary.format),
+                selected = searchViewFormat == SearchViewFormat.TeamSummary,
+                text = stringResource(SearchViewFormat.TeamSummary.format),
                 onOptionSelected = {
-                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.PlayerSummary))
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.TeamSummary))
                 })
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.InningsByInnings,
@@ -47,6 +48,12 @@ fun ViewFormatRow(
                         onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.MatchTotals))
                     })
             }
+            HorizontalTextRadioButton(
+                selected = searchViewFormat == SearchViewFormat.MatchResults,
+                text = stringResource(SearchViewFormat.MatchResults.format),
+                onOptionSelected = {
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.MatchResults))
+                })
         }
         Column(modifier = Modifier.weight(1f)) {
             if(selectedMatchType.isInternationalType()) {
@@ -64,13 +71,13 @@ fun ViewFormatRow(
                     onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.GroundAverages))
                 })
             if(selectedMatchType.isInternationalType()) {
-            HorizontalTextRadioButton(
-                selected = searchViewFormat == SearchViewFormat.ByHostCountry,
-                text = stringResource(SearchViewFormat.ByHostCountry.format),
-                onOptionSelected = {
-                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByHostCountry))
-                })
-                }
+                HorizontalTextRadioButton(
+                    selected = searchViewFormat == SearchViewFormat.ByHostCountry,
+                    text = stringResource(SearchViewFormat.ByHostCountry.format),
+                    onOptionSelected = {
+                        onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ByHostCountry))
+                    })
+            }
             HorizontalTextRadioButton(
                 selected = searchViewFormat == SearchViewFormat.ByOppositionTeam,
                 text = stringResource(SearchViewFormat.ByOppositionTeam.format),
@@ -90,6 +97,38 @@ fun ViewFormatRow(
                 text = stringResource(SearchViewFormat.BySeason.format),
                 onOptionSelected = {
                     onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.BySeason))
+                })
+            HorizontalTextRadioButton(
+                selected = searchViewFormat == SearchViewFormat.OverallExtras,
+                text = stringResource(SearchViewFormat.OverallExtras.format),
+                onOptionSelected = {
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.OverallExtras))
+                })
+            HorizontalTextRadioButton(
+                selected = searchViewFormat == SearchViewFormat.ExtrasByInnings,
+                text = stringResource(SearchViewFormat.ExtrasByInnings.format),
+                onOptionSelected = {
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.ExtrasByInnings))
+                })
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            HorizontalTextRadioButton(
+                selected = searchViewFormat == SearchViewFormat.HighestTargetChased,
+                text = stringResource(SearchViewFormat.HighestTargetChased.format),
+                onOptionSelected = {
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.HighestTargetChased))
+                })
+            HorizontalTextRadioButton(
+                selected = searchViewFormat == SearchViewFormat.SuccessfullyDefendedLowestTarget,
+                text = stringResource(SearchViewFormat.SuccessfullyDefendedLowestTarget.format),
+                onOptionSelected = {
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.SuccessfullyDefendedLowestTarget))
+                })
+            HorizontalTextRadioButton(
+                selected = searchViewFormat == SearchViewFormat.SuccessfullyDefendedInUnReducedMatch,
+                text = stringResource(SearchViewFormat.SuccessfullyDefendedInUnReducedMatch.format),
+                onOptionSelected = {
+                    onChangeFormatEvent(MainSearchEvent.SearchViewFormatEvent(SearchViewFormat.SuccessfullyDefendedInUnReducedMatch))
                 })
         }
 

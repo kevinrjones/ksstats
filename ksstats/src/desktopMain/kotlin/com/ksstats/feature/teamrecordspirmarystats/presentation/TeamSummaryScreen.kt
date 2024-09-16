@@ -1,4 +1,4 @@
-package com.ksstats.feature.playerbattingprimarystats.presentation
+package com.ksstats.feature.teamrecordspirmarystats.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -17,12 +16,15 @@ import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
 import com.ksstats.core.types.*
-import com.ksstats.feature.playerbattingprimarystats.data.InningsByInningsBatting
-import com.ksstats.feature.playerbattingprimarystats.domain.usecase.PlayerBattingPrimaryStatsUseCases
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
 import com.ksstats.feature.summary.util.buildSummary
+import com.ksstats.feature.teamrecordspirmarystats.data.source.TeamSummary
+import com.ksstats.feature.teamrecordspirmarystats.domain.usecase.TeamPrimaryStatsUseCases
 import com.ksstats.ksstats.generated.resources.*
+import com.ksstats.ksstats.generated.resources.Res
+import com.ksstats.ksstats.generated.resources.innings
+import com.ksstats.ksstats.generated.resources.team
 import com.ksstats.shared.fromSeconds
 import com.ksstats.shared.utils.buildDetailsScreenNavUrl
 import com.ksstats.shared.utils.buildRecordsScreenNavArguments
@@ -32,24 +34,23 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-fun NavGraphBuilder.playerBattingInningsByInningsScreen(
+fun NavGraphBuilder.teamSummaryScreen(
     navigate: (String) -> Unit,
     screen: StatsAppScreens,
     title: StringResource,
 ) {
-
     composable(
         route = buildSummaryScreenRoute(screen),
         arguments = buildRecordsScreenNavArguments(100)
     ) { navBackStackEntry ->
 
         var pagingParameters by remember {
-            mutableStateOf(PagingParameters(startRow = 0, pageSize = 50, limit = 0))
+            mutableStateOf(PagingParameters(startRow = 0, pageSize = 50, limit = 1))
         }
         var searchParameters by remember {
             mutableStateOf(
                 SearchParameters(
-                    sortOrder = SortOrder.Score,
+                    sortOrder = SortOrder.Won,
                     sortDirection = SortDirection.Descending,
                     pagingParameters = pagingParameters
                 )
@@ -68,11 +69,10 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
             )
         }
 
-
-        val battingUseCases: PlayerBattingPrimaryStatsUseCases = koinInject()
+        val teamUseCases: TeamPrimaryStatsUseCases = koinInject()
         val summaryUseCases: SummaryUseCases = koinInject()
-        val viewModel: PlayerBattingInningsByInningsScreenViewModel = viewModel {
-            PlayerBattingInningsByInningsScreenViewModel(battingUseCases, summaryUseCases, screen)
+        val viewModel: TeamSummaryScreenViewModel = viewModel {
+            TeamSummaryScreenViewModel(teamUseCases, summaryUseCases, screen)
         }
         val summary = viewModel.summary.collectAsState()
 
@@ -146,42 +146,31 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
 
         }
 
-        val searchResults = viewModel.inningsByInnings.collectAsState()
+        val searchResults = viewModel.teamSummary.collectAsState()
+
         val searching = viewModel.searching.collectAsState()
 
-        val count = searchResults.value.count
-        val displayRecords: List<Map<String, String>> = getDisplayRecords(searchResults.value.data, pagingParameters.startRow)
+        val count = 0
+        val displayRecords: List<Map<String, String>> = getDisplayRecords(searchResults.value.data)
 
         var summaryString: String by remember { mutableStateOf("") }
         summaryString = summary.value.buildSummary(searchParameters.startDate, searchParameters.endDate)
 
-        val isInningsByInnings = screen == StatsAppScreens.BattingInningsByInnings
 
-        PlayerBattingInningsByInningsScreen(
+        TeamSummaryScreen(
             displayRecords = displayRecords,
-            isInningsByInnings = isInningsByInnings,
             searching = searching,
-            title = stringResource(title),
             summary = summaryString,
+            title = stringResource(title),
             pageNumber = pagingParameters.calculatePageNumber(),
             pageSize = pagingParameters.pageSize,
             startRow = navBackStackEntry.arguments?.getInt("startRow") ?: 0,
-            limit = navBackStackEntry.arguments?.getInt("limit") ?: 100,
+            limit = navBackStackEntry.arguments?.getInt("limit") ?: 1,
             rowCount = count,
             sortOrder = searchParameters.sortOrder,
             sortDirection = searchParameters.sortDirection,
-            onPageChanged = {
-                pagingParameters = pagingParameters.calculateNewPagingParameters(it, count)
-                searchParameters = searchParameters.copy(
-                    pagingParameters = pagingParameters
-                )
-
-                val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
-                navigate(navUrl)
-            },
+            onPageChanged = {},
             onSort = { order ->
-
-                // reverse the sort direction if the order is the same otherwise keep it the same
                 val sortDirectionText = navBackStackEntry.arguments?.getString("sortDirection") ?: "DESC"
                 val sortOrderFromNav = SortOrder.entries[navBackStackEntry.arguments?.getInt("sortOrder")
                     ?: SortOrder.SortNamePart.ordinal]
@@ -203,48 +192,37 @@ fun NavGraphBuilder.playerBattingInningsByInningsScreen(
 
                 val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
                 navigate(navUrl)
-
             }
         )
     }
 }
 
-
-private fun getDisplayRecords(searchResults: List<InningsByInningsBatting>, startRow: Int): List<Map<String, String>> {
+fun getDisplayRecords(searchResults: List<TeamSummary>): List<Map<String, String>> {
     return searchResults.mapIndexed { index, searchResult ->
 
-        val format = createMatchDateEnglishDateFormat()
-        val date = searchResult.matchDate.fromSeconds().format(format)
+
         mapOf(
-            "index" to (index + startRow + 1).toString(),
-            "name" to searchResult.name,
-            "team" to searchResult.team,
-            "score" to getScore(searchResult.score, searchResult.notOut),
-            "minutes" to searchResult.minutes.toString(),
-            "balls" to searchResult.balls.toString(),
-            "fours" to searchResult.fours.toString(),
-            "sixes" to searchResult.sixes.toString(),
-            "sr" to searchResult.strikeRate.round(2),
+            "team" to searchResult.teamName,
+            "matches" to searchResult.matches.toString(),
             "innings" to searchResult.innings.toString(),
-            "opponents" to searchResult.opponents,
-            "ground" to searchResult.ground,
-            "date" to date,
+            "won" to searchResult.won.toString(),
+            "lost" to searchResult.lost.toString(),
+            "tied" to searchResult.tied.toString(),
+            "drawn" to searchResult.drawn.toString(),
+            "runs" to searchResult.runs.toString(),
+            "wickets" to searchResult.wickets.toString(),
+            "average" to searchResult.average.truncate(2),
+            "runsPerOver" to searchResult.runsPerOver.truncate(2),
+            "strikeRate" to searchResult.strikeRate.truncate(2),
         )
     }
+
 }
 
-fun getScore(score: Int, notOut: Int): String =
-    if (notOut == 1)
-        "${score}*"
-    else
-        score.toString()
-
-
 @Composable
-fun PlayerBattingInningsByInningsScreen(
+fun TeamSummaryScreen(
     displayRecords: List<Map<String, String>>,
     searching: State<Boolean>,
-    isInningsByInnings: Boolean,
     summary: String,
     title: String,
     pageNumber: Int,
@@ -257,7 +235,6 @@ fun PlayerBattingInningsByInningsScreen(
     onPageChanged: (PageChangedNavigation) -> Unit,
     onSort: (SortOrder) -> Unit,
 ) {
-
     Box(
         modifier = Modifier
             .height(0.dp)
@@ -275,7 +252,7 @@ fun PlayerBattingInningsByInningsScreen(
 
             TitleRow(title = title)
             SummaryRow(summary = summary)
-            SearchLimitRow(searchLimit = limit)
+            SearchLimitRow(searchLimit = limit, postFix = "Dismissals")
             NavigationRow(
                 pageNumber = pageNumber,
                 pageSize = pageSize,
@@ -287,22 +264,7 @@ fun PlayerBattingInningsByInningsScreen(
 
             Row {
                 val metaData = mapOf(
-                    "index" to ColumnMetaData("", 60.dp),
-                    "name" to ColumnMetaData(
-                        stringResource(Res.string.name),
-                        170.dp,
-                        sortOrder = SortOrder.SortNamePart,
-                        sortDirection = if (sortOrder == SortOrder.SortNamePart) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-                    ),
-                    "team" to   ColumnMetaData(
+                    "team" to ColumnMetaData(
                         stringResource(Res.string.team),
                         200.dp,
                         sortOrder = SortOrder.Team,
@@ -316,12 +278,39 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    "score" to  ColumnMetaData(
-                        stringResource(Res.string.score),
+                    "matches" to ColumnMetaData(
+                        stringResource(Res.string.played),
+                        200.dp,
+                        sortOrder = SortOrder.Played,
+                        sortDirection = if (sortOrder == SortOrder.Played) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    "innings" to ColumnMetaData(
+                        stringResource(Res.string.innings),
+                        200.dp,
+                        sortOrder = SortOrder.Innings,
+                        sortDirection = if (sortOrder == SortOrder.Innings) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    "won" to ColumnMetaData(
+                        stringResource(Res.string.wonLabel),
                         90.dp,
-                        sortOrder = SortOrder.Score,
-                        align = TextAlign.End,
-                        sortDirection = if (sortOrder == SortOrder.Score) {
+                        sortOrder = SortOrder.Won,
+                        sortDirection = if (sortOrder == SortOrder.Won) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {
@@ -330,14 +319,12 @@ fun PlayerBattingInningsByInningsScreen(
                         } else {
                             DisplaySortDirection.None
                         }
-
                     ),
-                    "minutes" to   ColumnMetaData(
-                        stringResource(Res.string.minutes),
+                    "lost" to ColumnMetaData(
+                        stringResource(Res.string.lostLabel),
                         90.dp,
-                        align = TextAlign.End,
-                        sortOrder = SortOrder.Minutes,
-                        sortDirection = if (sortOrder == SortOrder.Minutes) {
+                        sortOrder = SortOrder.Lost,
+                        sortDirection = if (sortOrder == SortOrder.Lost) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {
@@ -346,30 +333,12 @@ fun PlayerBattingInningsByInningsScreen(
                         } else {
                             DisplaySortDirection.None
                         }
-
                     ),
-                    "balls" to  ColumnMetaData(
-                        stringResource(Res.string.balls),
+                    "tied" to ColumnMetaData(
+                        stringResource(Res.string.tiedLabel),
                         90.dp,
-                        align = TextAlign.End,
-                        sortOrder = SortOrder.Balls,
-                        sortDirection = if (sortOrder == SortOrder.Balls) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-
-                    ),
-                    "fours" to  ColumnMetaData(
-                        stringResource(Res.string.fours),
-                        50.dp,
-                        align = TextAlign.End,
-                        sortOrder = SortOrder.Fours,
-                        sortDirection = if (sortOrder == SortOrder.Fours) {
+                        sortOrder = SortOrder.Tied,
+                        sortDirection = if (sortOrder == SortOrder.Tied) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {
@@ -379,12 +348,11 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    "sixes" to  ColumnMetaData(
-                        stringResource(Res.string.sixes),
-                        50.dp,
-                        align = TextAlign.End,
-                        sortOrder = SortOrder.Sixes,
-                        sortDirection = if (sortOrder == SortOrder.Sixes) {
+                    "drawn" to ColumnMetaData(
+                        stringResource(Res.string.drawnLabel),
+                        90.dp,
+                        sortOrder = SortOrder.Drawn,
+                        sortDirection = if (sortOrder == SortOrder.Drawn) {
                             if (sortDirection == SortDirection.Ascending) {
                                 DisplaySortDirection.Ascending
                             } else {
@@ -394,10 +362,65 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    "sr" to  ColumnMetaData(
+                    "runs" to ColumnMetaData(
+                        stringResource(Res.string.runs),
+                        90.dp,
+                        sortOrder = SortOrder.Runs,
+                        sortDirection = if (sortOrder == SortOrder.Runs) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    "wickets" to ColumnMetaData(
+                        stringResource(Res.string.wicketsLabel),
+                        90.dp,
+                        sortOrder = SortOrder.Wickets,
+                        sortDirection = if (sortOrder == SortOrder.Wickets) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    "average" to ColumnMetaData(
+                        stringResource(Res.string.averageLabel),
+                        90.dp,
+                        sortOrder = SortOrder.Average,
+                        sortDirection = if (sortOrder == SortOrder.Average) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    "runsPerOver" to ColumnMetaData(
+                        stringResource(Res.string.runsPerOverLabel),
+                        90.dp,
+                        sortOrder = SortOrder.RunsPerOver,
+                        sortDirection = if (sortOrder == SortOrder.RunsPerOver) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
+                    "strikeRate" to ColumnMetaData(
                         stringResource(Res.string.strikeRate),
                         90.dp,
-                        align = TextAlign.End,
                         sortOrder = SortOrder.strikeRate,
                         sortDirection = if (sortOrder == SortOrder.strikeRate) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -409,72 +432,14 @@ fun PlayerBattingInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
-                    "innings" to  ColumnMetaData(
-                        stringResource(Res.string.innings),
-                        40.dp,
-                        align = TextAlign.End,
-                        sortOrder = SortOrder.Innings,
-                        sortDirection = if (sortOrder == SortOrder.Innings) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        },
-                        visible = isInningsByInnings
-                    ),
-                    "opponents" to ColumnMetaData(
-                        stringResource(Res.string.opponent),
-                        200.dp,
-                        sortOrder = SortOrder.Opponents,
-                        sortDirection = if (sortOrder == SortOrder.Opponents) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-                    ),
-                    "ground" to ColumnMetaData(
-                        stringResource(Res.string.groundLabel),
-                        250.dp,
-                        sortOrder = SortOrder.Ground,
-                        sortDirection = if (sortOrder == SortOrder.Ground) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-                    ),
-                    "date" to ColumnMetaData(
-                        stringResource(Res.string.matchDate),
-                        150.dp, sortOrder =
-                        SortOrder.MatchStartDateAsOffset,
-                        sortDirection = if (sortOrder == SortOrder.MatchStartDateAsOffset) {
-                            if (sortDirection == SortDirection.Ascending) {
-                                DisplaySortDirection.Ascending
-                            } else {
-                                DisplaySortDirection.Descending
-                            }
-                        } else {
-                            DisplaySortDirection.None
-                        }
-                    )
                 )
+
                 Table(
                     rowCount = displayRecords.size,
                     cellContent = { key, row ->
                         if (displayRecords.isNotEmpty()) {
                             getContent(displayRecords, key, row, metaData)
-                        }
-                        else
+                        } else
                             null
                     },
                     metaData = metaData,
@@ -497,7 +462,3 @@ fun PlayerBattingInningsByInningsScreen(
         }
     }
 }
-
-
-
-

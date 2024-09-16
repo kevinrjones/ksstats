@@ -6,6 +6,7 @@ import com.ksstats.feature.playerfieldingprimarystats.di.playerFieldingSummaryMo
 import com.ksstats.feature.recordsearch.di.mainSearchModule
 import com.ksstats.feature.showselection.di.selectionModule
 import com.ksstats.feature.summary.di.summaryModule
+import com.ksstats.feature.teamrecordspirmarystats.di.teamSummaryModule
 import com.ksstats.shared.DatabaseConnection
 import com.ksstats.shared.DatabaseConnections
 import org.jooq.SQLDialect
@@ -28,4 +29,5 @@ fun appModule(databaseConnections: DatabaseConnections) = module {
     includes(playerBattingSummaryModule())
     includes(playerBowlingSummaryModule())
     includes(playerFieldingSummaryModule())
+    includes(teamSummaryModule())
 }

@@ -20,7 +20,6 @@ fun HorizontalTextRadioButton(height: Dp = 40.dp, selected: Boolean, text: Strin
 
     Row(
         Modifier
-            .fillMaxWidth()
             .height(height)
             .selectable(
                 selected = (selected),
