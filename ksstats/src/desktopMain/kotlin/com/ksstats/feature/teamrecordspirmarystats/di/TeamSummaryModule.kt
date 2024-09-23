@@ -13,6 +13,7 @@ import org.koin.dsl.module
 fun teamSummaryModule() = module {
     singleOf(::TeamPrimaryStatsUseCases)
     singleOf(::GetTeamSummary)
+    singleOf(::GetTeamInningsByInnings)
     singleOf(::JooqTeamRecordsRepository) bind TeamRecordsRepository::class
     factory { JooqTeamRecordsDao(get()) } bind TeamRecordsDao::class
     factory { MainSearchViewModel(get(), get(), get()) }

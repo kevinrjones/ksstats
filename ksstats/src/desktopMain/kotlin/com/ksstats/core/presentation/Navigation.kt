@@ -20,6 +20,7 @@ import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.S
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.mainSearchScreen
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
+import com.ksstats.feature.teamrecordspirmarystats.presentation.teamInningsByInningsScreen
 import com.ksstats.feature.teamrecordspirmarystats.presentation.teamSummaryScreen
 import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.ksstats.generated.resources.Res
@@ -278,6 +279,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             navigate = { navController.navigate(it) },
             screen = StatsAppScreens.TeamSummary,
             title = Res.string.teamSummaryTitle
+        )
+        teamInningsByInningsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.TeamInningsByInnings,
+            title = Res.string.inningsByInningsScreenTitle
         )
 
     }

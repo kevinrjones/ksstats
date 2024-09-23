@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import com.ksstats.core.domain.util.*
 import com.ksstats.core.presentation.StatsAppScreens
 import com.ksstats.core.presentation.components.*
+import com.ksstats.core.presentation.getOvers
 import com.ksstats.core.types.*
 import com.ksstats.feature.playerbowlingprimarystats.data.InningsByInningsBowling
 import com.ksstats.feature.playerbowlingprimarystats.domain.usecase.PlayerBowlingPrimaryStatsUseCases
@@ -227,17 +228,12 @@ private fun getDisplayRecords(searchResults: List<InningsByInningsBowling>, star
             "wkts" to searchResult.wickets.toString(),
             "econ" to searchResult.economy.truncate(2),
             "innings" to searchResult.inningsNumber.toString(),
-            "ground" to searchResult.ground.toString(),
+            "ground" to searchResult.ground,
             "date" to date,
         )
     }
 }
 
-fun getOvers(balls: Int, ballsPerOver: Int) : String {
-    val completedOvers = balls/ballsPerOver
-    val ballsLeft = balls % ballsPerOver
-    return "$completedOvers.$ballsLeft"
-}
 
 @Composable
 fun PlayerBowlingInningsByInningsScreen(

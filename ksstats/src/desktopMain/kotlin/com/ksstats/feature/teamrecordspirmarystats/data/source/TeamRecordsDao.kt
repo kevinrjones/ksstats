@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface TeamRecordsDao {
     fun getTeamSummary(searchParameters: SearchParameters): Flow<DatabaseResult<TeamSummary>>
+    fun getInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<TeamInningsByInnings>>
 }
 

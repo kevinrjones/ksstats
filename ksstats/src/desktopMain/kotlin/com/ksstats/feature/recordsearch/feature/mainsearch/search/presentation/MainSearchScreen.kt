@@ -291,7 +291,7 @@ fun getNavigateToScreenName(mainSearchType: MainSearchType, searchViewFormat: Se
 
         MainSearchType.Teams -> when (searchViewFormat) {
             SearchViewFormat.TeamSummary -> StatsAppScreens.TeamSummary.name
-            SearchViewFormat.InningsByInnings -> TODO()
+            SearchViewFormat.InningsByInnings -> StatsAppScreens.TeamInningsByInnings.name
             SearchViewFormat.MatchTotals -> TODO()
             SearchViewFormat.SeriesAverages -> TODO()
             SearchViewFormat.GroundAverages -> TODO()
@@ -372,7 +372,7 @@ fun getDefaultSortParameters(mainSearchType: MainSearchType, searchViewFormat: S
 
         MainSearchType.Teams -> when(searchViewFormat) {
             SearchViewFormat.TeamSummary -> Pair(SortOrder.Won, SortDirection.Descending)
-            SearchViewFormat.InningsByInnings -> TODO()
+            SearchViewFormat.InningsByInnings -> Pair(SortOrder.MatchStartDateAsOffset, SortDirection.Ascending)
             SearchViewFormat.MatchTotals -> TODO()
             SearchViewFormat.SeriesAverages -> TODO()
             SearchViewFormat.GroundAverages -> TODO()

@@ -45,4 +45,5 @@ enum class StatsAppScreens(val title: StringResource) {
     FieldingByYear(title = Res.string.playerSummary),
     FieldingBySeason(title = Res.string.playerSummary),
     TeamSummary(title = Res.string.teamSummary),
+    TeamInningsByInnings(title = Res.string.inningsByInningsScreenTitle),
 }

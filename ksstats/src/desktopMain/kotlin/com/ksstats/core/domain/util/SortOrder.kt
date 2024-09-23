@@ -32,6 +32,7 @@ enum class SortOrder {
     Score,
     Minutes,
     Ground,
+    Location,
     CountryName,
     Overs,
     BallsPerOver,
@@ -49,9 +50,14 @@ enum class SortOrder {
     Drawn,
     Lost,
     Tied,
-    RunsPerOver,
+    rpo,
     Played,
     Avg,
+    Result,
+    StartDate,
+    InningsOrder,
+    BallsBowled,
+    Total,
 }
 
 enum class SortDirection(val direction: String) {
