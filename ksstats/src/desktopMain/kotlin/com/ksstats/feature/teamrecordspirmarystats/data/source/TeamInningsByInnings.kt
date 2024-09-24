@@ -9,5 +9,7 @@ data class TeamInningsByInnings(
     val runsPerOver: Double,
     val result: String,
     val ground: String,
-    val startDate: String
-)
+    val startDate: String,
+    val wickets: Int
+) {
+}

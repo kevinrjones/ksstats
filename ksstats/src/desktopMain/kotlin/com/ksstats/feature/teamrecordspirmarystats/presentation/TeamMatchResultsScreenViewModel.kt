@@ -10,8 +10,7 @@ import com.ksstats.core.types.MatchType
 import com.ksstats.feature.summary.domain.model.SummaryResult
 import com.ksstats.feature.summary.domain.usecase.SummaryUseCases
 import com.ksstats.feature.summary.util.SummarySearchParameters
-import com.ksstats.feature.teamrecordspirmarystats.data.source.TeamInningsByInnings
-import com.ksstats.feature.teamrecordspirmarystats.data.source.TeamSummary
+import com.ksstats.feature.teamrecordspirmarystats.data.source.MatchResults
 import com.ksstats.feature.teamrecordspirmarystats.domain.usecase.TeamPrimaryStatsUseCases
 import com.ksstats.shared.fromSeconds
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.format
 
-class TeamInningsByInningsScreenViewModel(
+class TeamMatchResultsScreenViewModel(
     val teamUseCases: TeamPrimaryStatsUseCases,
     val summaryUseCases: SummaryUseCases,
     val screen: StatsAppScreens
@@ -31,13 +30,13 @@ class TeamInningsByInningsScreenViewModel(
 
     private val format = createAbbreviatedEnglishDateFormat()
 
-    private val _teamSummary: MutableStateFlow<DatabaseResult<TeamInningsByInnings>> = MutableStateFlow(
+    private val _teamSummary: MutableStateFlow<DatabaseResult<MatchResults>> = MutableStateFlow(
         DatabaseResult(
             listOf(), 0
         )
     )
 
-    val teamSummary: StateFlow<DatabaseResult<TeamInningsByInnings>> = _teamSummary.asStateFlow()
+    val teamSummary: StateFlow<DatabaseResult<MatchResults>> = _teamSummary.asStateFlow()
 
 
     private val _searching = MutableStateFlow<Boolean>(false)
@@ -72,14 +71,8 @@ class TeamInningsByInningsScreenViewModel(
             withContext(Dispatchers.IO) {
                 _searching.value = true
                 when (screen) {
-                    StatsAppScreens.TeamInningsByInnings -> {
-                        teamUseCases.getTeamInningsByInnings(searchParameters)
-                            .collect { _teamSummary.value = it }
-                        _searching.value = false
-                    }
-
-                    StatsAppScreens.TeamMatchTotalsScreen -> {
-                        teamUseCases.getMatchTotals(searchParameters)
+                    StatsAppScreens.MatchResults -> {
+                        teamUseCases.getMatchResults(searchParameters)
                             .collect { _teamSummary.value = it }
                         _searching.value = false
                     }

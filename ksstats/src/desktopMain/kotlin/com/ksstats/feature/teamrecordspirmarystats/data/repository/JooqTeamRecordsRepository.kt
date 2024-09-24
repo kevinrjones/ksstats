@@ -3,6 +3,7 @@ package com.ksstats.feature.teamrecordspirmarystats.data.repository
 import com.ksstats.core.data.DatabaseResult
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.feature.teamrecordspirmarystats.data.source.JooqTeamRecordsDao
+import com.ksstats.feature.teamrecordspirmarystats.data.source.MatchResults
 import com.ksstats.feature.teamrecordspirmarystats.data.source.TeamInningsByInnings
 import com.ksstats.feature.teamrecordspirmarystats.data.source.TeamSummary
 import com.ksstats.feature.teamrecordspirmarystats.domain.repository.TeamRecordsRepository
@@ -15,5 +16,13 @@ class JooqTeamRecordsRepository(private val teamRecordsDao: JooqTeamRecordsDao) 
 
     override fun getInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<TeamInningsByInnings>> {
         return teamRecordsDao.getInningsByInnings(searchParameters)
+    }
+
+    override fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<TeamInningsByInnings>> {
+        return teamRecordsDao.getMatchTotals(searchParameters)
+    }
+
+    override fun getMatchResults(searchParameters: SearchParameters): Flow<DatabaseResult<MatchResults>> {
+        return teamRecordsDao.getMatchResults(searchParameters)
     }
 }

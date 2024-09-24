@@ -2,19 +2,22 @@ package com.ksstats.feature.teamrecordspirmarystats.data.source
 
 import com.ksstats.core.domain.util.SearchParameters
 import com.ksstats.db.tables.Matches.Companion.MATCHES
-import com.ksstats.db.tables.references.*
+import com.ksstats.db.tables.references.EXTRAMATCHDETAILS
+import com.ksstats.db.tables.references.FIELDING
+import com.ksstats.db.tables.references.INNINGS
+import com.ksstats.db.tables.references.TEAMS
 import org.jooq.*
 import org.jooq.impl.DSL.*
 import java.math.BigDecimal
 
-object JooqInningsByInningsRecords {
-    fun createScoresCte(searchParameters: SearchParameters): SelectConditionStep<Record15<Any, Any, Int?, String?, String?, Long?, String?, String?, String?, Int?, Int?, Int?, Int?, Int?, Double>> {
+object JooqMatchTotalsRecords {
+    fun createScoresCte(searchParameters: SearchParameters): SelectConditionStep<Record15<Any, Any, Int?, String?, String?, Long?, String?, String?, String?, Int, Any, Any, Any, Any, Double>> {
 
         val teamIdCondition = if (searchParameters.teamId != 0) {
-            and(FIELDING.TEAMID.eq(searchParameters.teamId))
+            and(field("i1.Teamid").eq(searchParameters.teamId))
         } else null
         val opponentsIdCondition = if (searchParameters.opponentsId != 0) {
-            and(FIELDING.OPPONENTSID.eq(searchParameters.opponentsId))
+            and(field("i1.OpponentsId").eq(searchParameters.opponentsId))
         } else null
         val groundCondition = if (searchParameters.groundId != 0) {
             and(MATCHES.LOCATIONID.eq(searchParameters.groundId))
@@ -46,28 +49,34 @@ object JooqInningsByInningsRecords {
             MATCHES.RESULTSTRING,
             MATCHES.LOCATION,
             MATCHES.CAID,
-            INNINGS.INNINGSORDER,
-            INNINGS.TOTAL,
-            INNINGS.WICKETS,
-            INNINGS.BALLSBOWLED,
-            INNINGS.BALLSPEROVER,
+            inline(0).`as`("InningsOrder"),
+            field("i1.TOTAL").add(coalesce(field("i2.total"), 0)).`as`("Total"),
+            field("i1.wickets").add(coalesce(field("i2.wickets"), 0)).`as`("Wickets"),
+            coalesce(field("i1.ballsbowled"), 0).add(coalesce(field("i2.ballsbowled"), 0)).`as`("BallsBowled"),
+            field("i1.BallsPerOver"),
             iif(
-                INNINGS.BALLSBOWLED.eq(0),
+                coalesce(field("i1.ballsbowled"), 0).add(coalesce(field("i2.ballsbowled"), 0)).eq(0),
                 0.0,
-                INNINGS.TOTAL.cast(Double::class.java).div(INNINGS.BALLSBOWLED).mul(6)
+                coalesce(field("i1.total", Int::class.java), 0).add(coalesce(field("i2.total"), 0))
+                    .cast(Double::class.java).div(
+                        coalesce(field("i1.ballsbowled", Int::class.java), 0).add(coalesce(field("i2.ballsbowled"), 0))
+                    ).mul(6)
             ).`as`("rpo")
         ).from(MATCHES)
-            .join(INNINGS).on(INNINGS.MATCHID.eq(MATCHES.ID))
-            .join(TEAMS.`as`("team")).on(INNINGS.TEAMID.eq(field("team.id", Int::class.java)))
-            .join(TEAMS.`as`("opponents")).on(INNINGS.OPPONENTSID.eq(field("opponents.id", Int::class.java)))
+            .join(INNINGS.`as`("i1")).on(field("i1.MATCHID").eq(MATCHES.ID))
+            .and(field("i1.inningsNumber").eq(inline(1)))
+            .leftJoin(INNINGS.`as`("i2"))
+            .on(field("i2.matchid").eq(MATCHES.ID))
+            .and(field("i2.teamid").eq(field("i1.teamid")))
+            .and(field("i2.inningsNumber").eq(inline(2)))
+            .join(TEAMS.`as`("team")).on(field("i1.teamid").eq(field("team.id", Int::class.java)))
+            .join(TEAMS.`as`("opponents")).on(field("i1.opponentsId").eq(field("opponents.id", Int::class.java)))
             .join(EXTRAMATCHDETAILS).on(
                 EXTRAMATCHDETAILS.MATCHID.eq(MATCHES.ID)
                     .and(EXTRAMATCHDETAILS.TEAMID.eq(field("team.id", Int::class.java)))
                     .and(homeOrAwayCondition)
             )
             .where(MATCHES.MATCHTYPE.eq(searchParameters.matchType.value))
-            .and(MATCHES.ID.`in`(select(MATCHSUBTYPE.MATCHID).from(MATCHSUBTYPE).where(MATCHSUBTYPE.MATCHTYPE.eq(searchParameters.matchSubType.value))))
-            .and(INNINGS.TOTAL.ge(searchParameters.pagingParameters.limit))
             .and(homeCountryIdCondition)
             .and(dateOrSeasonCondition)
             .and(teamIdCondition)
@@ -76,6 +85,7 @@ object JooqInningsByInningsRecords {
             .and(matchResultCondition)
             .and(homeOrAwayCondition)
             .and(MATCHES.VICTORYTYPE.notIn(6, 11, 13))
+            .and(field("i1.total").add(coalesce(field("i2.total"), 0)).ge(searchParameters.pagingParameters.limit))
 
         return cte
 

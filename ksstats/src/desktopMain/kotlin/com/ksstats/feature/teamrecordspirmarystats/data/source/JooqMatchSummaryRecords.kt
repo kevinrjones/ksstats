@@ -102,7 +102,7 @@ object JooqMatchSummaryRecords {
         searchParameters: SearchParameters,
         cteScoresName: String,
         cteTotalsName: String
-    ): SelectOnConditionStep<Record13<String?, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Serializable>> {
+    ): SelectConditionStep<Record13<String?, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Serializable>> {
         val cte = select(
             TEAMS.NAME.`as`("Team"),
             coalesce(field("games.played"), 0).`as`("played"),
@@ -133,6 +133,7 @@ object JooqMatchSummaryRecords {
             ).from(cteScoresName).groupBy(field("teamid")).asTable("games")
         ).leftJoin(cteTotalsName).on(field("${cteTotalsName}.TeamId").eq(field("games.teamid")))
             .join(TEAMS).on(TEAMS.ID.eq(field("games.teamid", Int::class.java)))
+            .where(field("${cteTotalsName}.runs").ge(searchParameters.pagingParameters.limit))
         return cte
     }
 

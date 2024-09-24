@@ -145,7 +145,7 @@ fun NavGraphBuilder.teamInningsByInningsScreen(
 
         val searching = viewModel.searching.collectAsState()
 
-        val count = 0
+        val count = searchResults.value.count
         val displayRecords: List<Map<String, String>> = getDisplayRecords(searchResults.value.data)
 
         var summaryString: String by remember { mutableStateOf("") }
@@ -155,6 +155,7 @@ fun NavGraphBuilder.teamInningsByInningsScreen(
         TeamInningsByInningsScreen(
             displayRecords = displayRecords,
             searching = searching,
+            isInningsByInnings = screen == StatsAppScreens.TeamInningsByInnings,
             summary = summaryString,
             title = stringResource(title),
             pageNumber = pagingParameters.calculatePageNumber(),
@@ -164,7 +165,15 @@ fun NavGraphBuilder.teamInningsByInningsScreen(
             rowCount = count,
             sortOrder = searchParameters.sortOrder,
             sortDirection = searchParameters.sortDirection,
-            onPageChanged = {},
+            onPageChanged = {
+                pagingParameters = pagingParameters.calculateNewPagingParameters(it, count)
+                searchParameters = searchParameters.copy(
+                    pagingParameters = pagingParameters
+                )
+
+                val navUrl = buildDetailsScreenNavUrl(screen.name, searchParameters)
+                navigate(navUrl)
+            },
             onSort = { order ->
                 val sortDirectionText = navBackStackEntry.arguments?.getString("sortDirection") ?: "DESC"
                 val sortOrderFromNav = SortOrder.entries[navBackStackEntry.arguments?.getInt("sortOrder")
@@ -202,6 +211,7 @@ fun getDisplayRecords(searchResults: List<TeamInningsByInnings>): List<Map<Strin
             "innings" to searchResult.innings.toString(),
             "ground" to searchResult.ground,
             "score" to searchResult.score.toString(),
+            "wickets" to searchResult.wickets.toString(),
             "overs" to searchResult.overs,
             "runsPerOver" to searchResult.runsPerOver.truncate(2),
             "result" to searchResult.result,
@@ -215,6 +225,7 @@ fun getDisplayRecords(searchResults: List<TeamInningsByInnings>): List<Map<Strin
 fun TeamInningsByInningsScreen(
     displayRecords: List<Map<String, String>>,
     searching: State<Boolean>,
+    isInningsByInnings: Boolean,
     summary: String,
     title: String,
     pageNumber: Int,
@@ -284,6 +295,20 @@ fun TeamInningsByInningsScreen(
                             DisplaySortDirection.None
                         }
                     ),
+                    "wickets" to ColumnMetaData(
+                        stringResource(Res.string.wicketsLabel),
+                        90.dp,
+                        sortOrder = SortOrder.Wickets,
+                        sortDirection = if (sortOrder == SortOrder.Wickets) {
+                            if (sortDirection == SortDirection.Ascending) {
+                                DisplaySortDirection.Ascending
+                            } else {
+                                DisplaySortDirection.Descending
+                            }
+                        } else {
+                            DisplaySortDirection.None
+                        }
+                    ),
                     "overs" to ColumnMetaData(
                         stringResource(Res.string.overs),
                         90.dp,
@@ -324,7 +349,8 @@ fun TeamInningsByInningsScreen(
                             }
                         } else {
                             DisplaySortDirection.None
-                        }
+                        },
+                        visible = isInningsByInnings
                     ),
                     "result" to ColumnMetaData(
                         stringResource(Res.string.resultsLabel),
@@ -356,7 +382,7 @@ fun TeamInningsByInningsScreen(
                     ),
                     "ground" to ColumnMetaData(
                         stringResource(Res.string.groundsLabel),
-                        250.dp,
+                        300.dp,
                         sortOrder = SortOrder.Location,
                         sortDirection = if (sortOrder == SortOrder.Location) {
                             if (sortDirection == SortDirection.Ascending) {
@@ -370,7 +396,7 @@ fun TeamInningsByInningsScreen(
                     ),
                     "startDate" to ColumnMetaData(
                         stringResource(Res.string.startDateLabel),
-                        250.dp,
+                        300.dp,
                         sortOrder = SortOrder.MatchStartDateAsOffset,
                         sortDirection = if (sortOrder == SortOrder.MatchStartDateAsOffset) {
                             if (sortDirection == SortDirection.Ascending) {

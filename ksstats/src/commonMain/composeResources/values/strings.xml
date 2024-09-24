@@ -90,6 +90,8 @@
     <string name="overs">Overs</string>
     <string name="ballsPerOver">BpO</string>
     <string name="runs">Runs</string>
+    <string name="margin">Margin</string>
+    <string name="toss">Toss</string>
     <string name="wkts">Wkts</string>
     <string name="econ">Econ</string>
     <string name="dismissals">Dismissals</string>

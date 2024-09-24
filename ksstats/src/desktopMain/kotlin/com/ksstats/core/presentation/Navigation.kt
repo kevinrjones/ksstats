@@ -21,6 +21,7 @@ import com.ksstats.feature.recordsearch.feature.mainsearch.search.presentation.m
 import com.ksstats.feature.recordsearch.feature.mainsearch.search.utils.MainSearchType
 import com.ksstats.feature.showselection.presentation.chooseStatsTypeScreen
 import com.ksstats.feature.teamrecordspirmarystats.presentation.teamInningsByInningsScreen
+import com.ksstats.feature.teamrecordspirmarystats.presentation.teamMatchResultsScreen
 import com.ksstats.feature.teamrecordspirmarystats.presentation.teamSummaryScreen
 import com.ksstats.ksstats.generated.resources.*
 import com.ksstats.ksstats.generated.resources.Res
@@ -119,17 +120,19 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             })
         mainSearchScreen(MainSearchType.Teams,
             limits = Limits(
-                limitLabel = Res.string.minimumDismissalsLabel, limitValues =
+                limitLabel = Res.string.minimumRunsLabel,
+                limitValues =
                 mapOf(
-                    SearchViewFormat.PlayerSummary.name to 10,
-                    SearchViewFormat.InningsByInnings.name to 1,
-                    SearchViewFormat.MatchTotals.name to 1,
-                    SearchViewFormat.SeriesAverages.name to 1,
-                    SearchViewFormat.GroundAverages.name to 1,
-                    SearchViewFormat.ByHostCountry.name to 1,
-                    SearchViewFormat.ByOppositionTeam.name to 1,
-                    SearchViewFormat.ByYearOfMatchStart.name to 10,
-                    SearchViewFormat.BySeason.name to 10,
+                    SearchViewFormat.PlayerSummary.name to 0,
+                    SearchViewFormat.InningsByInnings.name to 0,
+                    SearchViewFormat.MatchTotals.name to 0,
+                    SearchViewFormat.MatchResults.name to 0,
+                    SearchViewFormat.SeriesAverages.name to 0,
+                    SearchViewFormat.GroundAverages.name to 0,
+                    SearchViewFormat.ByHostCountry.name to 0,
+                    SearchViewFormat.ByOppositionTeam.name to 0,
+                    SearchViewFormat.ByYearOfMatchStart.name to 0,
+                    SearchViewFormat.BySeason.name to 0,
                 )
             ),
             navigate = {
@@ -284,6 +287,16 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             navigate = { navController.navigate(it) },
             screen = StatsAppScreens.TeamInningsByInnings,
             title = Res.string.inningsByInningsScreenTitle
+        )
+        teamInningsByInningsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.TeamMatchTotalsScreen,
+            title = Res.string.matchTotals
+        )
+        teamMatchResultsScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.MatchResults,
+            title = Res.string.matchResults
         )
 
     }
