@@ -16,6 +16,7 @@ fun teamSummaryModule() = module {
     singleOf(::GetTeamInningsByInnings)
     singleOf(::GetMatchTotals)
     singleOf(::GetMatchResults)
+    singleOf(::GetSeriesRecords)
     singleOf(::JooqTeamRecordsRepository) bind TeamRecordsRepository::class
     factory { JooqTeamRecordsDao(get()) } bind TeamRecordsDao::class
     factory { MainSearchViewModel(get(), get(), get()) }

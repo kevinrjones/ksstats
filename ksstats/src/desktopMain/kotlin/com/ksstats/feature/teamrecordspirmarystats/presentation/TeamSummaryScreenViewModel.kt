@@ -77,6 +77,12 @@ class TeamSummaryScreenViewModel(
                         _searching.value = false
                     }
 
+                    StatsAppScreens.TeamSeriesRecords -> {
+                        teamUseCases.getSeriesRecords(searchParameters)
+                            .collect { _teamSummary.value = it }
+                        _searching.value = false
+                    }
+
                     else -> {
                         _searching.value = false
                         // todo: add logging

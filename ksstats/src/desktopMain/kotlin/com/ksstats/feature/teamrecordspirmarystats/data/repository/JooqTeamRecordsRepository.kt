@@ -25,4 +25,8 @@ class JooqTeamRecordsRepository(private val teamRecordsDao: JooqTeamRecordsDao) 
     override fun getMatchResults(searchParameters: SearchParameters): Flow<DatabaseResult<MatchResults>> {
         return teamRecordsDao.getMatchResults(searchParameters)
     }
+
+    override fun getSeriesRecords(searchParameters: SearchParameters): Flow<DatabaseResult<TeamSummary>> {
+        return teamRecordsDao.getSeriesRecords(searchParameters)
+    }
 }

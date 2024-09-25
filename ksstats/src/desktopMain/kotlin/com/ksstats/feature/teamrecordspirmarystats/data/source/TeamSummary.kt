@@ -2,6 +2,8 @@ package com.ksstats.feature.teamrecordspirmarystats.data.source
 
 data class TeamSummary(
     val teamName: String,
+    val opponents: String = "",
+    val year: String = "",
     val matches: Int,
     val innings: Int,
     val won: Int,

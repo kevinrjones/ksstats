@@ -31,3 +31,10 @@ class GetMatchResults(val repository: TeamRecordsRepository) {
         return repository.getMatchResults(searchParameters)
     }
 }
+
+class GetSeriesRecords(val repository: TeamRecordsRepository) {
+    operator fun invoke(searchParameters: SearchParameters): Flow<DatabaseResult<TeamSummary>> {
+        return repository.getSeriesRecords(searchParameters)
+    }
+}
+

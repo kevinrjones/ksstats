@@ -59,6 +59,7 @@ enum class SortOrder {
     BallsBowled,
     Total,
     HowMuch,
+    Series,
 }
 
 enum class SortDirection(val direction: String) {

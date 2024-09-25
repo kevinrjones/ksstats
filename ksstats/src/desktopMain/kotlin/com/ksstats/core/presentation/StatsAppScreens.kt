@@ -48,5 +48,6 @@ enum class StatsAppScreens(val title: StringResource) {
     TeamInningsByInnings(title = Res.string.inningsByInningsScreenTitle),
     TeamMatchTotalsScreen(title = Res.string.matchTotals),
     MatchResults(title = Res.string.matchResults),
+    TeamSeriesRecords(title = Res.string.seriesRecords),
 
 }

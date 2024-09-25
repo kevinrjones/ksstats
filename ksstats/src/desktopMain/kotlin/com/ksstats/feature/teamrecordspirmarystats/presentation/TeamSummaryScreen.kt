@@ -157,6 +157,7 @@ fun NavGraphBuilder.teamSummaryScreen(
 
         TeamSummaryScreen(
             displayRecords = displayRecords,
+            recordScreen = screen,
             searching = searching,
             summary = summaryString,
             title = stringResource(title),
@@ -201,6 +202,8 @@ fun getDisplayRecords(searchResults: List<TeamSummary>): List<Map<String, String
 
         mapOf(
             "team" to searchResult.teamName,
+            "opponents" to searchResult.opponents,
+            "season" to searchResult.year,
             "matches" to searchResult.matches.toString(),
             "innings" to searchResult.innings.toString(),
             "won" to searchResult.won.toString(),
@@ -220,6 +223,7 @@ fun getDisplayRecords(searchResults: List<TeamSummary>): List<Map<String, String
 @Composable
 fun TeamSummaryScreen(
     displayRecords: List<Map<String, String>>,
+    recordScreen: StatsAppScreens,
     searching: State<Boolean>,
     summary: String,
     title: String,
@@ -276,6 +280,41 @@ fun TeamSummaryScreen(
                             DisplaySortDirection.None
                         }
                     ),
+                    "opponents" to when (recordScreen) {
+                        StatsAppScreens.TeamSeriesRecords ->
+                            ColumnMetaData(
+                                "Opponents", 200.dp, sortOrder = SortOrder.Opponents,
+                                sortDirection = if (sortOrder == SortOrder.Opponents) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
+                    "season" to when (recordScreen) {
+                        StatsAppScreens.TeamSeriesRecords ->
+                            ColumnMetaData(
+                                stringResource(Res.string.season),
+                                200.dp, sortOrder = SortOrder.Year,
+                                sortDirection = if (sortOrder == SortOrder.Year) {
+                                    if (sortDirection == SortDirection.Ascending) {
+                                        DisplaySortDirection.Ascending
+                                    } else {
+                                        DisplaySortDirection.Descending
+                                    }
+                                } else {
+                                    DisplaySortDirection.None
+                                }
+                            )
+
+                        else -> null
+                    },
                     "matches" to ColumnMetaData(
                         stringResource(Res.string.played),
                         200.dp,

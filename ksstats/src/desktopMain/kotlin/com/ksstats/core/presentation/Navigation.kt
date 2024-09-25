@@ -298,6 +298,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             screen = StatsAppScreens.MatchResults,
             title = Res.string.matchResults
         )
+        teamSummaryScreen(
+            navigate = { navController.navigate(it) },
+            screen = StatsAppScreens.TeamSeriesRecords,
+            title = Res.string.seriesRecords
+        )
 
     }
 

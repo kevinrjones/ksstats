@@ -9,5 +9,6 @@ interface TeamRecordsDao {
     fun getInningsByInnings(searchParameters: SearchParameters): Flow<DatabaseResult<TeamInningsByInnings>>
     fun getMatchTotals(searchParameters: SearchParameters): Flow<DatabaseResult<TeamInningsByInnings>>
     fun getMatchResults(searchParameters: SearchParameters): Flow<DatabaseResult<MatchResults>>
+    fun getSeriesRecords(searchParameters: SearchParameters): Flow<DatabaseResult<TeamSummary>>
 }
 

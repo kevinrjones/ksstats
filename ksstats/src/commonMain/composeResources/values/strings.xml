@@ -20,6 +20,7 @@
     <string name="venueLabel">Venue:</string>
     <string name="seriesDatesLabel">Series Dates</string>
     <string name="seriesDateLabel">Series Date</string>
+    <string name="seriesRecords">Series Records</string>
     <string name="pageSizeLabel">Page Size</string>
     <string name="minimumRunsLabel">Minimum Runs</string>
     <string name="minimumWicketsLabel">Minimum Wickets</string>
@@ -71,6 +72,7 @@
     <string name="playerByOppositionTeamTitle">By Opposition Averages</string>
     <string name="playerByYearOfMatchStartTitle">By Year Of Match Start Averages</string>
     <string name="playerBySeasonTitle">By Season Averages</string>
+    <string name="season">Season</string>
     <string name="teamSummaryTitle">Team Summary</string>
     <string name="name">Name</string>
     <string name="team">Team</string>

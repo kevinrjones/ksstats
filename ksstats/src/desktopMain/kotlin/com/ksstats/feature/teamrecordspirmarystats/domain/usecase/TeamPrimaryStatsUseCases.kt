@@ -5,5 +5,6 @@ data class TeamPrimaryStatsUseCases(
     val getTeamInningsByInnings: GetTeamInningsByInnings,
     val getMatchTotals: GetMatchTotals,
     val getMatchResults: GetMatchResults,
+    val getSeriesRecords: GetSeriesRecords,
 )
 
